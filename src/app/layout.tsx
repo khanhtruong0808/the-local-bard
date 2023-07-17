@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
-import "./globals.css";
 import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "The Local Bard",
@@ -13,10 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full">
+      <body className="h-full flex flex-col">
         <Navbar />
-        {children}
+        <main className="flex grow">{children}</main>
       </body>
     </html>
   );
