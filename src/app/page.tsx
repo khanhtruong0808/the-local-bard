@@ -1,4 +1,5 @@
 import { Poster } from "@/components/Poster";
+import SearchInput from "@/components/SearchInput";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 const posters = [
@@ -41,11 +42,7 @@ export default function Home() {
             unforgettable movie experience. Discover now!
           </p>
           <div className="w-full self-center relative mt-6">
-            <input
-              type="text"
-              className="w-full p-4 pr-7 placeholder:text-gray-600 rounded-sm font-sans truncate"
-              placeholder="Enter an address, neighborhood, city, or ZIP code"
-            />
+            <SearchInput />
             <div className="absolute cursor-pointer inset-y-0 right-0 flex items-center pr-3">
               <MagnifyingGlassIcon className="h-5 w-5" />
             </div>
