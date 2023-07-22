@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Local theaters near you",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

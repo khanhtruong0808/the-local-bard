@@ -1,10 +1,31 @@
 "use client";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/20/solid";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { Database } from "@/lib/database.types";
+import Link from "next/link";
 
 export const Navbar = () => {
-  const [signedIn, setSignedIn] = useState(false);
+  // Maybe this auth part can be done on server side?
+  const supabase = createClientComponentClient<Database>();
+
+  type UserResponse = Awaited<ReturnType<typeof supabase.auth.getUser>>;
+  const [user, setUser] = useState<UserResponse["data"]["user"]>(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      return user;
+    };
+    fetchUser().then((user) => setUser(user));
+  }, [supabase.auth]);
+  const signedIn = user !== null;
+  // TODO: Delete this after testing
+  console.log("User:", user);
+
   const [open, setOpen] = useState(false);
   const links = [
     { href: "#", label: "Add a theater" },
@@ -27,10 +48,7 @@ export const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <button
-            onClick={() => setSignedIn(!signedIn)}
-            className="flex items-center"
-          >
+          <button className="flex items-center">
             {signedIn ? (
               <span className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
                 <svg
@@ -42,9 +60,12 @@ export const Navbar = () => {
                 </svg>
               </span>
             ) : (
-              <span className="hover:bg-yellow-400 px-3 py-2 rounded">
+              <Link
+                href="/login"
+                className="hover:bg-yellow-400 px-3 py-2 rounded"
+              >
                 Sign In
-              </span>
+              </Link>
             )}
           </button>
         </div>
@@ -63,10 +84,7 @@ export const Navbar = () => {
           <Image width={40} height={40} alt="" src="/logo.jpg" /> The Local Bard
         </a>
         <div className="flex text-sm items-center text-yellow-950">
-          <button
-            onClick={() => setSignedIn(!signedIn)}
-            className="flex items-center"
-          >
+          <button className="flex items-center">
             {signedIn ? (
               <span className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
                 <svg
@@ -78,9 +96,12 @@ export const Navbar = () => {
                 </svg>
               </span>
             ) : (
-              <span className="hover:bg-yellow-400 px-3 py-2 rounded">
+              <Link
+                href="/login"
+                className="hover:bg-yellow-400 px-3 py-2 rounded"
+              >
                 Sign In
-              </span>
+              </Link>
             )}
           </button>
         </div>
