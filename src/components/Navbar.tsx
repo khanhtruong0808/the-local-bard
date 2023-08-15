@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Database } from "@/lib/database.types";
 import Link from "next/link";
 import { Disclosure } from "@headlessui/react";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 export const Navbar = () => {
   // Maybe this auth part can be done on server side?
@@ -26,8 +27,9 @@ export const Navbar = () => {
   const signedIn = user !== null;
 
   const links = [
-    { href: "#", label: "Add a theater" },
-    { href: "#", label: "Claim a theater" },
+    { href: "", label: "" },
+    // { href: "#", label: "Add a theater" },
+    // { href: "#", label: "Claim a theater" },
   ];
   return (
     <Disclosure as="nav" className="bg-yellow-300">
@@ -51,21 +53,13 @@ export const Navbar = () => {
               ))}
               <button className="flex items-center">
                 {signedIn ? (
-                  <span className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
-                    <svg
-                      className="h-full w-full text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  </span>
+                  <ProfileDropdown />
                 ) : (
                   <Link
                     href="/login"
-                    className="hover:bg-yellow-400 px-3 py-2 rounded"
+                    className="bg-blue-950 text-white px-5 ml-3 py-2 rounded"
                   >
-                    Sign In
+                    Sign in
                   </Link>
                 )}
               </button>
@@ -100,7 +94,7 @@ export const Navbar = () => {
                 ) : (
                   <Link
                     href="/login"
-                    className="hover:bg-yellow-400 px-3 py-2 rounded"
+                    className="bg-blue-950 text-white px-5 ml-3 py-2 rounded"
                   >
                     Sign In
                   </Link>
