@@ -1,11 +1,11 @@
-import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightOnRectangleIcon,
-  Cog8ToothIcon,
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
+import { Fragment } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -15,7 +15,11 @@ export const ProfileDropdown = () => {
   const supabase = createClientComponentClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    const signOut = await supabase.auth.signOut();
+    if (signOut.error) {
+      console.error(signOut.error);
+      return;
+    }
   };
 
   return (
@@ -62,7 +66,7 @@ export const ProfileDropdown = () => {
           <div className="py-1">
             <Menu.Item>
               {({ active }) => (
-                <a
+                <Link
                   href="/login"
                   onClick={handleSignOut}
                   className={classNames(
@@ -75,7 +79,7 @@ export const ProfileDropdown = () => {
                     aria-hidden="true"
                   />
                   Log out
-                </a>
+                </Link>
               )}
             </Menu.Item>
           </div>

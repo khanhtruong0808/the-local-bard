@@ -5,29 +5,35 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { Database } from "@/lib/database.types";
-import Link from "next/link";
 import { Disclosure } from "@headlessui/react";
+import Link from "next/link";
 import { ProfileDropdown } from "./ProfileDropdown";
 
 export const Navbar = () => {
-  // Maybe this auth part can be done on server side?
+  // TODO: this auth part needs to be moved server-side so that we we eliminate
+  // the flash of the sign-in button before the user is signed in as well as
+  // the profile not updating when the user signs in
   const supabase = createClientComponentClient<Database>();
 
   type UserResponse = Awaited<ReturnType<typeof supabase.auth.getUser>>;
   const [user, setUser] = useState<UserResponse["data"]["user"]>(null);
   useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      return user;
-    };
-    fetchUser().then((user) => setUser(user));
+    supabase.auth.getUser().then((response) => {
+      if (response.error) {
+        console.error(response.error);
+        setUser(null);
+        return;
+      }
+      setUser(response.data.user);
+    });
   }, [supabase.auth]);
   const signedIn = user !== null;
 
-  const links = [
-    { href: "", label: "" },
+  // TODO: remove this TempLink type once we have some actual links.
+  // I had to do this because TypeScript didn't like links being empty.
+  type TempLink = { href: string; label: string };
+  const links: TempLink[] = [
+    // { href: "", label: "" },
     // { href: "#", label: "Add a theater" },
     // { href: "#", label: "Claim a theater" },
   ];
@@ -51,18 +57,18 @@ export const Navbar = () => {
                   {link.label}
                 </a>
               ))}
-              <button className="flex items-center">
-                {signedIn ? (
-                  <ProfileDropdown />
-                ) : (
+              {signedIn ? (
+                <ProfileDropdown />
+              ) : (
+                <button className="flex items-center">
                   <Link
                     href="/login"
                     className="bg-blue-950 text-white px-5 ml-3 py-2 rounded"
                   >
                     Sign in
                   </Link>
-                )}
-              </button>
+                </button>
+              )}
             </div>
           </div>
 

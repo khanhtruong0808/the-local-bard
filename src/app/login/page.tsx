@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Button from "@/components/Button";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -27,11 +27,23 @@ export default function Login() {
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await supabase.auth.signInWithPassword({
+    const signIn = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    router.push("/");
+    if (signIn.error) {
+      if (
+        signIn.error.name === "AuthApiError" &&
+        signIn.error.message === "Invalid login credentials"
+      ) {
+        alert("Invalid login credentials. Check your email and password.");
+      } else {
+        alert(`${signIn.error.name}: ${signIn.error.message}`);
+      }
+      return;
+    } else {
+      router.push("/");
+    }
   };
 
   const handleGoogleSignIn = async () => {
