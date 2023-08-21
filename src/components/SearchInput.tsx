@@ -4,30 +4,41 @@
 
 "use client";
 import { useLoadGoogleApi } from "@/lib/googleMaps";
-import { Autocomplete } from "@react-google-maps/api";
+import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// Restrictions on the autocomplete search
-const restrictions = {
-  country: "us",
+// Geographic boundary to bias the search results to Sacramento County.
+// Results outside of this area will still be returned, but will be lower priority.
+const SAC_COUNTY_BOUNDS = {
+  west: -121.862622,
+  south: 38.018421,
+  east: -121.027084,
+  north: 38.736405,
 };
 
 export default function SearchInput() {
   const router = useRouter();
   const { isLoaded, loadError } = useLoadGoogleApi();
 
-  const [search, setSearch] = useState<google.maps.places.Autocomplete | null>(
+  const [search, setSearch] = useState<google.maps.places.SearchBox | null>(
     null
   );
 
-  const handleLoad = (autocomplete: google.maps.places.Autocomplete) => {
-    setSearch(autocomplete);
+  const handleLoad = (search: google.maps.places.SearchBox) => {
+    setSearch(search);
   };
 
-  const handlePlaceChanged = () => {
+  const handlePlacesChanged = () => {
     if (search) {
-      const place = search.getPlace();
+      const places = search.getPlaces();
+
+      if (places === undefined || places.length === 0) {
+        alert("Could not find any places matching that search");
+        return;
+      }
+
+      const place = places[0];
       const lat = place.geometry?.location?.lat();
       const lng = place.geometry?.location?.lng();
       if (lat !== undefined && lng !== undefined) {
@@ -36,8 +47,9 @@ export default function SearchInput() {
             new URLSearchParams({ lat: lat.toString(), lng: lng.toString() })
         );
       } else {
-        // TODO: deal with error some better way
-        alert("Error: could not get latitude and longitude from place");
+        // This error should not happen unless the Google Maps place has no
+        // associated geometry. I'm not sure when that happens.
+        throw new Error("Could not get latitude and longitude from place");
       }
     }
   };
@@ -61,16 +73,16 @@ export default function SearchInput() {
     );
 
   return (
-    <Autocomplete
+    <StandaloneSearchBox
       onLoad={handleLoad}
-      onPlaceChanged={handlePlaceChanged}
-      restrictions={restrictions}
+      onPlacesChanged={handlePlacesChanged}
+      bounds={SAC_COUNTY_BOUNDS}
     >
       <input
         type="text"
         placeholder="Enter an address, neighborhood, city, or ZIP code"
         className="w-full p-4 pr-7 placeholder:text-gray-600 rounded-sm font-sans truncate"
       />
-    </Autocomplete>
+    </StandaloneSearchBox>
   );
 }
