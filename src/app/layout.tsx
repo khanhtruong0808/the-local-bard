@@ -1,3 +1,4 @@
+import { Auth } from "@/components/Auth";
 import { Navbar } from "@/components/Navbar";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -15,7 +16,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="h-full flex flex-col">
-        <Navbar />
+        <Navbar>
+          <Auth />
+        </Navbar>
         <main className="flex grow">{children}</main>
       </body>
     </html>

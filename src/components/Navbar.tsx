@@ -1,34 +1,11 @@
 "use client";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/20/solid";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import React from "react";
 
-import { Database } from "@/lib/database.types";
 import { Disclosure } from "@headlessui/react";
-import Link from "next/link";
-import { ProfileDropdown } from "./ProfileDropdown";
 
-export const Navbar = () => {
-  // TODO: this auth part needs to be moved server-side so that we we eliminate
-  // the flash of the sign-in button before the user is signed in as well as
-  // the profile not updating when the user signs in
-  const supabase = createClientComponentClient<Database>();
-
-  type UserResponse = Awaited<ReturnType<typeof supabase.auth.getUser>>;
-  const [user, setUser] = useState<UserResponse["data"]["user"]>(null);
-  useEffect(() => {
-    supabase.auth.getUser().then((response) => {
-      if (response.error) {
-        console.error(response.error);
-        setUser(null);
-        return;
-      }
-      setUser(response.data.user);
-    });
-  }, [supabase.auth]);
-  const signedIn = user !== null;
-
+export const Navbar = ({ children }: { children: React.ReactNode }) => {
   // TODO: remove this TempLink type once we have some actual links.
   // I had to do this because TypeScript didn't like links being empty.
   type TempLink = { href: string; label: string };
@@ -44,8 +21,8 @@ export const Navbar = () => {
           {/* Desktop Navbar */}
           <div className="max-w-5xl w-full justify-between p-3 mx-auto items-center hidden md:flex">
             <a href="/" className="flex items-center gap-2 font-medium">
-              <Image width={40} height={40} alt="" src="/logo.jpg" /> The Local
-              Bard
+              <Image width={40} height={40} alt="" src="/logo.jpg" />
+              The Local Bard
             </a>
             <div className="flex text-sm items-center text-yellow-950">
               {links.map((link) => (
@@ -57,18 +34,7 @@ export const Navbar = () => {
                   {link.label}
                 </a>
               ))}
-              {signedIn ? (
-                <ProfileDropdown />
-              ) : (
-                <button className="flex items-center">
-                  <Link
-                    href="/login"
-                    className="bg-blue-950 text-white px-5 ml-3 py-2 rounded"
-                  >
-                    Sign in
-                  </Link>
-                </button>
-              )}
+              {children}
             </div>
           </div>
 
@@ -86,26 +52,7 @@ export const Navbar = () => {
               Bard
             </a>
             <div className="flex text-sm items-center text-yellow-950">
-              <button className="flex items-center">
-                {signedIn ? (
-                  <span className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
-                    <svg
-                      className="h-full w-full text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  </span>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="bg-blue-950 text-white px-5 ml-3 py-2 rounded"
-                  >
-                    Sign In
-                  </Link>
-                )}
-              </button>
+              {children}
             </div>
           </div>
 

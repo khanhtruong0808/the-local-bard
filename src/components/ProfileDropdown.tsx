@@ -1,27 +1,14 @@
+"use client";
+import signOut from "@/actions/signOut";
 import { Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Fragment } from "react";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export const ProfileDropdown = () => {
-  const supabase = createClientComponentClient();
-
-  const handleSignOut = async () => {
-    const signOut = await supabase.auth.signOut();
-    if (signOut.error) {
-      console.error(signOut.error);
-      return;
-    }
-  };
-
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
@@ -46,42 +33,32 @@ export const ProfileDropdown = () => {
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="/account/general"
-                  className={classNames(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "group flex items-center px-4 py-2 text-sm"
-                  )}
-                >
-                  <UserCircleIcon
-                    className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  My Theater
-                </a>
-              )}
+              <Link
+                href="/account/general"
+                className="ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700 group flex items-center px-4 py-2 text-sm"
+              >
+                <UserCircleIcon
+                  className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+                />
+                My Theater
+              </Link>
             </Menu.Item>
           </div>
           <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  href="/login"
-                  onClick={handleSignOut}
-                  className={classNames(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "group flex items-center px-4 py-2 text-sm w-full"
-                  )}
-                >
-                  <ArrowRightOnRectangleIcon
-                    className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  Log out
-                </Link>
-              )}
-            </Menu.Item>
+            <form action={signOut} className="flex w-full">
+              <Menu.Item
+                as="button"
+                type="submit"
+                className="ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700 group flex items-center px-4 py-2 text-sm w-full"
+              >
+                <ArrowRightOnRectangleIcon
+                  className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+                />
+                Log out
+              </Menu.Item>
+            </form>
           </div>
         </Menu.Items>
       </Transition>
