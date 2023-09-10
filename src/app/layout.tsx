@@ -15,7 +15,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full flex flex-col bg-zinc-900">
+      <body className="flex h-full flex-col bg-zinc-900">
         <Navbar>
           <Auth />
         </Navbar>

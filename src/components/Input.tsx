@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 // TODO: Add more input styles depending on need
 const variantStyles = {
   primary:
-    "bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100",
+    "bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100",
 };
 
 type InputProps = {
