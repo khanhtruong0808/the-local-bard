@@ -15,21 +15,21 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
     // { href: "#", label: "Claim a theater" },
   ];
   return (
-    <Disclosure as="nav" className="bg-yellow-300">
+    <Disclosure as="nav" className="bg-zinc-800/90 text-zinc-200 shadow-2xl">
       {({ open }) => (
         <>
           {/* Desktop Navbar */}
-          <div className="max-w-5xl w-full justify-between p-3 mx-auto items-center hidden md:flex">
+          <div className="mx-auto hidden w-full max-w-5xl items-center justify-between p-3 md:flex">
             <a href="/" className="flex items-center gap-2 font-medium">
               <Image width={40} height={40} alt="" src="/logo.jpg" />
               The Local Bard
             </a>
-            <div className="flex text-sm items-center text-yellow-950">
+            <div className="flex items-center gap-x-4 text-sm">
               {links.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="hover:bg-yellow-400 px-3 py-2 rounded"
+                  className="rounded px-3 py-2 text-zinc-400 hover:bg-zinc-700 hover:text-white"
                 >
                   {link.label}
                 </a>
@@ -39,7 +39,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
           </div>
 
           {/* Mobile Sidebar */}
-          <div className="max-w-5xl w-full justify-between p-3 mx-auto items-center flex md:hidden">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-between p-3 md:hidden">
             <Disclosure.Button>
               {open ? (
                 <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -51,7 +51,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
               <Image width={40} height={40} alt="" src="/logo.jpg" /> The Local
               Bard
             </a>
-            <div className="flex text-sm items-center text-yellow-950">
+            <div className="flex items-center text-sm text-yellow-950">
               {children}
             </div>
           </div>
@@ -63,7 +63,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                   key={item.label}
                   as="a"
                   href={item.href}
-                  className="bg-yellow-300 text-black block rounded-md px-3 py-2 text-base font-medium"
+                  className="block rounded-md bg-yellow-300 px-3 py-2 text-base font-medium text-black"
                 >
                   {item.label}
                 </Disclosure.Button>
