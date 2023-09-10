@@ -4,15 +4,15 @@ import Image from "next/image";
 import React from "react";
 
 import { Disclosure } from "@headlessui/react";
+import Button from "./Button";
 
 export const Navbar = ({ children }: { children: React.ReactNode }) => {
   // TODO: remove this TempLink type once we have some actual links.
   // I had to do this because TypeScript didn't like links being empty.
   type TempLink = { href: string; label: string };
   const links: TempLink[] = [
-    // { href: "", label: "" },
-    // { href: "#", label: "Add a theater" },
-    // { href: "#", label: "Claim a theater" },
+    { href: "#", label: "Add a theater" },
+    { href: "#", label: "Claim a theater" },
   ];
   return (
     <Disclosure as="nav" className="bg-zinc-800/90 text-zinc-200 shadow-2xl">
@@ -51,9 +51,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
               <Image width={40} height={40} alt="" src="/logo.jpg" /> The Local
               Bard
             </a>
-            <div className="flex items-center text-sm text-yellow-950">
-              {children}
-            </div>
+            <div className="flex items-center text-sm">{children}</div>
           </div>
 
           <Disclosure.Panel className="md:hidden">
@@ -61,9 +59,10 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
               {links.map((item) => (
                 <Disclosure.Button
                   key={item.label}
-                  as="a"
+                  as={Button}
+                  variant="secondary"
                   href={item.href}
-                  className="block rounded-md bg-yellow-300 px-3 py-2 text-base font-medium text-black"
+                  className="block"
                 >
                   {item.label}
                 </Disclosure.Button>
