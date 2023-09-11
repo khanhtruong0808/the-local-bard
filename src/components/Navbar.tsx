@@ -13,7 +13,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
   const links: TempLink[] = [
     { href: "#", label: "Add a theater" },
     { href: "#", label: "Claim a theater" },
-    { href: "contact", label: "Contact us" },
+    { href: "/contact", label: "Contact us" },
   ];
   return (
     <Disclosure as="nav" className="bg-transparent text-zinc-200">
