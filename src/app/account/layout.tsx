@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <div className="w-full bg-zinc-900">
+    <div className="w-full">
       <div className="mx-auto w-full max-w-5xl lg:flex lg:gap-x-16">
         <aside className="flex overflow-x-auto border-b border-gray-900/5 py-4 lg:block lg:w-64 lg:flex-none lg:border-0 lg:py-20">
           <nav className="flex-none px-4 sm:px-6 lg:px-0">
@@ -62,7 +62,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </ul>
           </nav>
         </aside>
-
         {children}
       </div>
     </div>
