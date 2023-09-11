@@ -15,13 +15,13 @@ export const Poster = ({ src, name, date, location }: Props) => {
         width={200}
         src={src}
         alt=""
-        className="overflow-hidden w-[200px] h-[200px] rounded"
+        className="h-[200px] w-[200px] overflow-hidden rounded"
       />
-      <div className="flex justify-between text-sm mt-2">
-        <p>{name}</p>
-        <p>{date}</p>
+      <div className="mt-2 flex justify-between text-sm">
+        <p className="text-zinc-300">{name}</p>
+        <p className="text-zinc-400">{date}</p>
       </div>
-      <p className="text-xs text-gray-500">{location}</p>
+      <p className="text-xs text-zinc-400">{location}</p>
     </div>
   );
 };

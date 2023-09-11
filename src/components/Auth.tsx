@@ -1,6 +1,5 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import Button from "./Button";
 import { ProfileDropdown } from "./ProfileDropdown";
 
@@ -13,9 +12,9 @@ export async function Auth() {
 
   if (error || !user) {
     return (
-      <Link href="/login">
-        <Button variant="secondary">Sign In</Button>
-      </Link>
+      <Button variant="secondary" href="/login">
+        Sign In
+      </Button>
     );
   }
 

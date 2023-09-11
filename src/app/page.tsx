@@ -30,20 +30,20 @@ const posters = [
 ];
 export default function Home() {
   return (
-    <main className="w-full flex flex-col items-center font-serif">
-      <div className="bg-blue-950 w-full">
-        <div className="max-w-xl py-20 px-6 mx-auto flex flex-col gap-6 text-center sm:text-left">
-          <h1 className="text-white text-4xl sm:text-5xl font-medium">
+    <main className="flex w-full flex-col items-center font-serif">
+      <div className="w-full">
+        <div className="mx-auto flex max-w-xl flex-col gap-6 px-6 py-20 text-center sm:text-left">
+          <h1 className="text-4xl font-medium text-white sm:text-5xl">
             Find spectactular stage productions near you.
           </h1>
-          <p className="text-blue-100/70 sm:text-base text-sm">
+          <p className="text-sm text-zinc-400 sm:text-base">
             Uncover nearby theaters swiftly. User-friendly interface. No more
             tedious searches. Embrace cinematic delight. Your go-to for an
             unforgettable movie experience. Discover now!
           </p>
-          <div className="w-full self-center relative mt-6">
+          <div className="relative mt-6 w-full self-center">
             <SearchInput />
-            <div className="absolute cursor-pointer inset-y-0 right-0 flex items-center pr-3">
+            <div className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3">
               <MagnifyingGlassIcon className="h-5 w-5" />
             </div>
           </div>
@@ -51,8 +51,10 @@ export default function Home() {
       </div>
       <div className="divide-y divide-gray-300">
         <div className="max-w-5xl py-20">
-          <p className="text-2xl font-semibold text-center">Showing Soon</p>
-          <div className="flex gap-4 mt-8 flex-wrap justify-center">
+          <p className="text-center text-2xl font-semibold text-zinc-300">
+            Showing Soon
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
             {posters.map((poster) => (
               <Poster
                 key={poster.name}
@@ -65,8 +67,10 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-5xl py-20">
-          <p className="text-2xl font-semibold text-center">Categories</p>
-          <div className="flex gap-4 mt-8 flex-wrap justify-center">
+          <p className="text-center text-2xl font-semibold text-zinc-300">
+            Categories
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
             {posters.map((poster) => (
               <Poster
                 key={poster.name}

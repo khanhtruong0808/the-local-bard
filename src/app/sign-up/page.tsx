@@ -1,5 +1,6 @@
 import signUp from "@/actions/signUp";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 import Messages from "@/components/Messages";
 
 export default function SignUpPage() {
@@ -21,10 +22,12 @@ export default function SignUpPage() {
               Email
             </label>
             <div className="mt-2">
-              <input
-                className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white placeholder:text-white/30 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-yellow-500 sm:text-sm sm:leading-6"
+              <Input
+                type="email"
+                placeholder="Email address"
+                aria-label="Email address"
+                className="w-full"
                 name="email"
-                placeholder="you@example.com"
               />
             </div>
           </div>
@@ -36,14 +39,22 @@ export default function SignUpPage() {
               Password
             </label>
             <div className="mt-2">
-              <input
-                className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white placeholder:text-white/30 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-yellow-500 sm:text-sm sm:leading-6"
+              <Input
                 type="password"
+                placeholder="Password"
+                aria-label="Password"
+                className="w-full"
                 name="password"
               />
             </div>
           </div>
-          <Button type="submit">Submit</Button>
+          <Button
+            type="submit"
+            className="flex w-full justify-center"
+            size="large"
+          >
+            Sign Up
+          </Button>
         </form>
         <Messages className="mt-6" />
       </div>

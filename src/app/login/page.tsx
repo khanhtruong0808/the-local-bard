@@ -2,13 +2,14 @@
 
 import signInWithEmail from "@/actions/signInWithEmail";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 import Messages from "@/components/Messages";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Login() {
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-blue-950">
+    <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Image
           className="mx-auto w-auto"
@@ -32,10 +33,12 @@ export default async function Login() {
               Email
             </label>
             <div className="mt-2">
-              <input
-                className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white placeholder:text-white/30 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-yellow-500 sm:text-sm sm:leading-6"
+              <Input
+                type="email"
+                placeholder="Email address"
+                aria-label="Email address"
+                className="w-full"
                 name="email"
-                placeholder="you@example.com"
               />
             </div>
           </div>
@@ -47,11 +50,12 @@ export default async function Login() {
               Password
             </label>
             <div className="mt-2">
-              <input
-                className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white placeholder:text-white/30 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-yellow-500 sm:text-sm sm:leading-6"
+              <Input
                 type="password"
+                placeholder="Password"
+                aria-label="Password"
+                className="w-full"
                 name="password"
-                placeholder="••••••••"
               />
             </div>
           </div>
@@ -61,7 +65,7 @@ export default async function Login() {
           <p className="mt-6 text-center text-sm text-neutral-400">
             Don&apos;t have an account?
             {/* Fake button, looks like a link */}
-            <Link className="pl-1 underline" href="/sign-up">
+            <Link className="pl-1.5 text-zinc-300 underline" href="/sign-up">
               Sign Up
             </Link>
           </p>
