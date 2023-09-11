@@ -41,8 +41,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={classNames(
                       segment === item.segment
-                        ? "bg-zinc-800 text-zinc-100"
-                        : "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-200",
+                        ? "bg-zinc-700 text-zinc-100"
+                        : "text-zinc-300 hover:bg-zinc-700 hover:text-zinc-200",
                       "group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm font-semibold leading-6",
                     )}
                   >

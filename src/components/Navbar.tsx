@@ -16,11 +16,11 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
     { href: "contact", label: "Contact us" },
   ];
   return (
-    <Disclosure as="nav" className="bg-zinc-800/90 text-zinc-200 shadow-2xl">
+    <Disclosure as="nav" className="bg-transparent text-zinc-200">
       {({ open }) => (
         <>
           {/* Desktop Navbar */}
-          <div className="mx-auto hidden w-full max-w-5xl items-center justify-between p-3 md:flex">
+          <div className="mx-auto hidden w-full max-w-5xl items-center justify-between p-8 md:flex">
             <a href="/" className="flex items-center gap-2 font-medium">
               <Image width={40} height={40} alt="" src="/logo.jpg" />
               The Local Bard
