@@ -2,20 +2,21 @@
 import signInWithEmail from "@/actions/signInWithEmail";
 import Link from "next/link";
 import { useState } from "react";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 import Input from "./Input";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
-  const { pending } = useFormStatus();
+  const [pending, setPending] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
+    setPending(true);
     const res = await signInWithEmail(formData);
     if (res.error) {
       setError(res.error);
     }
+    setPending(false);
   };
 
   return (
@@ -56,6 +57,7 @@ export default function LoginForm() {
       </div>
       <Button
         disabled={pending}
+        type="submit"
         className="flex w-full justify-center"
         size="large"
       >
