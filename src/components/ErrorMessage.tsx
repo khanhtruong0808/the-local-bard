@@ -1,15 +1,13 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { twMerge } from "tailwind-merge";
 
-export default function Messages({ className }: { className?: string }) {
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-  const message = searchParams.get("message");
+interface Props {
+  className?: string;
+  error?: string | null;
+}
 
-  if (!error && !message) return null;
+export default function ErrorMessage({ className, error }: Props) {
+  if (!error) return null;
 
   return (
     <div className={twMerge("rounded-md bg-red-50 p-4", className)}>
@@ -20,10 +18,7 @@ export default function Messages({ className }: { className?: string }) {
         <div className="ml-3">
           <h3 className="text-sm font-medium text-red-800">Error</h3>
           <div className="mt-2 text-sm text-red-700">
-            <ul role="list" className="list-disc space-y-1 pl-5">
-              {error && <li>{error}</li>}
-              {message && <li>{message}</li>}
-            </ul>
+            <p>{error}</p>
           </div>
         </div>
       </div>

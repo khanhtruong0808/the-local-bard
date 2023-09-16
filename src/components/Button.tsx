@@ -1,5 +1,5 @@
-import { twMerge } from "tailwind-merge";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 const variantStyles = {
   primary:
@@ -30,7 +30,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   className = twMerge(
-    "font-semibold shadow-sm outline-offset-2 transition active:transition-none",
+    "font-semibold shadow-sm outline-offset-2 transition active:transition-none disabled:pointer-events-none disabled:opacity-50",
     variantStyles[variant],
     sizeStyles[size],
     className,

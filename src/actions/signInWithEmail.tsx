@@ -15,10 +15,12 @@ export default async function signInWithEmail(form: FormData) {
     email,
     password,
   });
+
   if (signIn.error) {
     console.error(signIn.error);
-    redirect("/login?error=Could not authenticate user");
+    return { error: signIn.error.message };
   }
+
   revalidatePath("/");
   redirect("/");
 }
