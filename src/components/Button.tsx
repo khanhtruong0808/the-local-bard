@@ -15,9 +15,10 @@ const sizeStyles = {
   large: "rounded-md px-3.5 py-2.5 text-sm",
 };
 
-type ButtonProps = {
+export type ButtonProps = {
   variant?: keyof typeof variantStyles;
   size?: keyof typeof sizeStyles;
+  disabled?: boolean;
 } & (
   | (React.ComponentPropsWithoutRef<"button"> & { href?: undefined })
   | React.ComponentPropsWithoutRef<typeof Link>
@@ -26,6 +27,7 @@ type ButtonProps = {
 export default function Button({
   variant = "primary",
   size = "medium",
+  disabled,
   className,
   ...props
 }: ButtonProps) {
@@ -37,7 +39,7 @@ export default function Button({
   );
 
   return typeof props.href === "undefined" ? (
-    <button className={className} {...props} />
+    <button className={className} disabled={disabled} {...props} />
   ) : (
     <Link className={className} {...props} />
   );

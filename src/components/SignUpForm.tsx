@@ -5,6 +5,7 @@ import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 import Input from "./Input";
+import SubmitButton from "./SubmitButton";
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +54,9 @@ export default function SignUpForm() {
           />
         </div>
       </div>
-      <Button
-        disabled={pending}
-        type="submit"
-        className="flex w-full justify-center"
-        size="large"
-      >
+      <SubmitButton size="large" className="flex w-full justify-center">
         Sign Up
-      </Button>
+      </SubmitButton>
       <ErrorMessage error={error} />
     </form>
   );

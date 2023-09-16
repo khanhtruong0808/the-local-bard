@@ -2,21 +2,18 @@
 import signInWithEmail from "@/actions/signInWithEmail";
 import Link from "next/link";
 import { useState } from "react";
-import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 import Input from "./Input";
+import SubmitButton from "./SubmitButton";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
-    setPending(true);
     const res = await signInWithEmail(formData);
     if (res.error) {
       setError(res.error);
     }
-    setPending(false);
   };
 
   return (
@@ -55,14 +52,9 @@ export default function LoginForm() {
           />
         </div>
       </div>
-      <Button
-        disabled={pending}
-        type="submit"
-        className="flex w-full justify-center"
-        size="large"
-      >
+      <SubmitButton size="large" className="flex w-full justify-center">
         Sign In
-      </Button>
+      </SubmitButton>
       <p className="mt-6 text-center text-sm text-neutral-400">
         Don&apos;t have an account?
         {/* Fake button, looks like a link */}
