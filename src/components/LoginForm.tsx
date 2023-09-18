@@ -28,20 +28,31 @@ export default function LoginForm() {
         <div className="mt-2">
           <Input
             type="email"
+            name="email"
             placeholder="Email address"
             aria-label="Email address"
             className="w-full"
-            name="email"
+            required
           />
         </div>
       </div>
       <div>
-        <label
-          className="block text-sm/6 font-medium text-white"
-          htmlFor="password"
-        >
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label
+            className="block text-sm/6 font-medium text-white"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <div className="text-sm">
+            <Link
+              href="/reset-password"
+              className="font-semibold text-zinc-300 hover:text-zinc-200"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
         <div className="mt-2">
           <Input
             type="password"
@@ -49,6 +60,7 @@ export default function LoginForm() {
             aria-label="Password"
             className="w-full"
             name="password"
+            required
           />
         </div>
       </div>
