@@ -1,5 +1,5 @@
-import { twMerge } from "tailwind-merge";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 const variantStyles = {
   primary:
@@ -15,9 +15,10 @@ const sizeStyles = {
   large: "rounded-md px-3.5 py-2.5 text-sm",
 };
 
-type ButtonProps = {
+export type ButtonProps = {
   variant?: keyof typeof variantStyles;
   size?: keyof typeof sizeStyles;
+  disabled?: boolean;
 } & (
   | (React.ComponentPropsWithoutRef<"button"> & { href?: undefined })
   | React.ComponentPropsWithoutRef<typeof Link>
@@ -26,18 +27,19 @@ type ButtonProps = {
 export default function Button({
   variant = "primary",
   size = "medium",
+  disabled,
   className,
   ...props
 }: ButtonProps) {
   className = twMerge(
-    "font-semibold shadow-sm outline-offset-2 transition active:transition-none",
+    "font-semibold shadow-sm outline-offset-2 transition active:transition-none disabled:pointer-events-none disabled:opacity-50",
     variantStyles[variant],
     sizeStyles[size],
     className,
   );
 
   return typeof props.href === "undefined" ? (
-    <button className={className} {...props} />
+    <button className={className} disabled={disabled} {...props} />
   ) : (
     <Link className={className} {...props} />
   );

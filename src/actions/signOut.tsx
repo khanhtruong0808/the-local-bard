@@ -10,7 +10,8 @@ export default async function signOut() {
   const signOut = await supabase.auth.signOut();
   if (signOut.error) {
     console.error(signOut.error);
-    return;
+    return { error: signOut.error.message };
   }
+
   redirect("/login");
 }

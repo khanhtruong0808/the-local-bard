@@ -15,7 +15,7 @@ export default async function signInWithGoogle() {
 
   if (signIn.error) {
     console.error(signIn.error);
-    return;
+    return { error: signIn.error.message };
   }
 
   redirect(signIn.data.url);

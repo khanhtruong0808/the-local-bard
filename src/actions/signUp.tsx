@@ -1,7 +1,6 @@
 "use server";
 
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -21,12 +20,8 @@ export default async function signUp(form: FormData) {
   });
 
   if (signUp.error) {
-    if (signUp.error.message === "User already registered") {
-      redirect("/sign-up?error=User already registered");
-    }
-    redirect("/sign-up?error=Could not create user");
+    return { error: signUp.error.message };
   }
 
-  revalidatePath("/");
-  redirect("/");
+  redirect("/sign-up/check-email");
 }
