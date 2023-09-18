@@ -15,7 +15,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="flex h-full flex-col bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-zinc-700 via-zinc-900 to-zinc-800 bg-fixed">
+      <body className="flex h-full flex-col bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-zinc-600 via-zinc-900 to-zinc-800 bg-fixed">
         <Navbar>
           <Auth />
         </Navbar>

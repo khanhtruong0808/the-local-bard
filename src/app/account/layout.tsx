@@ -1,6 +1,10 @@
 "use client";
-import { ShieldExclamationIcon } from "@heroicons/react/20/solid";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+import {
+  BuildingLibraryIcon,
+  FilmIcon,
+  ShieldExclamationIcon,
+  UserCircleIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 
@@ -16,6 +20,18 @@ const secondaryNavigation = [
     href: "/account/password",
     segment: "password",
     icon: ShieldExclamationIcon,
+  },
+  {
+    name: "Productions",
+    href: "/account/productions",
+    segment: "productions",
+    icon: FilmIcon,
+  },
+  {
+    name: "Stages",
+    href: "/account/stages",
+    segment: "stages",
+    icon: BuildingLibraryIcon,
   },
 ];
 
