@@ -7,7 +7,7 @@ export default function GeneralPage() {
   return (
     <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
       <div className="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
-        <div>
+        <form>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             My Theater
           </h2>
@@ -199,7 +199,6 @@ export default function GeneralPage() {
                 />
               </div>
             </div>
-
             <div className="col-span-full">
               <label
                 className="block text-sm/6 font-medium text-white"
@@ -208,12 +207,16 @@ export default function GeneralPage() {
                 Theater Type
               </label>
               <div className="mt-2">
-                <Input
-                  type="text"
-                  name="theaterType"
+                <select
                   id="theaterType"
-                  className="w-full"
-                />
+                  name="theaterType"
+                  className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+                >
+                  <option>High School</option>
+                  <option>Junior College</option>
+                  <option>Equity Theater</option>
+                  <option>Play House</option>
+                </select>
               </div>
             </div>
             <div className="col-span-full">
@@ -233,70 +236,8 @@ export default function GeneralPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-end">
-            <Button type="submit">Update Theater</Button>
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-zinc-200">
-            Stages
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-zinc-400">
-            Add stages to your theater.
-          </p>
-
-          <ul
-            role="list"
-            className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
-          >
-            <li className="flex justify-between gap-x-6 py-6">
-              <div className="font-medium text-zinc-300">Stage 1</div>
-              <Button type="button" variant="secondary" size="small">
-                Update
-              </Button>
-            </li>
-            <li className="flex justify-between gap-x-6 py-6">
-              <div className="font-medium text-zinc-300">Stage 2</div>
-              <Button type="button" variant="secondary" size="small">
-                Update
-              </Button>
-            </li>
-          </ul>
-
-          <div className="flex border-t border-gray-100 pt-6">
-            <Button type="button" variant="secondary">
-              <span aria-hidden="true">+</span> Add another application
-            </Button>
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-zinc-200">
-            Productions
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-zinc-400">
-            Add productions to your theater.
-          </p>
-
-          <ul
-            role="list"
-            className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
-          >
-            <li className="flex justify-between gap-x-6 py-6">
-              <div className="font-medium text-zinc-300">Production 1</div>
-              <Button type="button" variant="secondary" size="small">
-                Update
-              </Button>
-            </li>
-          </ul>
-
-          <div className="flex border-t border-gray-100 pt-6">
-            <Button type="button" variant="secondary">
-              <span aria-hidden="true">+</span> Add another application
-            </Button>
-          </div>
-        </div>
+          <Button type="submit">Update Theater</Button>
+        </form>
       </div>
     </div>
   );

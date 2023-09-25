@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* remove the arrows from number input */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* change the color of a date input calendar icon */
+  ::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    color-scheme: dark;
+  }
+}

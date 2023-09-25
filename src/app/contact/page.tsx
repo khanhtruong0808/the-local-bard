@@ -3,14 +3,13 @@ import Input from "@/components/Input";
 
 export default async function ContactPage() {
   return (
-    <div className="h-screen w-screen">
+    <div className="h-screen w-screen px-4 py-16 sm:px-6 lg:flex-auto lg:py-20">
       <form className="mx-auto mt-16 flex w-full max-w-7xl flex-col">
         <h2 className="mb-12 text-center text-5xl font-semibold text-zinc-200">
           CONTACT US
         </h2>
-        <p></p>
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <label
               className="block text-sm/6 font-medium text-white"
               htmlFor="name"
@@ -24,7 +23,7 @@ export default async function ContactPage() {
               className="mt-2 w-full bg-zinc-100 text-zinc-800"
             />
           </div>
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <label
               className="block text-sm/6 font-medium text-white"
               htmlFor="Email"
