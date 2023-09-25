@@ -2,8 +2,8 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import type { Database } from "@/lib/supabase/database.types";
 import type { NextRequest } from "next/server";
-import type { Database } from "@/lib/database.types";
 
 export async function GET(request: NextRequest) {
   // The `/auth/callback` route is required for the server-side auth flow implemented
