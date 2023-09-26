@@ -26,11 +26,12 @@ export default async function RootLayout({
         <Image
           src={spotlights}
           alt="Spotlights"
-          fill
-          sizes="100vw"
           style={{
             objectFit: "cover",
             zIndex: -1,
+            position: "fixed",
+            height: "100vh",
+            width: "100vw",
           }}
         />
         <Navbar>
