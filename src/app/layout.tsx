@@ -1,6 +1,8 @@
 import { Auth } from "@/components/Auth";
 import { Navbar } from "@/components/Navbar";
 import type { Metadata } from "next";
+import Image from "next/image";
+import spotlights from "../../public/spotlights.svg";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +23,16 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="flex h-full flex-col bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-zinc-600 via-zinc-900 to-zinc-800 bg-fixed">
+        <Image
+          src={spotlights}
+          alt="Spotlights"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: "cover",
+            zIndex: -1,
+          }}
+        />
         <Navbar>
           <Auth />
         </Navbar>
