@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   description: "Local theaters near you",
 };
 
+// TODO: figure why this is necessary to avoid following error:
+// Dynamic server usage: Page couldn't be rendered statically because it used `cookies`.
+// See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: {

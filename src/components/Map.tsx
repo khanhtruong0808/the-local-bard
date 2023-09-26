@@ -1,9 +1,12 @@
 "use client";
 
 import { useLoadGoogleApi } from "@/lib/googleMaps";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { Tables } from "@/lib/supabase/database.types";
+import { supabase } from "@/lib/supabase/supabaseClient";
+import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -99,26 +102,87 @@ const nightModeStyles = [
 
 const zoom = 12;
 
+type FullProductionInfo = Tables<"productions"> & {
+  theaters:
+    | (Tables<"theaters"> & {
+        addresses: Tables<"addresses"> | null;
+      })
+    | null;
+  stages: Tables<"stages"> | null;
+};
+
 export default function Map() {
+  const [productions, setProductions] = useState<FullProductionInfo[]>([]);
+  const [activeProduction, setActiveProduction] =
+    useState<FullProductionInfo | null>(null);
+
+  useEffect(() => {
+    async function getProductions() {
+      const { data, error } = await supabase
+        .from("productions")
+        .select(`*, theaters (*, addresses (*)), stages (*)`);
+
+      if (error) {
+        console.error(error);
+        throw new Error(error.message);
+      }
+
+      if (!ignore) {
+        setProductions(data);
+      }
+    }
+
+    let ignore = false;
+    getProductions();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   const searchParams = useSearchParams();
-
   const { isLoaded, loadError } = useLoadGoogleApi();
-
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
   }, []);
-
   const onUnmount = useCallback((map: google.maps.Map) => {
     setMap(null);
   }, []);
 
+  const handleActiveProduction = (production: FullProductionInfo) => {
+    const lat = production.theaters?.addresses?.latitude;
+    const lng = production.theaters?.addresses?.longitude;
+
+    if (production === activeProduction) {
+      setActiveProduction(null);
+    } else {
+      setActiveProduction(production);
+    }
+
+    if (map && lat != null && lng != null) {
+      map.setCenter({ lat, lng });
+    }
+  };
+
+  // If we have selected a production's marker, use that as the map center.
+  // Otherwise, use the lat/lng from the URL search params.
+  // Else, use the default center.
+  let center = defaultCenter;
+
+  const activeAddress = activeProduction?.theaters?.addresses;
+  const activeLat = activeAddress?.latitude;
+  const activeLng = activeAddress?.longitude;
+
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
 
-  let center = defaultCenter;
-  if (lat !== null && lng !== null) {
+  if (activeLat != null && activeLng != null) {
+    center = {
+      lat: activeLat,
+      lng: activeLng,
+    };
+  } else if (lat !== null && lng !== null) {
     center = {
       lat: parseFloat(lat),
       lng: parseFloat(lng),
@@ -133,25 +197,100 @@ export default function Map() {
   if (!isLoaded) return null; // TODO: replace with some loading indicator
 
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={zoom}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-      options={{
-        backgroundColor: "black",
-        styles: nightModeStyles,
-      }}
-    >
-      <Marker
-        position={center}
-        onClick={() => {
-          alert(
-            "Marker clicked. TODO: open details about this, probably in a dialog or side drawer.",
-          );
+    <>
+      <div className="flex flex-1">
+        <div className="w-96 bg-zinc-800 px-4 py-6 text-zinc-200">
+          {/* Left column area */}
+          <h2 className="text-xl font-semibold leading-9 tracking-tight text-white">
+            Productions
+          </h2>
+          <div className="mt-2 flex flex-col gap-y-4">
+            {productions.map((production) => {
+              const theater = production.theaters;
+              const address = theater?.addresses;
+              return (
+                <div
+                  key={production.id}
+                  className="cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow hover:bg-zinc-600"
+                >
+                  <div className="px-4 py-5 sm:p-6">
+                    <h3 className="text-lg font-medium leading-6 text-zinc-200">
+                      {production.name}
+                    </h3>
+                    <div className="mt-2 max-w-xl text-sm text-zinc-400">
+                      <p>{theater?.name}</p>
+                      <p>{address?.street_address}</p>
+                      <p>
+                        {address?.city}, {address?.state}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={zoom}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        options={{
+          backgroundColor: "black",
+          styles: nightModeStyles,
         }}
-      />
-    </GoogleMap>
+      >
+        {productions.map((production) => {
+          const lat = production?.theaters?.addresses?.latitude;
+          const lng = production?.theaters?.addresses?.longitude;
+
+          if (lat == null || lng == null) {
+            return null;
+          }
+
+          return (
+            <Marker
+              key={production.id}
+              position={{ lat, lng }}
+              onClick={() => handleActiveProduction(production)}
+            >
+              {activeProduction === production && (
+                <InfoWindow>
+                  <div>
+                    <h3 className="text-lg">{production.name}</h3>
+                    <div className="mt-2 text-sm">
+                      <p>Theater: {production.theaters?.name}</p>
+                      <p>Stage: {production.stages?.name}</p>
+                      <p>{production.theaters?.addresses?.street_address}</p>
+                      <p>
+                        {production.theaters?.addresses?.city},{" "}
+                        {production.theaters?.addresses?.state}
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p>Cost: {production.cost_range}</p>
+                      <p>Duration: {production.duration_minutes} mins.</p>
+                    </div>
+                    <div className="mt-2">
+                      {production.url && (
+                        <Link
+                          href={production.url}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                        >
+                          Click for more info
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </InfoWindow>
+              )}
+            </Marker>
+          );
+        })}
+      </GoogleMap>
+    </>
   );
 }
