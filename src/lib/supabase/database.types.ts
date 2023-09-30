@@ -89,7 +89,7 @@ export interface Database {
           kid_friendly: boolean | null
           name: string | null
           notes: string | null
-          poster_id: string | null
+          poster_url: string | null
           stage_id: number | null
           start_date: string | null
           summary: string | null
@@ -110,7 +110,7 @@ export interface Database {
           kid_friendly?: boolean | null
           name?: string | null
           notes?: string | null
-          poster_id?: string | null
+          poster_url?: string | null
           stage_id?: number | null
           start_date?: string | null
           summary?: string | null
@@ -131,7 +131,7 @@ export interface Database {
           kid_friendly?: boolean | null
           name?: string | null
           notes?: string | null
-          poster_id?: string | null
+          poster_url?: string | null
           stage_id?: number | null
           start_date?: string | null
           summary?: string | null
@@ -142,12 +142,6 @@ export interface Database {
           writers?: string[] | null
         }
         Relationships: [
-          {
-            foreignKeyName: "productions_poster_id_fkey"
-            columns: ["poster_id"]
-            referencedRelation: "objects"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "productions_stage_id_fkey"
             columns: ["stage_id"]

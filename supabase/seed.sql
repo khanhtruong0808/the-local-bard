@@ -111,7 +111,7 @@ INSERT INTO
     url,
     start_date,
     end_date,
-    poster_id
+    poster_url
   )
 VALUES
   (
@@ -130,7 +130,7 @@ VALUES
     'https://www.google.com',
     '2024-01-01',
     '2024-01-10',
-    NULL
+    'https://upload.wikimedia.org/wikipedia/en/6/67/LesMisLogo.png'
   ),
   (
     2,
@@ -148,5 +148,5 @@ VALUES
     'https://www.nba.com/kings/',
     '2024-01-01',
     '2024-01-10',
-    NULL
+    'https://upload.wikimedia.org/wikipedia/en/c/c7/SacramentoKings.svg'
   );
