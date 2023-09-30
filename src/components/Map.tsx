@@ -4,6 +4,7 @@ import { useLoadGoogleApi } from "@/lib/googleMaps";
 import { Tables } from "@/lib/supabase/dbHelperTypes";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -284,6 +285,15 @@ export default function Map() {
                         </Link>
                       )}
                     </div>
+                    {production.poster_url && (
+                      <Image
+                        className="mt-2"
+                        src={production.poster_url}
+                        alt={production.name || "Production poster"}
+                        width={300}
+                        height={300}
+                      />
+                    )}
                   </div>
                 </InfoWindow>
               )}
