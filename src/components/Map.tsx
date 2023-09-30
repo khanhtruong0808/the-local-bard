@@ -1,7 +1,7 @@
 "use client";
 
 import { useLoadGoogleApi } from "@/lib/googleMaps";
-import { Tables } from "@/lib/supabase/database.types";
+import { Tables } from "@/lib/supabase/dbHelperTypes";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import Link from "next/link";
