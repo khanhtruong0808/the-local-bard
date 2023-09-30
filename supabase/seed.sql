@@ -4,7 +4,8 @@ INSERT INTO
     street_address_line_2,
     city,
     state,
-    county,
+    postal_code,
+    country,
     latitude,
     longitude
   )
@@ -14,7 +15,8 @@ VALUES
     NULL,
     'Rancho Cordova',
     'CA',
-    'Sacramento',
+    95742,
+    'United States',
     38.587790,
     -121.261319
   ),
@@ -23,7 +25,8 @@ VALUES
     NULL,
     'Sacramento',
     'CA',
-    'Sacramento',
+    95814,
+    'United States',
     38.580227,
     -121.499657
   );
