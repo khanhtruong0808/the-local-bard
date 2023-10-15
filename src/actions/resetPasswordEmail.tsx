@@ -4,7 +4,7 @@ import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function resetPassword(form: FormData) {
+export default async function resetPasswordEmail(form: FormData) {
   const headersList = headers();
   const email = form.get("email") as string;
 

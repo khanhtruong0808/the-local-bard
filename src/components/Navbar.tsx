@@ -7,14 +7,12 @@ import { Disclosure } from "@headlessui/react";
 import Button from "./Button";
 
 export const Navbar = ({ children }: { children: React.ReactNode }) => {
-  // TODO: remove this TempLink type once we have some actual links.
-  // I had to do this because TypeScript didn't like links being empty.
-  type TempLink = { href: string; label: string };
-  const links: TempLink[] = [
+  const links = [
     { href: "#", label: "Add a theater" },
     { href: "#", label: "Claim a theater" },
     { href: "/contact", label: "Contact us" },
   ];
+
   return (
     <Disclosure as="nav" className="bg-transparent text-zinc-200">
       {({ open }) => (

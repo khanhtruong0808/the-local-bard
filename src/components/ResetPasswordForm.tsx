@@ -1,6 +1,6 @@
 "use client";
 
-import resetPassword from "@/actions/resetPassword";
+import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import { useState } from "react";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
@@ -10,7 +10,7 @@ export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
-    const res = await resetPassword(formData);
+    const res = await resetPasswordEmail(formData);
     if (res.error) {
       setError(res.error);
     }
