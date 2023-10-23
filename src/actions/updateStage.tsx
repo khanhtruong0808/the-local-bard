@@ -4,51 +4,53 @@ import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-export default async function updateStage(
-  id: number,
-  address_id: number,
-  form: FormData,
-) {
-  const name = form.get("name") as string;
-  const type = form.get("type") as string;
-  const notes = form.get("notes") as string;
-  const street_address = form.get("street_address") as string;
-  const city = form.get("city") as string;
-  const state = form.get("state") as string;
-  const postal_code = form.get("postal_code") as string;
-  const wheelchair_accessible = form.get("wheelchair_accessible") as string;
-  const seating_capacity = form.get("seating_capacity") as string;
+import { updateStageSchema } from "@/lib/form-schemas/stages";
+import type { Database } from "@/lib/supabase/database.types";
 
-  const supabase = createServerActionClient({ cookies });
+export default async function updateStage(form: FormData) {
+  const parsed = updateStageSchema.safeParse({
+    id: form.get("id"),
+    address_id: form.get("address_id"),
+    name: form.get("name"),
+    type: form.get("type"),
+    notes: form.get("notes"),
+    street_address: form.get("street_address"),
+    city: form.get("city"),
+    state: form.get("state"),
+    postal_code: form.get("postal_code"),
+    wheelchair_accessible: form.get("wheelchair_accessible"),
+    seating_capacity: form.get("seating_capacity"),
+  });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+  }
+
+  const supabase = createServerActionClient<Database>({ cookies });
 
   const { error: stageError } = await supabase
     .from("stages")
     .update({
-      name,
-      type,
-      notes,
-      wheelchair_accessible,
-      seating_capacity,
+      name: parsed.data.name,
+      type: parsed.data.type,
+      notes: parsed.data.notes,
+      wheelchair_accessible: parsed.data.wheelchair_accessible,
+      seating_capacity: parsed.data.seating_capacity,
     })
-    .eq("id", id);
+    .eq("id", parsed.data.id);
+
+  if (stageError) throw stageError;
 
   const { error: addressesError } = await supabase
     .from("addresses")
     .update({
-      street_address,
-      city,
-      state,
-      postal_code,
+      street_address: parsed.data.street_address,
+      city: parsed.data.city,
+      state: parsed.data.state,
+      postal_code: parsed.data.postal_code,
     })
-    .eq("id", address_id);
+    .eq("id", parsed.data.address_id);
 
-  if (stageError) {
-    console.error(stageError);
-    throw new Error(stageError.message);
-  }
-  if (addressesError) {
-    console.error(addressesError);
-    throw new Error(addressesError.message);
-  }
-  revalidatePath(`/account/stages/${id}`);
+  if (addressesError) throw addressesError;
+
+  revalidatePath(`/account/stages/${parsed.data.id}`);
 }

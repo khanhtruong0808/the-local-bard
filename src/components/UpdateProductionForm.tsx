@@ -6,24 +6,25 @@ import updateProduction from "@/actions/updateProduction";
 import { useState } from "react";
 import SubmitButton from "./SubmitButton";
 import toast from "react-hot-toast";
-import { Tables } from "@/lib/supabase/dbHelperTypes";
+import type {
+  Production,
+  TheaterForUpdateProduction,
+} from "@/lib/supabase/queries";
+import Label from "./Label";
 
 interface ProductionFormProps {
-  production: any;
-  theater: any;
-  addresses: any;
-  stages: any;
+  production: Production;
+  theater: TheaterForUpdateProduction;
 }
 
 export const UpdateProductionForm = ({
   production,
   theater,
-  addresses,
-  stages,
 }: ProductionFormProps) => {
-  const [posterUrl, setPosterUrl] = useState<string>();
+  const [posterUrl, setPosterUrl] = useState<string | null>(
+    production.poster_url,
+  );
   const [imageKey, setImageKey] = useState(0);
-  const updateProductionWithId = updateProduction.bind(null, production.id);
 
   const handlePosterChange = (file: any) => {
     const url = file ? URL.createObjectURL(file) : "";
@@ -33,11 +34,11 @@ export const UpdateProductionForm = ({
 
   const handleSubmit = async (formData: FormData) => {
     toast.promise(
-      updateProductionWithId(formData),
+      updateProduction(formData),
       {
         loading: "Updating Production...",
         success: "Production Updated!",
-        error: "Something went wrong",
+        error: (error: Error) => error.message,
       },
       {
         style: {
@@ -62,13 +63,9 @@ export const UpdateProductionForm = ({
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
+        <input type="hidden" name="id" id="id" value={production.id} />
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="title"
-          >
-            Title
-          </label>
+          <Label htmlFor="title">Title</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -76,16 +73,12 @@ export const UpdateProductionForm = ({
               id="title"
               className="w-full"
               defaultValue={production.name || ""}
+              required
             />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="summary"
-          >
-            Summary
-          </label>
+          <Label htmlFor="summary">Summary</Label>
           <div className="mt-2">
             <textarea
               id="summary"
@@ -100,25 +93,19 @@ export const UpdateProductionForm = ({
           </p>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="stage"
-          >
-            Stage
-          </label>
+          <Label htmlFor="stage">Stage</Label>
           <div className="mt-2">
             <select
               id="stage"
               name="stage"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
               defaultValue={
-                stages.find(
-                  (stage: Tables<"stages">) => (stage.id = production.stage_id),
-                ).id
+                theater.stages.find((stage) => stage.id === production.stage_id)
+                  ?.id
               }
             >
               <option></option>
-              {stages.map((stage: any) => (
+              {theater.stages.map((stage) => (
                 <option key={stage.id} value={stage.id}>
                   {stage.name}
                 </option>
@@ -127,12 +114,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3 sm:col-start-1">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="playwrights"
-          >
-            Playwrights
-          </label>
+          <Label htmlFor="playwrights">Playwrights</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -147,12 +129,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="directors"
-          >
-            Directors
-          </label>
+          <Label htmlFor="directors">Directors</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -167,12 +144,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="composers"
-          >
-            Composers
-          </label>
+          <Label htmlFor="composers">Composers</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -187,12 +159,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3 sm:col-start-1">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="genre"
-          >
-            Genre
-          </label>
+          <Label htmlFor="genre">Genre</Label>
           <div className="mt-2">
             <select
               id="genre"
@@ -208,12 +175,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="kidFriendly"
-          >
-            Kid Friendly
-          </label>
+          <Label htmlFor="kidFriendly">Kid Friendly</Label>
           <div className="mt-2">
             <select
               id="kidFriendly"
@@ -227,12 +189,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="costRange"
-          >
-            Cost Range
-          </label>
+          <Label htmlFor="costRange">Cost Range</Label>
           <div className="mt-2">
             <select
               id="costRange"
@@ -248,12 +205,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="duration"
-          >
-            Duration (minutes)
-          </label>
+          <Label htmlFor="duration">Duration</Label>
           <div className="mt-2">
             <Input
               type="number"
@@ -265,15 +217,9 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="h-full sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="poster"
-          >
-            Poster
-          </label>
+          <Label htmlFor="poster">Poster</Label>
           <div className="mt-2 flex h-full flex-col justify-between">
             <div>
-              {" "}
               <Input
                 type="file"
                 key={imageKey}
@@ -302,9 +248,9 @@ export const UpdateProductionForm = ({
           <div className="overflow-hidden rounded-lg bg-zinc-700 shadow">
             <div className="sm:flex">
               <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
-                {(production.poster_url || posterUrl) && (
+                {posterUrl && (
                   <Image
-                    src={posterUrl || production.poster_url}
+                    src={posterUrl}
                     alt={production.name || "Production poster"}
                     width={100}
                     height={100}
@@ -317,9 +263,9 @@ export const UpdateProductionForm = ({
                 </h3>
                 <div className="mt-2 max-w-xl text-sm text-zinc-400">
                   <p>{theater?.name}</p>
-                  <p>{addresses?.street_address}</p>
+                  <p>{theater.addresses?.street_address}</p>
                   <p>
-                    {addresses?.city}, {addresses?.state}
+                    {theater.addresses?.city}, {theater.addresses?.state}
                   </p>
                 </div>
               </div>
@@ -327,12 +273,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="url"
-          >
-            URL
-          </label>
+          <Label htmlFor="url">URL</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -344,12 +285,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="notes"
-          >
-            Notes
-          </label>
+          <Label htmlFor="notes">Notes</Label>
           <div className="mt-2">
             <textarea
               id="notes"
@@ -364,12 +300,7 @@ export const UpdateProductionForm = ({
           </p>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="openingNight"
-          >
-            Opening Night
-          </label>
+          <Label htmlFor="openingNight">Opening Night</Label>
           <div className="mt-2">
             <Input
               type="date"
@@ -381,12 +312,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="closingNight"
-          >
-            Closing Night
-          </label>
+          <Label htmlFor="closingNight">Closing Night</Label>
           <div className="mt-2">
             <Input
               type="date"

@@ -1,28 +1,26 @@
 "use client";
-import updateTheater from "@/actions/updateTheater";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
 import toast from "react-hot-toast";
 
+import updateTheater from "@/actions/updateTheater";
+import { TheaterForTheaterPage } from "@/lib/supabase/queries";
+import Input from "./Input";
+import SubmitButton from "./SubmitButton";
+import Label from "./Label";
+
 interface TheaterFormProps {
-  theater: any;
-  addresses: any;
+  theater: TheaterForTheaterPage;
 }
 
-export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
-  const updateTheaterWithIds = updateTheater.bind(
-    null,
-    theater.id,
-    theater.address_id,
-  );
+export const TheaterForm = ({ theater }: TheaterFormProps) => {
+  const address = theater.addresses;
 
   const handleSubmit = async (formData: FormData) => {
     toast.promise(
-      updateTheaterWithIds(formData),
+      updateTheater(formData),
       {
         loading: "Updating Theater...",
         success: "Theater Updated!",
-        error: "Something went wrong",
+        error: (error: Error) => error.message,
       },
       {
         style: {
@@ -43,6 +41,13 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
+        <input type="hidden" name="id" id="id" defaultValue={theater.id} />
+        <input
+          type="hidden"
+          name="address_id"
+          id="address_id"
+          defaultValue={address?.id || ""}
+        />
         {/* Possibly implement later if that is a feature we'd like? */}
         {/* <div className="col-span-full">
               <label
@@ -60,83 +65,58 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
               </div>
             </div> */}
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="name"
-          >
-            Theater Name
-          </label>
+          <Label htmlFor="name">Theater Name</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="name"
               id="name"
               className="w-full"
-              defaultValue={theater.name}
+              defaultValue={theater.name || ""}
             />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="street-address"
-          >
-            Street address
-          </label>
+          <Label htmlFor="street_address">Street Address</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="street_address"
               id="street_address"
               className="w-full"
-              defaultValue={addresses.street_address}
+              defaultValue={address?.street_address || ""}
             />
           </div>
         </div>
 
         <div className="sm:col-span-2 sm:col-start-1">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="city"
-          >
-            City
-          </label>
+          <Label htmlFor="city">City</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="city"
               id="city"
               className="w-full"
-              defaultValue={addresses.city}
+              defaultValue={address?.city || ""}
             />
           </div>
         </div>
 
         <div className="sm:col-span-2">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="state"
-          >
-            State / Province
-          </label>
+          <Label htmlFor="state">State / Province</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="state"
               id="state"
               className="w-full"
-              defaultValue={addresses.state}
+              defaultValue={address?.state || ""}
             />
           </div>
         </div>
 
         <div className="sm:col-span-2">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="postal_code"
-          >
-            ZIP / Postal Code
-          </label>
+          <Label htmlFor="postal_code">ZIP / Postal Code</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -144,59 +124,44 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
               id="postal_code"
               autoComplete="postal_code"
               className="w-full"
-              defaultValue={addresses.postal_code}
+              defaultValue={address?.postal_code || ""}
             />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="phone"
-          >
-            Phone
-          </label>
+          <Label htmlFor="phone">Phone</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="phone"
               id="phone"
               className="w-full"
-              defaultValue={theater.phone}
+              defaultValue={theater.phone || ""}
             />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="email"
-          >
-            Contact Email
-          </label>
+          <Label htmlFor="email">Contact Email</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="email"
               id="email"
               className="w-full"
-              defaultValue={theater.email}
+              defaultValue={theater.email || ""}
             />
           </div>
         </div>
 
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="notes"
-          >
-            Notes
-          </label>
+          <Label htmlFor="notes">Notes</Label>
           <div className="mt-2">
             <textarea
               id="notes"
               name="notes"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              defaultValue={theater.notes}
+              defaultValue={theater.notes || ""}
             />
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
@@ -205,19 +170,14 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
         </div>
 
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="parking_instructions"
-          >
-            Parking Instructions
-          </label>
+          <Label htmlFor="parking_instructions">Parking Instructions</Label>
           <div className="mt-2">
             <textarea
               id="parking_instructions"
               name="parking_instructions"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              defaultValue={theater.parking_instructions}
+              defaultValue={theater.parking_instructions || ""}
             />
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
@@ -225,12 +185,7 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
           </p>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="url"
-          >
-            Website URL
-          </label>
+          <Label htmlFor="url">Website URL</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -238,23 +193,18 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
               id="url"
               className="w-full"
               placeholder="www.example.com"
-              defaultValue={theater.url}
+              defaultValue={theater.url || ""}
             />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="type"
-          >
-            Theater Type
-          </label>
+          <Label htmlFor="type">Theater Type</Label>
           <div className="mt-2">
             <select
               id="type"
               name="type"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              defaultValue={theater.type}
+              defaultValue={theater.type || ""}
             >
               <option>High School</option>
               <option>Junior College</option>
@@ -264,19 +214,14 @@ export const TheaterForm = ({ theater, addresses }: TheaterFormProps) => {
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="concessions"
-          >
-            Concessions
-          </label>
+          <Label htmlFor="concessions">Concessions</Label>
           <div className="mt-2">
             <Input
               type="text"
               name="concessions"
               id="concessions"
               className="w-full"
-              defaultValue={theater.concessions}
+              defaultValue={theater.concessions || ""}
             />
           </div>
         </div>

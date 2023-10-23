@@ -1,7 +1,9 @@
-import Button from "@/components/Button";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Tables } from "@/lib/supabase/dbHelperTypes";
 import { cookies } from "next/headers";
+
+import Button from "@/components/Button";
+import { getTheaterForStagesPage } from "@/lib/supabase/queries";
+import Link from "next/link";
 
 export default async function StagesPage() {
   const supabase = createServerComponentClient({ cookies });
@@ -11,13 +13,7 @@ export default async function StagesPage() {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("No user found");
 
-  const { data: theater } = await supabase
-    .from("theaters")
-    .select("*, theater_managers(user_id, theater_id), stages(*)")
-    .eq("theater_managers.user_id", user.id)
-    .order("updated_at")
-    .limit(1)
-    .single();
+  const { data: theater } = await getTheaterForStagesPage(supabase, user.id);
 
   if (!theater) throw new Error("No theater associated with user");
 
@@ -39,24 +35,24 @@ export default async function StagesPage() {
             role="list"
             className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
           >
-            {stages.map((stage: Tables<"productions">) => (
+            {stages.map((stage) => (
               <li className="flex justify-between gap-x-6 py-6" key={stage.id}>
                 <div className="font-medium text-zinc-300">{stage.name}</div>
-                <a href={`stages/${stage.id}`}>
+                <Link href={`stages/${stage.id}`}>
                   <Button type="button" variant="secondary" size="small">
                     Update
                   </Button>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
 
           <div className="flex border-t border-gray-100 pt-6">
-            <a href="stages/new">
+            <Link href="stages/new">
               <Button type="button" variant="secondary">
                 <span aria-hidden="true">+</span> Add another stage
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -4,58 +4,59 @@ import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-export default async function updateTheater(
-  id: number,
-  address_id: number,
-  form: FormData,
-) {
-  const name = form.get("name") as string;
-  const street_address = form.get("street_address") as string;
-  const city = form.get("city") as string;
-  const state = form.get("state") as string;
-  const postal_code = form.get("postal_code") as string;
-  const phone = form.get("phone") as string;
-  const email = form.get("email") as string;
-  const notes = form.get("notes") as string;
-  const parking_instructions = form.get("parking_instructions") as string;
-  const url = form.get("url") as string;
-  const type = form.get("type") as string;
-  const concessions = form.get("concessions") as string;
+import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
+import type { Database } from "@/lib/supabase/database.types";
 
-  const supabase = createServerActionClient({ cookies });
+export default async function updateTheater(form: FormData) {
+  const parsed = updateTheaterSchema.safeParse({
+    id: form.get("id"),
+    address_id: form.get("address_id"),
+    name: form.get("name"),
+    street_address: form.get("street_address"),
+    city: form.get("city"),
+    state: form.get("state"),
+    postal_code: form.get("postal_code"),
+    phone: form.get("phone"),
+    email: form.get("email"),
+    notes: form.get("notes"),
+    parking_instructions: form.get("parking_instructions"),
+    url: form.get("url"),
+    type: form.get("type"),
+    concessions: form.get("concessions"),
+  });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+  }
+
+  const supabase = createServerActionClient<Database>({ cookies });
 
   const { error: theatersError } = await supabase
     .from("theaters")
     .update({
-      name,
-      phone,
-      email,
-      notes,
-      parking_instructions,
-      url,
-      type,
-      concessions,
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      email: parsed.data.email,
+      notes: parsed.data.notes,
+      parking_instructions: parsed.data.parking_instructions,
+      url: parsed.data.url,
+      type: parsed.data.type,
+      concessions: parsed.data.concessions,
     })
-    .eq("id", id);
+    .eq("id", parsed.data.id);
+
+  if (theatersError) throw theatersError;
 
   const { error: addressesError } = await supabase
     .from("addresses")
     .update({
-      street_address,
-      city,
-      state,
-      postal_code,
+      street_address: parsed.data.street_address,
+      city: parsed.data.city,
+      state: parsed.data.state,
+      postal_code: parsed.data.postal_code,
     })
-    .eq("id", address_id);
+    .eq("id", parsed.data.address_id);
 
-  if (theatersError) {
-    console.error(theatersError);
-    throw new Error(theatersError.message);
-  }
-  if (addressesError) {
-    console.error(addressesError);
-    throw new Error(addressesError.message);
-  }
+  if (addressesError) throw addressesError;
 
   revalidatePath("/account/theater");
 }

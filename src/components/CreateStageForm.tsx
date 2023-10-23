@@ -3,15 +3,16 @@ import createStage from "@/actions/createStage";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import toast from "react-hot-toast";
+import Label from "./Label";
 
 export const CreateStageForm = () => {
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     toast.promise(
       createStage(formData),
       {
         loading: "Creating Stage...",
         success: "Stage Created!",
-        error: "Something went wrong",
+        error: (error: Error) => error.message,
       },
       {
         style: {
@@ -36,23 +37,19 @@ export const CreateStageForm = () => {
 
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="name"
-          >
-            Name
-          </label>
+          <Label htmlFor="name">Name</Label>
           <div className="mt-2">
-            <Input type="text" name="name" id="name" className="w-full" />
+            <Input
+              type="text"
+              name="name"
+              id="name"
+              className="w-full"
+              required
+            />
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="street_address"
-          >
-            Street address
-          </label>
+          <Label htmlFor="street_address">Street address</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -64,36 +61,21 @@ export const CreateStageForm = () => {
         </div>
 
         <div className="sm:col-span-2 sm:col-start-1">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="city"
-          >
-            City
-          </label>
+          <Label htmlFor="city">City</Label>
           <div className="mt-2">
             <Input type="text" name="city" id="city" className="w-full" />
           </div>
         </div>
 
         <div className="sm:col-span-2">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="state"
-          >
-            State / Province
-          </label>
+          <Label htmlFor="state">State / Province</Label>
           <div className="mt-2">
             <Input type="text" name="state" id="state" className="w-full" />
           </div>
         </div>
 
         <div className="sm:col-span-2">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="postal_code"
-          >
-            ZIP / Postal Code
-          </label>
+          <Label htmlFor="postal_code">ZIP / Postal</Label>
           <div className="mt-2">
             <Input
               type="text"
@@ -105,12 +87,7 @@ export const CreateStageForm = () => {
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="type"
-          >
-            Stage Type
-          </label>
+          <Label htmlFor="type">Stage Type</Label>
           <div className="mt-2">
             <select
               id="type"
@@ -127,16 +104,11 @@ export const CreateStageForm = () => {
           </div>
         </div>
         <div className="sm:col-span-3">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="wheelChairAccessible"
-          >
-            Wheel Chair Accessible
-          </label>
+          <Label htmlFor="wheelchair_accessible">Wheel Chair Accessible</Label>
           <div className="mt-2">
             <select
-              id="wheelChairAccessible"
-              name="wheelChairAccessible"
+              id="wheelchair_accessible"
+              name="wheelchair_accessible"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
             >
               <option>Yes</option>
@@ -145,12 +117,7 @@ export const CreateStageForm = () => {
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="seating_capacity"
-          >
-            Seating Capacity
-          </label>
+          <Label htmlFor="seating_capacity">Seating Capacity</Label>
           <div className="mt-2">
             <Input
               type="number"
@@ -161,12 +128,7 @@ export const CreateStageForm = () => {
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="notes"
-          >
-            Notes
-          </label>
+          <Label htmlFor="notes">Notes</Label>
           <div className="mt-2">
             <textarea
               id="notes"
@@ -180,7 +142,7 @@ export const CreateStageForm = () => {
           </p>
         </div>
       </div>
-      <SubmitButton>Update</SubmitButton>
+      <SubmitButton>Create</SubmitButton>
     </form>
   );
 };

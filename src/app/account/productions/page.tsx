@@ -1,27 +1,22 @@
 import Button from "@/components/Button";
-import { Tables } from "@/lib/supabase/dbHelperTypes";
+import { getTheaterForProductionsPage } from "@/lib/supabase/queries";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import type { Database } from "@/lib/supabase/database.types";
 
 export default async function ProductionsPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerComponentClient<Database>({ cookies });
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("No user found");
 
-  const { data: theater } = await supabase
-    .from("theaters")
-    .select("*, theater_managers(user_id, theater_id), productions(*)")
-    .eq("theater_managers.user_id", user.id)
-    .order("updated_at")
-    .limit(1)
-    .single();
-
+  const { data: theater } = await getTheaterForProductionsPage(
+    supabase,
+    user.id,
+  );
   if (!theater) throw new Error("No theater associated with user");
-
-  const { productions } = theater;
 
   return (
     <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
@@ -39,7 +34,7 @@ export default async function ProductionsPage() {
             role="list"
             className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
           >
-            {productions.map((production: Tables<"productions">) => (
+            {theater.productions.map((production) => (
               <li
                 className="flex justify-between gap-x-6 py-6"
                 key={production.id}

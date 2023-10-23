@@ -1,83 +1,62 @@
 "use server";
 
+import { Database } from "@/lib/supabase/database.types";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function createProduction(
-  theater_id: number,
-  form: FormData,
-) {
-  const name = form.get("title") as string;
-  const summary = form.get("summary") as string;
-  const stage_id = form.get("stage") as string;
-  const playwrights = form.get("playwrights") as string;
-  const writers = playwrights
-    ? playwrights.replace(/\s*,\s*/g, ",").split(",")
-    : [];
-  const directors_string = form.get("directors") as string;
-  const directors = directors_string
-    ? directors_string.replace(/\s*,\s*/g, ",").split(",")
-    : [];
-  const composers_string = form.get("composers") as string;
-  const composers = composers_string
-    ? composers_string.replace(/\s*,\s*/g, ",").split(",")
-    : [];
-  const type = form.get("genre") as string;
-  const kid_friendly = form.get("kidFriendly") as string;
-  const cost_range = form.get("costRange") as string;
-  const duration_minutes = form.get("duration") as unknown as number;
-  const poster_file = form.get("poster") as File;
-  const url = form.get("url") as string;
-  const notes = form.get("notes") as string;
-  const start_date = form.get("openingNight") as string;
-  const end_date = form.get("closingNight") as string;
+import { createProductionSchema } from "@/lib/form-schemas/productions";
 
-  const supabase = createServerActionClient({ cookies });
+export default async function createProduction(form: FormData) {
+  const parsed = createProductionSchema.safeParse({
+    theater_id: form.get("theater_id"),
+    name: form.get("title"),
+    summary: form.get("summary"),
+    stage_id: form.get("stage"),
+    writers: form.get("playwrights"),
+    directors: form.get("directors"),
+    composers: form.get("composers"),
+    type: form.get("genre"),
+    kid_friendly: form.get("kidFriendly"),
+    cost_range: form.get("costRange"),
+    duration_minutes: form.get("duration"),
+    poster: form.get("poster"),
+    url: form.get("url"),
+    notes: form.get("notes"),
+    start_date: form.get("openingNight"),
+    end_date: form.get("closingNight"),
+  });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+  }
 
-  let poster_url;
-  if (poster_file.size > 0) {
+  const supabase = createServerActionClient<Database>({ cookies });
+
+  if (parsed.data.poster.size > 0) {
     const { error: fileError } = await supabase.storage
       .from("posters")
-      .upload(poster_file.name, poster_file, {
+      .upload(parsed.data.poster.name, parsed.data.poster, {
         upsert: true,
       });
 
     if (fileError) {
-      console.error(fileError);
-      throw new Error(fileError.message);
+      throw fileError;
     }
 
     const { data } = supabase.storage
       .from("posters")
-      .getPublicUrl(poster_file.name);
+      .getPublicUrl(parsed.data.poster.name);
 
     const { publicUrl } = data;
-    poster_url = publicUrl;
+    parsed.data.poster_url = publicUrl;
   }
 
-  const { error } = await supabase.from("productions").insert({
-    theater_id,
-    stage_id,
-    name,
-    summary,
-    writers,
-    directors,
-    composers,
-    type,
-    kid_friendly,
-    poster_url,
-    cost_range,
-    duration_minutes,
-    start_date,
-    end_date,
-    notes,
-    url,
-  });
+  // omit the actual file from the data we send to the database
+  const { poster, ...newProduction } = parsed.data;
+  const { error } = await supabase.from("productions").insert(newProduction);
 
   if (error) {
-    console.error(error);
-    throw new Error(error.message);
+    throw error;
   }
 
   redirect("/account/productions");

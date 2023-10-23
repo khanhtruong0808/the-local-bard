@@ -1,5 +1,6 @@
 "use client";
 import Input from "./Input";
+import Label from "./Label";
 import SubmitButton from "./SubmitButton";
 
 export const PasswordForm = () => {
@@ -10,12 +11,7 @@ export const PasswordForm = () => {
       </h2>
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="oldPassword"
-          >
-            Old Password
-          </label>
+          <Label htmlFor="oldPassword">Old Password</Label>
           <div className="mt-2">
             <Input
               type="password"
@@ -26,12 +22,7 @@ export const PasswordForm = () => {
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="newPassword"
-          >
-            New Password
-          </label>
+          <Label htmlFor="newPassword">New Password</Label>
           <div className="mt-2">
             <Input
               type="password"
@@ -42,12 +33,7 @@ export const PasswordForm = () => {
           </div>
         </div>
         <div className="col-span-full">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="confirmNewPassword"
-          >
-            Confirm New Password
-          </label>
+          <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
           <div className="mt-2">
             <Input
               type="password"
