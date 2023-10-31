@@ -5,6 +5,7 @@ import { useState } from "react";
 import ErrorMessage from "./ErrorMessage";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
+import Label from "./Label";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
@@ -19,12 +20,7 @@ export default function LoginForm() {
   return (
     <form className="space-y-6" action={handleSubmit}>
       <div>
-        <label
-          className="block text-sm/6 font-medium text-white"
-          htmlFor="email"
-        >
-          Email
-        </label>
+        <Label htmlFor="email">Email</Label>
         <div className="mt-2">
           <Input
             type="email"
@@ -38,12 +34,7 @@ export default function LoginForm() {
       </div>
       <div>
         <div className="flex items-center justify-between">
-          <label
-            className="block text-sm/6 font-medium text-white"
-            htmlFor="password"
-          >
-            Password
-          </label>
+          <Label htmlFor="password">Password</Label>
           <div className="text-sm">
             <Link
               href="/reset-password"

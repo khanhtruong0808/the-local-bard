@@ -1,16 +1,17 @@
 "use client";
 
-import resetPassword from "@/actions/resetPassword";
+import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import { useState } from "react";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import ErrorMessage from "./ErrorMessage";
+import Label from "./Label";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
-    const res = await resetPassword(formData);
+    const res = await resetPasswordEmail(formData);
     if (res.error) {
       setError(res.error);
     }
@@ -19,12 +20,7 @@ export default function ResetPasswordForm() {
   return (
     <form className="space-y-6" action={handleSubmit}>
       <div>
-        <label
-          className="block text-sm/6 font-medium text-white"
-          htmlFor="email"
-        >
-          Email
-        </label>
+        <Label htmlFor="email">Email</Label>
         <div className="mt-2">
           <Input
             type="email"

@@ -1,25 +1,37 @@
 "use server";
 
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+
+import type { Database } from "@/lib/supabase/database.types";
+
+const resetPasswordSchema = z.object({
+  email: z.string().trim().email(),
+  password: z.string().trim(),
+});
 
 export default async function resetPassword(form: FormData) {
-  const headersList = headers();
-  const email = form.get("email") as string;
-
-  const supabase = createServerActionClient({ cookies });
-
-  const reset = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${headersList.get(
-      "host",
-    )}/auth/callback?next=/update-password`,
+  const parsed = resetPasswordSchema.safeParse({
+    email: form.get("email"),
+    password: form.get("password"),
   });
 
-  if (reset.error) {
-    console.error(reset.error);
-    return { error: reset.error.message };
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  redirect("/reset-password/check-email");
+  const supabase = createServerActionClient<Database>({ cookies });
+
+  const update = await supabase.auth.updateUser({
+    password: parsed.data.password,
+  });
+
+  if (update.error) {
+    console.error(update.error);
+    return { error: update.error.message };
+  }
+
+  redirect("/login");
 }

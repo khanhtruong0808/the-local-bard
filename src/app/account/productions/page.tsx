@@ -1,7 +1,23 @@
-"use client";
 import Button from "@/components/Button";
+import { getTheaterForProductionsPage } from "@/lib/supabase/queries";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import type { Database } from "@/lib/supabase/database.types";
 
-export default function ProductionsPage() {
+export default async function ProductionsPage() {
+  const supabase = createServerComponentClient<Database>({ cookies });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("No user found");
+
+  const { data: theater } = await getTheaterForProductionsPage(
+    supabase,
+    user.id,
+  );
+  if (!theater) throw new Error("No theater associated with user");
+
   return (
     <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
       <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
@@ -18,22 +34,21 @@ export default function ProductionsPage() {
             role="list"
             className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
           >
-            <li className="flex justify-between gap-x-6 py-6">
-              <div className="font-medium text-zinc-300">Production 1</div>
-              <a href="productions/1">
-                <Button type="button" variant="secondary" size="small">
-                  Update
-                </Button>
-              </a>
-            </li>{" "}
-            <li className="flex justify-between gap-x-6 py-6">
-              <div className="font-medium text-zinc-300">Production 2</div>
-              <a href="productions/2">
-                <Button type="button" variant="secondary" size="small">
-                  Update
-                </Button>
-              </a>
-            </li>
+            {theater.productions.map((production) => (
+              <li
+                className="flex justify-between gap-x-6 py-6"
+                key={production.id}
+              >
+                <div className="font-medium text-zinc-300">
+                  {production.name}
+                </div>
+                <a href={`productions/${production.id}`}>
+                  <Button type="button" variant="secondary" size="small">
+                    Update
+                  </Button>
+                </a>
+              </li>
+            ))}
           </ul>
 
           <div className="flex border-t border-gray-100 pt-6">

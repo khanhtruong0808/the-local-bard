@@ -1,15 +1,12 @@
 "use client";
 import signUp from "@/actions/signUp";
 import { useState } from "react";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
-  const { pending } = useFormStatus();
 
   const handleSubmit = async (formData: FormData) => {
     const res = await signUp(formData);

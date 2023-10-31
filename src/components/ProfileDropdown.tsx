@@ -11,7 +11,7 @@ import { Fragment } from "react";
 export const ProfileDropdown = () => {
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="inline-block h-8 w-8 ml-2 overflow-hidden rounded-full bg-gray-100">
+      <Menu.Button className="ml-2 inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
         <svg
           className="h-full w-full text-gray-300"
           fill="currentColor"
@@ -34,8 +34,8 @@ export const ProfileDropdown = () => {
           <div className="py-1">
             <Menu.Item>
               <Link
-                href="/account/general"
-                className="ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700 group flex items-center px-4 py-2 text-sm"
+                href="/account/theater"
+                className="group flex items-center px-4 py-2 text-sm ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700"
               >
                 <UserCircleIcon
                   className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
@@ -50,7 +50,7 @@ export const ProfileDropdown = () => {
               <Menu.Item
                 as="button"
                 type="submit"
-                className="ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700 group flex items-center px-4 py-2 text-sm w-full"
+                className="group flex w-full items-center px-4 py-2 text-sm ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700"
               >
                 <ArrowRightOnRectangleIcon
                   className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
