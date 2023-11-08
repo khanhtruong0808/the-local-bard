@@ -1,11 +1,10 @@
 "use server";
 
-import { Database } from "@/lib/supabase/database.types";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createProductionSchema } from "@/lib/form-schemas/productions";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function createProduction(form: FormData) {
   const parsed = createProductionSchema.safeParse({
@@ -30,7 +29,8 @@ export default async function createProduction(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createServerActionClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   if (parsed.data.poster.size > 0) {
     const { error: fileError } = await supabase.storage

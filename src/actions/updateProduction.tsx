@@ -1,11 +1,10 @@
 "use server";
 
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { updateProductionSchema } from "@/lib/form-schemas/productions";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function updateProduction(form: FormData) {
   const parsed = updateProductionSchema.safeParse({
@@ -30,7 +29,8 @@ export default async function updateProduction(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createServerActionClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   if (parsed.data.poster.size > 0) {
     const { error: fileError } = await supabase.storage

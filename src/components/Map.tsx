@@ -1,13 +1,14 @@
 "use client";
 
-import { useLoadGoogleApi } from "@/lib/googleMaps";
-import { Tables } from "@/lib/supabase/dbHelperTypes";
-import { supabase } from "@/lib/supabase/supabaseClient";
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+
+import { useLoadGoogleApi } from "@/lib/googleMaps";
+import { createClient } from "@/lib/supabase/client";
+import { Tables } from "@/lib/supabase/dbHelperTypes";
 
 const containerStyle = {
   width: "100%",
@@ -117,6 +118,8 @@ export default function Map() {
   const [activeProduction, setActiveProduction] =
     useState<FullProductionInfo | null>(null);
 
+  const supabase = createClient();
+
   useEffect(() => {
     async function getProductions() {
       const { data, error } = await supabase
@@ -138,7 +141,7 @@ export default function Map() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [supabase]);
 
   const searchParams = useSearchParams();
   const { isLoaded, loadError } = useLoadGoogleApi();

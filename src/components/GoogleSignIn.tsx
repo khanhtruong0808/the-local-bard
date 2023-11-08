@@ -1,12 +1,13 @@
 "use client";
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/client";
 import Button from "./Button";
 
 export default function GoogleSignInButton() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const signIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({

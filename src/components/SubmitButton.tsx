@@ -5,9 +5,9 @@
  * submitting.
  */
 
-import type { ButtonProps } from "./Button";
-import Button from "./Button";
 import { useFormStatus } from "react-dom";
+
+import Button, { type ButtonProps } from "./Button";
 
 export default function SubmitButton(props: ButtonProps) {
   const { pending } = useFormStatus();

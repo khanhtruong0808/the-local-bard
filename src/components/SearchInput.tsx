@@ -1,12 +1,11 @@
-/**
- * Search input component with Google Maps Places Autocomplete
- */
-
 "use client";
-import { useLoadGoogleApi } from "@/lib/googleMaps";
+
+// Search input component with Google Maps Places Autocomplete
 import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import { useLoadGoogleApi } from "@/lib/googleMaps";
 
 // Geographic boundary to bias the search results to Sacramento County.
 // Results outside of this area will still be returned, but will be lower priority.
@@ -22,7 +21,7 @@ export default function SearchInput() {
   const { isLoaded, loadError } = useLoadGoogleApi();
 
   const [search, setSearch] = useState<google.maps.places.SearchBox | null>(
-    null
+    null,
   );
 
   const handleLoad = (search: google.maps.places.SearchBox) => {
@@ -44,7 +43,7 @@ export default function SearchInput() {
       if (lat !== undefined && lng !== undefined) {
         router.push(
           "/search?" +
-            new URLSearchParams({ lat: lat.toString(), lng: lng.toString() })
+            new URLSearchParams({ lat: lat.toString(), lng: lng.toString() }),
         );
       } else {
         // This error should not happen unless the Google Maps place has no
@@ -68,7 +67,7 @@ export default function SearchInput() {
         type="text"
         placeholder="Enter an address, neighborhood, city, or ZIP code"
         disabled
-        className="w-full p-4 pr-7 placeholder:text-gray-600 rounded-sm font-sans truncate"
+        className="w-full truncate rounded-sm p-4 pr-7 font-sans placeholder:text-gray-600"
       />
     );
 
@@ -81,7 +80,7 @@ export default function SearchInput() {
       <input
         type="text"
         placeholder="Enter an address, neighborhood, city, or ZIP code"
-        className="w-full p-4 pr-7 placeholder:text-gray-600 rounded-sm font-sans truncate"
+        className="w-full truncate rounded-sm p-4 pr-7 font-sans placeholder:text-gray-600"
       />
     </StandaloneSearchBox>
   );

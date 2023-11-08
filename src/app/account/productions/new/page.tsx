@@ -1,13 +1,14 @@
-import { CreateProductionForm } from "@/components/CreateProductionForm";
-import { Database } from "@/lib/supabase/database.types";
-import { getTheaterForNewProduction } from "@/lib/supabase/queries";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+
+import { CreateProductionForm } from "@/components/CreateProductionForm";
+import { getTheaterForNewProduction } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NewProductionPage() {
   //TODO: Need to redirect page to something else if the user is not a theater manager
   // for the associated theater's production
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

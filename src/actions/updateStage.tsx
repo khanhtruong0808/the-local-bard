@@ -1,11 +1,10 @@
 "use server";
 
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { updateStageSchema } from "@/lib/form-schemas/stages";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function updateStage(form: FormData) {
   const parsed = updateStageSchema.safeParse({
@@ -25,7 +24,8 @@ export default async function updateStage(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createServerActionClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const { error: stageError } = await supabase
     .from("stages")

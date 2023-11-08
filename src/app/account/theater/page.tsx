@@ -1,12 +1,12 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 import { TheaterForm } from "@/components/TheaterForm";
 import { getTheaterForTheaterPage } from "@/lib/supabase/queries";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function GeneralPage() {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

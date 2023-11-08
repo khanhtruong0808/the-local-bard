@@ -1,11 +1,12 @@
+import { cookies } from "next/headers";
+
 import Button from "@/components/Button";
 import { getTheaterForProductionsPage } from "@/lib/supabase/queries";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ProductionsPage() {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

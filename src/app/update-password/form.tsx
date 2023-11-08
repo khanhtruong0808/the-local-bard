@@ -1,16 +1,22 @@
+// There are two update password forms:
+// One once you are already logged in and enter in your old password and new password.
+// The other is when you forgot your password and you enter in your email address to
+// receive a password reset link.
+// This is the password reset link version.
+
 "use client";
 
 import toast from "react-hot-toast";
 
-import updatePassword from "@/actions/updatePassword";
-import Input from "./Input";
-import Label from "./Label";
-import SubmitButton from "./SubmitButton";
+import Input from "@/components/Input";
+import Label from "@/components/Label";
+import SubmitButton from "@/components/SubmitButton";
+import updatePasswordAfterReset from "./action";
 
-export const UpdatePasswordForm = () => {
+export const UpdatePasswordAfterResetForm = () => {
   const handleSubmit = async (formData: FormData) => {
     toast.promise(
-      updatePassword(formData),
+      updatePasswordAfterReset(formData),
       {
         loading: "Updating password...",
         success: "Password updated!",
@@ -26,21 +32,7 @@ export const UpdatePasswordForm = () => {
 
   return (
     <form action={handleSubmit}>
-      <h2 className="text-base font-semibold leading-7 text-zinc-200">
-        Change password
-      </h2>
-      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
-        <div className="col-span-full">
-          <Label htmlFor="oldPassword">Old Password</Label>
-          <div className="mt-2">
-            <Input
-              type="password"
-              name="oldPassword"
-              id="oldPassword"
-              className="w-full"
-            />
-          </div>
-        </div>
+      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
         <div className="col-span-full">
           <Label htmlFor="newPassword">New Password</Label>
           <div className="mt-2">
