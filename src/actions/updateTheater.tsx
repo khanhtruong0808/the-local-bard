@@ -1,11 +1,10 @@
 "use server";
 
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function updateTheater(form: FormData) {
   const parsed = updateTheaterSchema.safeParse({
@@ -28,7 +27,8 @@ export default async function updateTheater(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createServerActionClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const { error: theatersError } = await supabase
     .from("theaters")

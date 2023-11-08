@@ -1,11 +1,12 @@
 "use client";
+
 import toast from "react-hot-toast";
 
 import updateTheater from "@/actions/updateTheater";
 import { TheaterForTheaterPage } from "@/lib/supabase/queries";
 import Input from "./Input";
-import SubmitButton from "./SubmitButton";
 import Label from "./Label";
+import SubmitButton from "./SubmitButton";
 
 interface TheaterFormProps {
   theater: TheaterForTheaterPage;

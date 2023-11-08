@@ -1,14 +1,16 @@
 import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
+
 import { SecondaryNavigation } from "@/components/SecondaryNavigation";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

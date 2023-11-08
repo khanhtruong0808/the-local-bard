@@ -1,13 +1,13 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 
-const updatePasswordSchema = z
+const updatePasswordAfterResetSchema = z
   .object({
-    oldPassword: z.string().trim(),
     newPassword: z.string().trim(),
     confirmNewPassword: z.string().trim(),
   })
@@ -16,9 +16,8 @@ const updatePasswordSchema = z
     path: ["confirmNewPassword"],
   });
 
-export default async function updatePassword(form: FormData) {
-  const parsed = updatePasswordSchema.safeParse({
-    oldPassword: form.get("oldPassword"),
+export default async function updatePasswordAfterReset(form: FormData) {
+  const parsed = updatePasswordAfterResetSchema.safeParse({
     newPassword: form.get("newPassword"),
     confirmNewPassword: form.get("confirmNewPassword"),
   });
@@ -35,7 +34,8 @@ export default async function updatePassword(form: FormData) {
   });
 
   if (update.error) {
-    console.error(update.error);
-    return { error: update.error.message };
+    throw update.error;
   }
+
+  redirect("/account/productions");
 }

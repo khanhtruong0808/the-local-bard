@@ -1,11 +1,12 @@
 "use client";
 
-import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import { useState } from "react";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+
+import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import ErrorMessage from "./ErrorMessage";
+import Input from "./Input";
 import Label from "./Label";
+import SubmitButton from "./SubmitButton";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);

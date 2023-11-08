@@ -1,17 +1,17 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { UpdateStageForm } from "@/components/UpdateStageForm";
-import type { Database } from "@/lib/supabase/database.types";
 import { StageWithAddress, getStageWithAddress } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function EditStagePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   //TODO: Need to redirect page to something else if the user is not a theater manager
   // for the associated theater's stage

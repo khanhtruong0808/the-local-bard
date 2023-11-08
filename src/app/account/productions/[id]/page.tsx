@@ -1,13 +1,12 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { UpdateProductionForm } from "@/components/UpdateProductionForm";
-import type { Tables } from "@/lib/supabase/dbHelperTypes";
 import {
   getProduction,
   getTheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function EditProductionPage({
   params,
@@ -16,7 +15,8 @@ export default async function EditProductionPage({
 }) {
   //TODO: Need to redirect page to something else if the user is not a theater manager
   // for the associated theater's production
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

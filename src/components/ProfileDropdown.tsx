@@ -1,5 +1,5 @@
 "use client";
-import signOut from "@/actions/signOut";
+
 import { Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightOnRectangleIcon,
@@ -7,6 +7,8 @@ import {
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { Fragment } from "react";
+
+import signOut from "@/actions/signOut";
 
 export const ProfileDropdown = () => {
   return (

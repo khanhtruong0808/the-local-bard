@@ -1,16 +1,18 @@
 "use client";
+
 import Image from "next/image";
-import Input from "./Input";
-import Button from "./Button";
-import updateProduction from "@/actions/updateProduction";
 import { useState } from "react";
-import SubmitButton from "./SubmitButton";
 import toast from "react-hot-toast";
+
+import updateProduction from "@/actions/updateProduction";
 import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
+import Button from "./Button";
+import Input from "./Input";
 import Label from "./Label";
+import SubmitButton from "./SubmitButton";
 
 interface ProductionFormProps {
   production: Production;
