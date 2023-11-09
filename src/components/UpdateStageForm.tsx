@@ -6,8 +6,12 @@ import toast from "react-hot-toast";
 import updateStage from "@/actions/updateStage";
 import type { StageWithAddress } from "@/lib/supabase/queries";
 import Label from "./Label";
+import deleteStage from "@/actions/deleteStage";
+import Button from "./Button";
+import { useState } from "react";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   // Not sure why addresses is typed as an array
   const address = stage.addresses;
 
@@ -25,6 +29,24 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
         },
       },
     );
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    toast.promise(
+      deleteStage(stage.id),
+      {
+        loading: "Deleting Stage...",
+        success: "Stage Deleted!",
+        error: (error: Error) => error.message,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+      },
+    );
+    setIsDeleting(false);
   };
 
   return (
@@ -179,7 +201,18 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
           </p>
         </div>
       </div>
-      <SubmitButton>Update</SubmitButton>
+      <div className="flex justify-between">
+        <SubmitButton>Update</SubmitButton>
+        {/* TODO: Create a confirmation modal for deleting a stage */}
+        <Button
+          type="button"
+          variant="alert"
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          Delete Stage
+        </Button>
+      </div>
     </form>
   );
 };
