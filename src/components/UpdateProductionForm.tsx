@@ -207,7 +207,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <Label htmlFor="duration">Duration</Label>
+          <Label htmlFor="duration">Duration (minutes)</Label>
           <div className="mt-2">
             <Input
               type="number"

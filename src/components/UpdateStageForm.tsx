@@ -179,7 +179,12 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
           </p>
         </div>
       </div>
-      <SubmitButton>Update</SubmitButton>
+      <div className="flex justify-between">
+        <SubmitButton>Update</SubmitButton>
+        <SubmitButton type="button" variant="alert">
+          Delete Stage
+        </SubmitButton>
+      </div>
     </form>
   );
 };

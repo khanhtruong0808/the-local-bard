@@ -30,7 +30,7 @@ export const createProductionSchema = z.object({
     .string()
     .trim()
     .transform((val) => (val ? Number(val) : null)),
-  poster: z.instanceof(File),
+  poster: z.custom<File>(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
   poster_url: z.string().trim().url().optional().nullable(),
   url: z.string().trim(),
   notes: z.string().trim(),

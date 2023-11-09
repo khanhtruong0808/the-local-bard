@@ -25,6 +25,7 @@ export default async function updateProduction(form: FormData) {
     start_date: form.get("openingNight"),
     end_date: form.get("closingNight"),
   });
+
   if (!parsed.success) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
@@ -51,7 +52,7 @@ export default async function updateProduction(form: FormData) {
     parsed.data.poster_url = poster_url;
   } else {
     // TODO: Figure out how to actually delete orphaned posters from storage?
-    parsed.data.poster_url = null;
+    // keep old poster_url if no file is given
   }
 
   const { id, poster, ...updatedProduction } = parsed.data;
