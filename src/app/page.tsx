@@ -1,34 +1,30 @@
 import { Poster } from "@/components/Poster";
 import SearchInput from "@/components/SearchInput";
+import { createClient } from "@/lib/supabase/server";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { cookies } from "next/headers";
 
-const posters = [
-  {
-    name: "Macbeth",
-    src: "/macbeth.jpg",
-    date: "July 12, 2022",
-    location: "123 Broadway St",
-  },
-  {
-    name: "Les Miserables",
-    src: "/les-miserables.jpg",
-    date: "July 24, 2022",
-    location: "5353 Downtown Ave",
-  },
-  {
-    name: "Lion King",
-    src: "/lion-king.jpg",
-    date: "July 15, 2022",
-    location: "2352 September Ct",
-  },
-  {
-    name: "Hamilton",
-    src: "/hamilton.jpg",
-    date: "July 19, 2022",
-    location: "6262 West St",
-  },
-];
-export default function Home() {
+export default async function Home() {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}`;
+  const { data: upcomingProductions } = await supabase
+    .from("productions")
+    .select("*, stages(address_id, addresses(*))")
+    .filter("start_date", "gte", formattedDate)
+    .not("name", "is", null)
+    .not("poster_url", "is", null)
+    .not("start_date", "is", null)
+    .not("stages.addresses.street_address", "is", null)
+    .order("start_date", { ascending: true })
+    .limit(4);
+
   return (
     <div className="flex h-full w-full flex-col items-center font-serif">
       <div className="w-full">
@@ -50,36 +46,28 @@ export default function Home() {
         </div>
       </div>
       <div className="divide-y divide-gray-300">
-        <div className="max-w-5xl py-16">
+        <div className="max-w-7xl py-20">
           <p className="text-center text-2xl font-semibold text-zinc-300">
             Showing Soon
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {posters.map((poster) => (
-              <Poster
-                key={poster.name}
-                name={poster.name}
-                src={poster.src}
-                date={poster.date}
-                location={poster.location}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="max-w-5xl py-16">
-          <p className="text-center text-2xl font-semibold text-zinc-300">
-            Categories
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {posters.map((poster) => (
-              <Poster
-                key={poster.name}
-                name={poster.name}
-                src={poster.src}
-                date={poster.date}
-                location={poster.location}
-              />
-            ))}
+            {upcomingProductions ? (
+              upcomingProductions.map((production) => {
+                return (
+                  <Poster
+                    key={production.id}
+                    name={production.name}
+                    src={production.poster_url}
+                    date={new Date(production.start_date)}
+                    address={production.stages.addresses}
+                  />
+                );
+              })
+            ) : (
+              <div className="text-zinc-400">
+                No upcoming productions. Check back again later.
+              </div>
+            )}
           </div>
         </div>
       </div>

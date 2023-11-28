@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import deleteProduction from "@/actions/deleteProduction";
 import updateProduction from "@/actions/updateProduction";
 import type {
   Production,
@@ -23,6 +24,7 @@ export const UpdateProductionForm = ({
   production,
   theater,
 }: ProductionFormProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [posterUrl, setPosterUrl] = useState<string | null>(
     production.poster_url,
   );
@@ -48,6 +50,24 @@ export const UpdateProductionForm = ({
         },
       },
     );
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    toast.promise(
+      deleteProduction(production.id),
+      {
+        loading: "Deleting Production...",
+        success: "Production Deleted!",
+        error: (error: Error) => error.message,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+      },
+    );
+    setIsDeleting(false);
   };
 
   return (
@@ -207,7 +227,7 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="sm:col-span-3">
-          <Label htmlFor="duration">Duration</Label>
+          <Label htmlFor="duration">Duration (minutes)</Label>
           <div className="mt-2">
             <Input
               type="number"
@@ -326,7 +346,18 @@ export const UpdateProductionForm = ({
           </div>
         </div>
       </div>
-      <SubmitButton>Update</SubmitButton>
+      <div className="flex justify-between">
+        <SubmitButton>Update</SubmitButton>
+        {/* TODO: Create a confirmation modal for deleting a production */}
+        <Button
+          type="button"
+          variant="alert"
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          Delete Production
+        </Button>
+      </div>
     </form>
   );
 };
