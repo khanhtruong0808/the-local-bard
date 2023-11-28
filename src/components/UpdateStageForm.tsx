@@ -10,9 +10,12 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
+import useDialog from "@/utils/dialogStore";
+import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { openDialog, closeDialog } = useDialog();
   // Not sure why addresses is typed as an array
   const address = stage.addresses;
 
@@ -34,7 +37,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    toast.promise(
+    await toast.promise(
       deleteStage(stage.id),
       {
         loading: "Deleting Stage...",
@@ -48,6 +51,14 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
       },
     );
     setIsDeleting(false);
+    closeDialog();
+  };
+
+  const handleConfirmDelete = () => {
+    openDialog({
+      title: "Delete stage",
+      content: <ConfirmDeleteForm handleDelete={handleDelete} />,
+    });
   };
 
   return (
@@ -165,8 +176,8 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
                 stage.wheelchair_accessible === true
                   ? "Yes"
                   : stage.wheelchair_accessible === false
-                    ? "No"
-                    : "" // If null, don't default to anything
+                  ? "No"
+                  : "" // If null, don't default to anything
               }
             >
               <option>Yes</option>
@@ -204,11 +215,10 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
       </div>
       <div className="flex justify-between">
         <SubmitButton>Update</SubmitButton>
-        {/* TODO: Create a confirmation modal for deleting a stage */}
         <Button
           type="button"
           variant="alert"
-          onClick={handleDelete}
+          onClick={handleConfirmDelete}
           disabled={isDeleting}
         >
           Delete Stage
