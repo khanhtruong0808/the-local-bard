@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import { Auth } from "@/components/Auth";
 import { Navbar } from "@/components/Navbar";
 import Toaster from "@/components/toaster";
+import { GlobalDialog } from "@/components/GlobalDialog";
 
 export const metadata: Metadata = {
   title: "The Local Bard",
@@ -51,6 +52,7 @@ export default async function RootLayout({
             },
           }}
         />
+        <GlobalDialog />
       </body>
     </html>
   );

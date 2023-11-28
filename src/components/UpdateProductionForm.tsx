@@ -14,6 +14,8 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
+import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
+import useDialog from "@/utils/dialogStore";
 
 interface ProductionFormProps {
   production: Production;
@@ -29,6 +31,7 @@ export const UpdateProductionForm = ({
     production.poster_url,
   );
   const [imageKey, setImageKey] = useState(0);
+  const { openDialog, closeDialog } = useDialog();
 
   const handlePosterChange = (file: any) => {
     const url = file ? URL.createObjectURL(file) : "";
@@ -54,7 +57,7 @@ export const UpdateProductionForm = ({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    toast.promise(
+    await toast.promise(
       deleteProduction(production.id),
       {
         loading: "Deleting Production...",
@@ -68,6 +71,14 @@ export const UpdateProductionForm = ({
       },
     );
     setIsDeleting(false);
+    closeDialog();
+  };
+
+  const handleConfirmDelete = () => {
+    openDialog({
+      title: "Delete production",
+      content: <ConfirmDeleteForm handleDelete={handleDelete} />,
+    });
   };
 
   return (
@@ -348,11 +359,10 @@ export const UpdateProductionForm = ({
       </div>
       <div className="flex justify-between">
         <SubmitButton>Update</SubmitButton>
-        {/* TODO: Create a confirmation modal for deleting a production */}
         <Button
           type="button"
           variant="alert"
-          onClick={handleDelete}
+          onClick={handleConfirmDelete}
           disabled={isDeleting}
         >
           Delete Production
