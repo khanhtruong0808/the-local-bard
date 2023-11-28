@@ -4,9 +4,9 @@ import { useState } from "react";
 
 import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./Input";
-import Label from "./Label";
-import SubmitButton from "./SubmitButton";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);

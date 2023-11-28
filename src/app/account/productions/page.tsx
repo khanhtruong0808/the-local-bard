@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { getTheaterForProductionsPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 

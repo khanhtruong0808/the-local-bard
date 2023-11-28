@@ -1,14 +1,15 @@
 "use client";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+
+import { useState } from "react";
 import toast from "react-hot-toast";
 
+import deleteStage from "@/actions/deleteStage";
 import updateStage from "@/actions/updateStage";
 import type { StageWithAddress } from "@/lib/supabase/queries";
-import Label from "./Label";
-import deleteStage from "@/actions/deleteStage";
-import Button from "./Button";
-import { useState } from "react";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -164,8 +165,8 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
                 stage.wheelchair_accessible === true
                   ? "Yes"
                   : stage.wheelchair_accessible === false
-                  ? "No"
-                  : "" // If null, don't default to anything
+                    ? "No"
+                    : "" // If null, don't default to anything
               }
             >
               <option>Yes</option>

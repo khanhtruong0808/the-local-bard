@@ -4,16 +4,16 @@ import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import deleteProduction from "@/actions/deleteProduction";
 import updateProduction from "@/actions/updateProduction";
 import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
-import Button from "./Button";
-import Input from "./Input";
-import Label from "./Label";
-import SubmitButton from "./SubmitButton";
-import deleteProduction from "@/actions/deleteProduction";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 interface ProductionFormProps {
   production: Production;

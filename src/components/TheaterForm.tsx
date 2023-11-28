@@ -4,9 +4,9 @@ import toast from "react-hot-toast";
 
 import updateTheater from "@/actions/updateTheater";
 import { TheaterForTheaterPage } from "@/lib/supabase/queries";
-import Input from "./Input";
-import Label from "./Label";
-import SubmitButton from "./SubmitButton";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 interface TheaterFormProps {
   theater: TheaterForTheaterPage;

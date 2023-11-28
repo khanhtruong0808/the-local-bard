@@ -145,12 +145,14 @@ export interface Database {
           {
             foreignKeyName: "productions_stage_id_fkey"
             columns: ["stage_id"]
+            isOneToOne: false
             referencedRelation: "stages"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "productions_theater_id_fkey"
             columns: ["theater_id"]
+            isOneToOne: false
             referencedRelation: "theaters"
             referencedColumns: ["id"]
           }
@@ -188,12 +190,14 @@ export interface Database {
           {
             foreignKeyName: "profiles_address_id_fkey"
             columns: ["address_id"]
+            isOneToOne: false
             referencedRelation: "addresses"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -201,6 +205,7 @@ export interface Database {
       }
       stages: {
         Row: {
+          address_id: number | null
           created_at: string | null
           id: number
           name: string | null
@@ -212,6 +217,7 @@ export interface Database {
           wheelchair_accessible: boolean | null
         }
         Insert: {
+          address_id?: number | null
           created_at?: string | null
           id?: number
           name?: string | null
@@ -223,6 +229,7 @@ export interface Database {
           wheelchair_accessible?: boolean | null
         }
         Update: {
+          address_id?: number | null
           created_at?: string | null
           id?: number
           name?: string | null
@@ -235,8 +242,16 @@ export interface Database {
         }
         Relationships: [
           {
+            foreignKeyName: "stages_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "stages_theater_id_fkey"
             columns: ["theater_id"]
+            isOneToOne: false
             referencedRelation: "theaters"
             referencedColumns: ["id"]
           }
@@ -268,12 +283,14 @@ export interface Database {
           {
             foreignKeyName: "theater_managers_theater_id_fkey"
             columns: ["theater_id"]
+            isOneToOne: false
             referencedRelation: "theaters"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "theater_managers_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -329,6 +346,7 @@ export interface Database {
           {
             foreignKeyName: "theaters_address_id_fkey"
             columns: ["address_id"]
+            isOneToOne: false
             referencedRelation: "addresses"
             referencedColumns: ["id"]
           }
@@ -454,6 +472,7 @@ export interface Database {
           {
             foreignKeyName: "objects_bucketId_fkey"
             columns: ["bucket_id"]
+            isOneToOne: false
             referencedRelation: "buckets"
             referencedColumns: ["id"]
           }

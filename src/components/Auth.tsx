@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 import { createClient } from "@/lib/supabase/server";
-import Button from "./Button";
+import Button from "./ui/Button";
 import { ProfileDropdown } from "./ProfileDropdown";
 
 export const dynamic = "force-dynamic";
