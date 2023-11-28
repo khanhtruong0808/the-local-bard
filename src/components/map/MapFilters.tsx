@@ -29,7 +29,7 @@ function FilterItem({ name, label, field, value }: FilterItemProps) {
   return (
     <div className="relative flex items-start">
       <div className="flex h-6 items-center">
-        <Link href={createUrl(pathname, newParams)}>
+        <Link href={createUrl(pathname, newParams)} prefetch={false}>
           <input
             id={name}
             name={name}
