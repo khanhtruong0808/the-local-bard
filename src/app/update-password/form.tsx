@@ -8,9 +8,9 @@
 
 import toast from "react-hot-toast";
 
-import Input from "@/components/Input";
-import Label from "@/components/Label";
-import SubmitButton from "@/components/SubmitButton";
+import Input from "@/components/ui/Input";
+import Label from "@/components/ui/Label";
+import SubmitButton from "@/components/ui/SubmitButton";
 import updatePasswordAfterReset from "./action";
 
 export const UpdatePasswordAfterResetForm = () => {

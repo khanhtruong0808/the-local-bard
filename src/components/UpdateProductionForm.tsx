@@ -9,10 +9,10 @@ import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
-import Button from "./Button";
-import Input from "./Input";
-import Label from "./Label";
-import SubmitButton from "./SubmitButton";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 interface ProductionFormProps {
   production: Production;

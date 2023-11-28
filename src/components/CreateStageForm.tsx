@@ -1,9 +1,9 @@
 "use client";
 import createStage from "@/actions/createStage";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+import Input from "./ui/Input";
+import SubmitButton from "./ui/SubmitButton";
 import toast from "react-hot-toast";
-import Label from "./Label";
+import Label from "./ui/Label";
 
 export const CreateStageForm = () => {
   const handleSubmit = (formData: FormData) => {

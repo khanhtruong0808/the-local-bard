@@ -3,9 +3,9 @@ import signInWithEmail from "@/actions/signInWithEmail";
 import Link from "next/link";
 import { useState } from "react";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
-import Label from "./Label";
+import Input from "./ui/Input";
+import SubmitButton from "./ui/SubmitButton";
+import Label from "./ui/Label";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);

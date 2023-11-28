@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { getTheaterForStagesPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 

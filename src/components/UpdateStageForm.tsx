@@ -1,11 +1,11 @@
 "use client";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+import Input from "./ui/Input";
+import SubmitButton from "./ui/SubmitButton";
 import toast from "react-hot-toast";
 
 import updateStage from "@/actions/updateStage";
 import type { StageWithAddress } from "@/lib/supabase/queries";
-import Label from "./Label";
+import Label from "./ui/Label";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   // Not sure why addresses is typed as an array
@@ -142,8 +142,8 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
                 stage.wheelchair_accessible === true
                   ? "Yes"
                   : stage.wheelchair_accessible === false
-                  ? "No"
-                  : "" // If null, don't default to anything
+                    ? "No"
+                    : "" // If null, don't default to anything
               }
             >
               <option>Yes</option>

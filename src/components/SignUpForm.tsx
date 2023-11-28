@@ -2,8 +2,8 @@
 import signUp from "@/actions/signUp";
 import { useState } from "react";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+import Input from "./ui/Input";
+import SubmitButton from "./ui/SubmitButton";
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);

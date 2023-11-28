@@ -90,6 +90,30 @@ export const getProduction = async (
 
 export type Production = DbResultOk<ReturnType<typeof getProduction>>;
 
+/**
+ * Only eq filter on the production table is implemented for now
+ * filters comes from searchParams on the map/search page
+ */
+export const getFullProductions = async (
+  client: SupabaseClient<Database>,
+  filters?: Record<string, string | number>,
+) => {
+  const query = client
+    .from("productions")
+    .select("*, theaters (*, addresses (*)), stages (*)");
+
+  if (filters) {
+    Object.entries(filters).forEach(([key, value]) => {
+      query.eq(key, value);
+    });
+  }
+
+  return await query;
+};
+
+export type FullProductions = DbResultOk<ReturnType<typeof getFullProductions>>;
+export type FullProduction = FullProductions[number];
+
 export const getStageWithAddress = async (
   client: SupabaseClient<Database>,
   stageId: number,

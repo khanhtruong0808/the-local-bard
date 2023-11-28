@@ -30,9 +30,9 @@ const posters = [
 ];
 export default function Home() {
   return (
-    <main className="flex w-full flex-col items-center font-serif">
+    <div className="flex h-full w-full flex-col items-center font-serif">
       <div className="w-full">
-        <div className="mx-auto flex max-w-xl flex-col gap-6 px-6 py-20 text-center sm:text-left">
+        <div className="mx-auto flex max-w-xl flex-col gap-6 px-6 py-16 text-center sm:text-left">
           <h1 className="text-4xl font-medium text-white sm:text-5xl">
             Find spectactular stage productions near you.
           </h1>
@@ -41,7 +41,7 @@ export default function Home() {
             tedious searches. Embrace cinematic delight. Your go-to for an
             unforgettable movie experience. Discover now!
           </p>
-          <div className="relative mt-6 w-full self-center">
+          <div className="relative mt-4 w-full self-center">
             <SearchInput />
             <div className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3">
               <MagnifyingGlassIcon className="h-5 w-5" />
@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </div>
       <div className="divide-y divide-gray-300">
-        <div className="max-w-5xl py-20">
+        <div className="max-w-5xl py-16">
           <p className="text-center text-2xl font-semibold text-zinc-300">
             Showing Soon
           </p>
@@ -66,7 +66,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="max-w-5xl py-20">
+        <div className="max-w-5xl py-16">
           <p className="text-center text-2xl font-semibold text-zinc-300">
             Categories
           </p>
@@ -83,6 +83,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
