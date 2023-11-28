@@ -1,5 +1,6 @@
 import { Poster } from "@/components/Poster";
 import SearchInput from "@/components/SearchInput";
+import { Tables } from "@/lib/supabase/dbHelperTypes";
 import { createClient } from "@/lib/supabase/server";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { cookies } from "next/headers";
@@ -14,9 +15,9 @@ export default async function Home() {
   const day = String(currentDate.getDate()).padStart(2, "0");
 
   const formattedDate = `${year}-${month}-${day}`;
-  const { data: upcomingProductions } = await supabase
+  const { data: upcomingProductions, error } = await supabase
     .from("productions")
-    .select("*, stages(address_id, addresses(*))")
+    .select("*, stages(addresses(*))")
     .filter("start_date", "gte", formattedDate)
     .not("name", "is", null)
     .not("poster_url", "is", null)
@@ -24,6 +25,8 @@ export default async function Home() {
     .not("stages.addresses.street_address", "is", null)
     .order("start_date", { ascending: true })
     .limit(4);
+
+  if (error) throw new Error(error.message);
 
   return (
     <div className="flex h-full w-full flex-col items-center font-serif">
@@ -53,13 +56,16 @@ export default async function Home() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             {upcomingProductions ? (
               upcomingProductions.map((production) => {
+                // TODO: add better type checking?
                 return (
                   <Poster
                     key={production.id}
-                    name={production.name}
-                    src={production.poster_url}
-                    date={new Date(production.start_date)}
-                    address={production.stages.addresses}
+                    name={production.name as string}
+                    src={production.poster_url as string}
+                    date={new Date(production.start_date as string)}
+                    address={
+                      production?.stages?.addresses as Tables<"addresses">
+                    }
                   />
                 );
               })
