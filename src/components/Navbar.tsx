@@ -25,7 +25,6 @@ export const Navbar = ({
     { href: "#", label: "Claim a theater", hidden: !user },
   ];
 
-  console.log(user);
   return (
     <Disclosure
       as="nav"

@@ -9,6 +9,7 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
+import { PostgrestError } from "@supabase/supabase-js";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -30,7 +31,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
       {
         loading: "Creating Production...",
         success: "Production Created!",
-        error: (error: Error) => error.message,
+        error: (error: PostgrestError) => error.message,
       },
       {
         style: {
