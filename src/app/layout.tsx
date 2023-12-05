@@ -6,6 +6,9 @@ import { Auth } from "@/components/Auth";
 import { Navbar } from "@/components/Navbar";
 import Toaster from "@/components/toaster";
 import { GlobalDialog } from "@/components/GlobalDialog";
+import { Footer } from "@/components/Footer";
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "The Local Bard",
@@ -22,6 +25,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data } = await supabase.auth.getUser();
+  const { user } = data;
   return (
     <html lang="en" className="h-full">
       <body className="flex h-full flex-col overscroll-none bg-fixed">
@@ -38,10 +46,11 @@ export default async function RootLayout({
           height={1080}
           width={1920}
         />
-        <Navbar>
+        <Navbar user={user}>
           <Auth />
         </Navbar>
         <main className="mt-20 flex grow">{children}</main>
+        <Footer />
         <Toaster
           position="top-right"
           toastOptions={{
