@@ -275,6 +275,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
               type="date"
               name="openingNight"
               id="openingNight"
+              required
               className="w-full"
             />
           </div>
@@ -286,6 +287,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
               type="date"
               name="closingNight"
               id="closingNight"
+              required
               className="w-full"
             />
           </div>

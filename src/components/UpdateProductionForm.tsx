@@ -340,6 +340,7 @@ export const UpdateProductionForm = ({
               name="openingNight"
               id="openingNight"
               className="w-full"
+              required
               defaultValue={production.start_date || ""}
             />
           </div>
@@ -352,6 +353,7 @@ export const UpdateProductionForm = ({
               name="closingNight"
               id="closingNight"
               className="w-full"
+              required
               defaultValue={production.end_date || ""}
             />
           </div>
