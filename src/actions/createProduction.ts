@@ -40,7 +40,7 @@ export default async function createProduction(form: FormData) {
       });
 
     if (fileError) {
-      throw fileError;
+      throw fileError.message;
     }
 
     const { data } = supabase.storage
@@ -56,7 +56,7 @@ export default async function createProduction(form: FormData) {
   const { error } = await supabase.from("productions").insert(newProduction);
 
   if (error) {
-    throw error;
+    throw error.message;
   }
 
   redirect("/account/productions");

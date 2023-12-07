@@ -3,8 +3,8 @@ import Input from "@/components/ui/Input";
 
 export default async function ContactPage() {
   return (
-    <div className="h-screen w-screen px-4 py-16 sm:px-6 lg:flex-auto lg:py-20">
-      <form className="mx-auto mt-16 flex w-full max-w-7xl flex-col">
+    <div className="mb-40 px-4 sm:px-6 md:mb-0 lg:flex-auto">
+      <form className="mx-auto flex w-full max-w-7xl flex-col">
         <h2 className="mb-12 text-center text-5xl font-semibold text-zinc-200">
           CONTACT US
         </h2>

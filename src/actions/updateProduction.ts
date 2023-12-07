@@ -64,7 +64,7 @@ export default async function updateProduction(form: FormData) {
 
   if (error) {
     console.error(error);
-    throw new Error(error.message);
+    throw error.message;
   }
 
   revalidatePath(`/account/productions/${id}`);
