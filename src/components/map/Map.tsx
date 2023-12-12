@@ -1,18 +1,11 @@
-// This file is a huge mess. TODO:
-// 1. Get filters to do something
-// 3. Figure out why clicking a production in the sidebar shows a tiny empty
-//    InfoWindow above the marker as well as the full InfoWindow
 "use client";
 
 import { GoogleMap } from "@react-google-maps/api";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { nightModeStyles, useLoadGoogleApi } from "@/lib/googleMaps";
 import { type FullProductions } from "@/lib/supabase/queries";
-import MapFilters from "./MapFilters";
-import MapMarkers from "./MapMarkers";
-import MapProductionsList from "./MapProductionsList";
 
 const containerStyle = {
   width: "100%",
@@ -27,11 +20,7 @@ const defaultCenter = {
 
 const zoom = 12;
 
-interface MapProps {
-  productions: FullProductions;
-}
-
-export default function Map({ productions }: MapProps) {
+export default function Map({ children }: { children: React.ReactNode }) {
   const [activeProduction, setActiveProduction] = useState<
     FullProductions[number] | null
   >(null);
@@ -92,43 +81,18 @@ export default function Map({ productions }: MapProps) {
   if (!isLoaded) return null; // TODO: replace with some loading indicator
 
   return (
-    <div className="mx-auto flex h-full w-full items-start gap-x-4">
-      {/* Sidebar Filters */}
-      <div className="sticky top-20 hidden w-60 shrink-0 px-8 lg:block">
-        <div className="mt-8 h-full w-full">
-          <h2 className="text-xl font-semibold leading-9 tracking-tight text-white">
-            Filters
-          </h2>
-          <MapFilters />
-        </div>
-      </div>
-
-      {/* Sidebar Productions List */}
-      <div className="relative z-10 w-96 shrink-0 px-4 py-4">
-        <MapProductionsList
-          productions={productions}
-          handleActiveProduction={handleActiveProduction}
-        />
-      </div>
-      <div className="sticky right-0 top-20 z-0 hidden h-[calc(100vh-5rem)] w-full xl:block">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={zoom}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-          options={{
-            backgroundColor: "black",
-            styles: nightModeStyles,
-          }}
-        >
-          <MapMarkers
-            productions={productions}
-            activeProduction={activeProduction}
-            handleClick={handleActiveProduction}
-          />
-        </GoogleMap>
-      </div>
-    </div>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={zoom}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      options={{
+        backgroundColor: "black",
+        styles: nightModeStyles,
+      }}
+    >
+      {children}
+    </GoogleMap>
   );
 }
