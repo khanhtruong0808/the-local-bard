@@ -1,6 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cache } from "react";
+
 import type { Database } from "./database.types";
 import type { DbResultOk, Tables } from "./dbHelperTypes";
+import type { RouteSearchParams } from "../types";
 
 export const getTheaterForNewProduction = async (
   client: SupabaseClient<Database>,
@@ -94,22 +97,28 @@ export type Production = DbResultOk<ReturnType<typeof getProduction>>;
  * Only eq filter on the production table is implemented for now
  * filters comes from searchParams on the map/search page
  */
-export const getFullProductions = async (
-  client: SupabaseClient<Database>,
-  filters?: Record<string, string | number>,
-) => {
-  const query = client
-    .from("productions")
-    .select("*, theaters (*, addresses (*)), stages (*)");
+export const getFullProductions = cache(
+  async (client: SupabaseClient<Database>, filters?: RouteSearchParams) => {
+    const query = client
+      .from("productions")
+      .select("*, theaters (*, addresses (*)), stages (*)");
 
-  if (filters) {
-    Object.entries(filters).forEach(([key, value]) => {
-      query.eq(key, value);
-    });
-  }
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value === undefined) {
+          return; // Skip undefined values
+        } else if (Array.isArray(value)) {
+          query.in(key, value);
+          return;
+        } else {
+          query.eq(key, value);
+        }
+      });
+    }
 
-  return await query;
-};
+    return await query;
+  },
+);
 
 export type FullProductions = DbResultOk<ReturnType<typeof getFullProductions>>;
 export type FullProduction = FullProductions[number];

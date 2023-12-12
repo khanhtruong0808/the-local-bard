@@ -1,82 +1,41 @@
-"use client";
+"use server";
 
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { twMerge } from "tailwind-merge";
+import { FilterItem } from "@/components/map/MapFilterItem";
 
-import { createUrl } from "@/lib/utils";
-
-interface FilterItemProps {
-  name: string;
-  label: string;
-  field: string;
-  value: string;
-}
-
-function FilterItem({ name, label, field, value }: FilterItemProps) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const active = searchParams.get(field) === value;
-
-  // If the user clicks the filter, set search params to newParams.
-  const newParams = new URLSearchParams(searchParams);
-  if (active) {
-    newParams.delete(field);
-  } else {
-    newParams.set(field, value);
-  }
-
-  return (
-    <div className="relative flex items-start">
-      <div className="flex h-6 items-center">
-        <Link href={createUrl(pathname, newParams)} prefetch={false}>
-          <input
-            id={name}
-            name={name}
-            type="checkbox"
-            className={twMerge(
-              "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600",
-            )}
-            checked={active}
-          />
-        </Link>
-      </div>
-      <div className="ml-3 text-sm leading-6">
-        <label htmlFor={name} className="font-medium text-white">
-          {label}
-        </label>
-      </div>
-    </div>
-  );
-}
-
-export default function MapFilters() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export default async function MapFilters() {
   return (
     <>
       <fieldset className="mt-4">
         <legend className="sr-only">Price</legend>
         <h4 className="text-md font-medium leading-6 text-white">Price</h4>
         <div className="mt-2 space-y-2">
-          <FilterItem name="oneDollar" label="$" field="cost_range" value="$" />
+          <FilterItem
+            name="oneDollar"
+            label="$"
+            field="cost_range"
+            value="$"
+            multi={true}
+          />
           <FilterItem
             name="twoDollar"
             label="$$"
             field="cost_range"
             value="$$"
+            multi={true}
           />
           <FilterItem
             name="threeDollar"
             label="$$$"
             field="cost_range"
             value="$$$"
+            multi={true}
           />
           <FilterItem
             name="fourDollar"
             label="$$$$"
             field="cost_range"
             value="$$$$"
+            multi={true}
           />
         </div>
       </fieldset>

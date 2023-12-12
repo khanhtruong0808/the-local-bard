@@ -66,6 +66,7 @@ export default async function Home() {
                     address={
                       production?.stages?.addresses as Tables<"addresses">
                     }
+                    url={production.url}
                   />
                 );
               })
