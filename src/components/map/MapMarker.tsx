@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { createUrl } from "@/lib/utils";
 import {
   InfoWindow,
@@ -11,10 +13,14 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface MapMarkerProps extends MarkerProps {
   productionId: number;
+  theaterId?: number;
+  groupedProductionIds?: number[];
 }
 
 export default function MapMarker({
   productionId,
+  theaterId,
+  groupedProductionIds,
   position,
   children,
 }: MapMarkerProps) {
@@ -23,9 +29,16 @@ export default function MapMarker({
   const router = useRouter();
 
   const currentProductionId = searchParams.get("productionId");
+  const currentTheaterId = searchParams.get("theaterId");
 
   const nextSearchParams = new URLSearchParams(searchParams.toString());
-  nextSearchParams.set("productionId", productionId.toString());
+  if (theaterId) {
+    nextSearchParams.delete("productionId");
+    nextSearchParams.set("theaterId", theaterId.toString());
+  } else {
+    nextSearchParams.set("productionId", productionId.toString());
+    nextSearchParams.delete("theaterId");
+  }
   nextSearchParams.set("lat", position.lat.toString());
   nextSearchParams.set("lng", position.lng.toString());
   const nextUrl = createUrl(pathname, nextSearchParams);
@@ -35,6 +48,11 @@ export default function MapMarker({
   const closeUrl = createUrl(pathname, closeSearchParams);
 
   const map = useGoogleMap();
+
+  const active =
+    groupedProductionIds?.includes(parseInt(currentProductionId || "")) ||
+    currentProductionId === productionId.toString() ||
+    currentTheaterId === theaterId?.toString();
 
   return (
     <Marker
@@ -48,11 +66,14 @@ export default function MapMarker({
       //   scaledSize: new google.maps.Size(40, 40),
       // }}
     >
-      {currentProductionId === productionId.toString() && (
+      {active && (
         <InfoWindow
           position={position}
           onCloseClick={() => {
             router.push(closeUrl);
+          }}
+          options={{
+            maxWidth: 1920,
           }}
         >
           {children}

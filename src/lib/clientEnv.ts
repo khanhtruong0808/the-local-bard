@@ -9,15 +9,17 @@ import { z } from "zod";
 // We have to manually define this here instead of doing envSchema.parse(process.env)
 // because process.env acts weirdly in the browser and says that it's undefined.
 const publicEnvVars = {
-  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   NEXT_PUBLIC_GCP_PROJECT_ID: process.env.NEXT_PUBLIC_GCP_PROJECT_ID,
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  NEXT_PUBLIC_GOOGLE_MAP_ID: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 };
 
 const envSchema = z.object({
-  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().trim().min(1),
   NEXT_PUBLIC_GCP_PROJECT_ID: z.string().trim().min(1),
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().trim().min(1),
+  NEXT_PUBLIC_GOOGLE_MAP_ID: z.string().trim().min(1),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().trim().min(1),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().trim().min(1),
 });

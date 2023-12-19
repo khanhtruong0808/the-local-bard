@@ -15,7 +15,7 @@ export async function MapProductionsList({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { productionId, lat, lng, ...filters } = searchParams || {};
+  const { productionId, theaterId, lat, lng, ...filters } = searchParams || {};
   const nextSearchParams = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
@@ -50,6 +50,7 @@ export async function MapProductionsList({
         const theater = production.theaters;
         const address = theater?.addresses;
         nextSearchParams.set("productionId", production.id.toString());
+        nextSearchParams.delete("theaterId");
         if (address?.latitude && address?.longitude) {
           nextSearchParams.set("lat", address.latitude.toString());
           nextSearchParams.set("lng", address.longitude.toString());
@@ -58,6 +59,7 @@ export async function MapProductionsList({
           <Link
             key={production.id}
             href={createUrl("/search", nextSearchParams)}
+            prefetch={false}
             className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow hover:bg-zinc-600"
           >
             <div className="sm:flex">
