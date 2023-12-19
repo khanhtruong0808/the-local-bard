@@ -8,13 +8,14 @@ import { getFullProductions } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import MapMarker from "./MapMarker";
 import { type RouteSearchParams } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export default async function MapMarkers({
   searchParams,
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { productionId, lat, lng, ...filters } = searchParams || {};
+  const { productionId, theaterId, lat, lng, ...filters } = searchParams || {};
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
@@ -109,12 +110,66 @@ export default async function MapMarkers({
     return (
       <MapMarker
         key={productionsAtAddress[0].id}
+        theaterId={productionsAtAddress[0].theaters?.id}
         productionId={productionsAtAddress[0].id}
+        groupedProductionIds={productionsAtAddress.map((p) => p.id)}
         position={{ lat, lng }}
       >
-        <div className="space-y-8 divide-y-2">
+        <div className="mx-auto max-h-[75vh] p-4 lg:max-w-7xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+            Productions at {productionsAtAddress[0].theaters?.name}
+          </h2>
+          <div className="mt-4 grid grid-cols-1 gap-y-4 lg:grid-cols-2 lg:gap-x-3 lg:gap-y-5 xl:grid-cols-3 xl:gap-x-4">
+            {productionsAtAddress.map((production) => (
+              <div
+                key={production.id}
+                className={cn(
+                  "group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white",
+                  production.id.toString() === productionId &&
+                    "ring-4 ring-fuchsia-600 ring-offset-2",
+                )}
+              >
+                <div className="aspect-h-4 aspect-w-3 sm:aspect-none relative bg-gray-200 group-hover:opacity-75 sm:h-72">
+                  {production.poster_url && (
+                    <Image
+                      src={production.poster_url}
+                      alt={production.poster_url || "Production poster"}
+                      className="h-full w-full object-cover object-center sm:h-full sm:w-full"
+                      fill
+                    />
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col space-y-2 p-4">
+                  <h3 className="text-sm font-medium text-gray-900">
+                    {production.url && (
+                      <Link href={production.url} target="_blank">
+                        <span aria-hidden="true" className="absolute inset-0" />
+                        {production.name}
+                      </Link>
+                    )}
+                  </h3>
+                  <p className="truncate text-sm text-gray-500">
+                    {production.summary}
+                  </p>
+                  <div className="flex flex-1 flex-col justify-end">
+                    <p className="text-sm italic text-gray-500">
+                      Length: {production.duration_minutes} mins.
+                    </p>
+                    <p className="text-base font-medium text-gray-900">
+                      {production.cost_range}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* <div className="space-y-3 divide-y-2 bg-gray-100 p-4">
           {productionsAtAddress.map((production) => (
-            <div key={production.id}>
+            <div
+              key={production.id}
+              className="overflow-hidden rounded-md bg-white px-6 py-4 shadow"
+            >
               <h3 className="text-lg">{production.name}</h3>
               <div className="mt-2 text-sm">
                 <p>Theater: {production.theaters?.name}</p>
@@ -151,7 +206,7 @@ export default async function MapMarkers({
               )}
             </div>
           ))}
-        </div>
+        </div> */}
       </MapMarker>
     );
   });

@@ -94,7 +94,6 @@ export const getProduction = async (
 export type Production = DbResultOk<ReturnType<typeof getProduction>>;
 
 /**
- * Only eq filter on the production table is implemented for now
  * filters comes from searchParams on the map/search page
  */
 export const getFullProductions = cache(
@@ -122,6 +121,25 @@ export const getFullProductions = cache(
 
 export type FullProductions = DbResultOk<ReturnType<typeof getFullProductions>>;
 export type FullProduction = FullProductions[number];
+
+/**
+ * formattedDate should be in the format "YYYY-MM-DD"
+ */
+export const getUpcomingProductions = async (
+  client: SupabaseClient<Database>,
+  formattedDate: string,
+) => {
+  return await client
+    .from("productions")
+    .select("*, stages(addresses(*))")
+    .filter("start_date", "gte", formattedDate)
+    .not("name", "is", null)
+    .not("poster_url", "is", null)
+    .not("start_date", "is", null)
+    .not("stages.addresses.street_address", "is", null)
+    .order("start_date", { ascending: true })
+    .limit(4);
+};
 
 export const getStageWithAddress = async (
   client: SupabaseClient<Database>,

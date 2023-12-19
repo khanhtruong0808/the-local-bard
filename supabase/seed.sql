@@ -29,6 +29,16 @@ VALUES
     'United States',
     38.580227,
     -121.499657
+  )
+  (
+    '4121 Marconi Ave',
+    NULL,
+    'Sacramento',
+    'CA',
+    95821,
+    'United States',
+    38.617948,
+    -121.367033
   );
 
 INSERT INTO
@@ -65,6 +75,17 @@ VALUES
     'Referred by nobody',
     'Plenty of food and drink for sale',
     2
+  )
+  (
+    'McDonalds',
+    '1357924680',
+    'Free parking lot',
+    'Mickey Ds',
+    'https://www.mcdonalds.com/',
+    'Restaurant',
+    'Referred by Ronald',
+    'See menu for concessions',
+    3
   );
 
 INSERT INTO
@@ -91,6 +112,14 @@ VALUES
     'arena',
     10000,
     true,
+    'Test notes'
+  ),
+  (
+    3,
+    'McDonalds Stage',
+    'restaurant',
+    100,
+    false,
     'Test notes'
   );
 
@@ -149,4 +178,58 @@ VALUES
     '2024-01-01',
     '2024-01-10',
     'https://upload.wikimedia.org/wikipedia/en/c/c7/SacramentoKings.svg'
+  )
+  (
+    3,
+    3,
+    'Test production 1 at McDonalds',
+    'Tragedy',
+    'Trajedy at McDonalds',
+    ARRAY ['Ronald McDonald'],
+    ARRAY ['Grimace'],
+    ARRAY ['Hamburglar'],
+    true,
+    '$$$$',
+    120,
+    'Test notes',
+    'https://www.mcdonalds.com',
+    '2024-01-01',
+    '2024-01-10',
+    'https://upload.wikimedia.org/wikipedia/en/6/67/LesMisLogo.png'
+  ),
+  (
+    3,
+    3,
+    'Test production 2 at McDonalds',
+    'Comedy',
+    'Comedy at McDonalds',
+    NULL,
+    NULL,
+    NULL,
+    true,
+    '$',
+    150,
+    'Test notes',
+    'https://www.mcdonalds.com',
+    '2024-01-01',
+    '2024-01-10',
+    'https://upload.wikimedia.org/wikipedia/commons/d/dd/Ronald_McDonald_cheers_during_the_Special_Olympics_opening_ceremony_at_Kadena_Air_Base_in_Okinawa%2C_Japan%2C_Nov_111105-F-ZT401-232_%28cropped%29.jpg'
+  ),
+  (
+    3,
+    3,
+    'Test production 3 at McDonalds',
+    'Musical',
+    'Musical at McDonalds',
+    NULL,
+    NULL,
+    NULL,
+    true,
+    '$$',
+    150,
+    'Test notes',
+    'https://www.mcdonalds.com',
+    '2024-01-01',
+    '2024-01-10',
+    'https://upload.wikimedia.org/wikipedia/commons/7/7a/MG_8571_%2819492588742%29_%28cropped%29.jpg'
   );

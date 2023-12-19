@@ -1,11 +1,12 @@
 "use client";
 
 import { GoogleMap } from "@react-google-maps/api";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
-import { nightModeStyles, useLoadGoogleApi } from "@/lib/googleMaps";
-import { type FullProductions } from "@/lib/supabase/queries";
+import { clientEnv } from "@/lib/clientEnv";
+import { useLoadGoogleApi } from "@/lib/googleMaps";
+import { createUrl } from "@/lib/utils";
 
 const containerStyle = {
   width: "100%",
@@ -21,57 +22,27 @@ const defaultCenter = {
 const zoom = 12;
 
 export default function Map({ children }: { children: React.ReactNode }) {
-  const [activeProduction, setActiveProduction] = useState<
-    FullProductions[number] | null
-  >(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
+
   const { isLoaded, loadError } = useLoadGoogleApi();
 
-  const onLoad = useCallback((map: google.maps.Map) => {
-    setMap(map);
-  }, []);
-  const onUnmount = useCallback((map: google.maps.Map) => {
-    setMap(null);
-  }, []);
+  // Close any open info windows when the map is clicked.
+  const handleMapClick = useCallback(
+    (e: google.maps.MapMouseEvent) => {
+      const currentProductionId = searchParams.get("productionId");
+      const currentTheaterId = searchParams.get("theaterId");
+      if (currentProductionId === null && currentTheaterId === null) return;
 
-  const handleActiveProduction = (production: FullProductions[number]) => {
-    const lat = production.theaters?.addresses?.latitude;
-    const lng = production.theaters?.addresses?.longitude;
-
-    if (production === activeProduction) {
-      setActiveProduction(null);
-    } else {
-      setActiveProduction(production);
-    }
-
-    if (map && lat != null && lng != null) {
-      map.setCenter({ lat, lng });
-    }
-  };
-
-  // If we have selected a production's marker, use that as the map center.
-  // Otherwise, use the lat/lng from the URL search params.
-  // Else, use the default center.
-  let center = defaultCenter;
-
-  const activeAddress = activeProduction?.theaters?.addresses;
-  const activeLat = activeAddress?.latitude;
-  const activeLng = activeAddress?.longitude;
-  const [lat, lng] = [searchParams.get("lat"), searchParams.get("lng")];
-
-  if (activeLat != null && activeLng != null) {
-    center = {
-      lat: activeLat,
-      lng: activeLng,
-    };
-  } else if (lat !== null && lng !== null) {
-    center = {
-      lat: parseFloat(lat),
-      lng: parseFloat(lng),
-    };
-  }
+      const nextSearchParams = new URLSearchParams(searchParams.toString());
+      nextSearchParams.delete("productionId");
+      nextSearchParams.delete("theaterId");
+      const nextUrl = createUrl(pathname, nextSearchParams);
+      router.push(nextUrl);
+    },
+    [pathname, router, searchParams],
+  );
 
   if (loadError) {
     // TODO: replace with some error indicator
@@ -83,13 +54,12 @@ export default function Map({ children }: { children: React.ReactNode }) {
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
+      center={defaultCenter}
       zoom={zoom}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
+      onClick={handleMapClick}
       options={{
         backgroundColor: "black",
-        styles: nightModeStyles,
+        mapId: clientEnv.NEXT_PUBLIC_GOOGLE_MAP_ID,
       }}
     >
       {children}
