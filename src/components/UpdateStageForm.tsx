@@ -15,6 +15,7 @@ import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [touched, setTouched] = useState(false);
   const { openDialog, closeDialog } = useDialog();
   // Not sure why addresses is typed as an array
   const address = stage.addresses;
@@ -65,6 +66,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
     <form
       className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
       action={handleSubmit}
+      onReset={() => setTouched(false)}
     >
       <div>
         <h2 className="text-base font-semibold leading-7 text-zinc-200">
@@ -91,6 +93,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="name"
               id="name"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={stage.name || ""}
             />
           </div>
@@ -103,6 +106,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="street_address"
               id="street_address"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={address.street_address || ""}
             />
           </div>
@@ -116,6 +120,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="city"
               id="city"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={address.city || ""}
             />
           </div>
@@ -129,6 +134,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="state"
               id="state"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={address.state || ""}
             />
           </div>
@@ -143,6 +149,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               id="postal_code"
               autoComplete="postal_code"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={address.postal_code || ""}
             />
           </div>
@@ -154,6 +161,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               id="type"
               name="type"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={stage.type || ""}
             >
               <option>Proscenium</option>
@@ -172,12 +180,13 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               id="wheelchair_accessible"
               name="wheelchair_accessible"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={
                 stage.wheelchair_accessible === true
                   ? "Yes"
                   : stage.wheelchair_accessible === false
-                  ? "No"
-                  : "" // If null, don't default to anything
+                    ? "No"
+                    : "" // If null, don't default to anything
               }
             >
               <option>Yes</option>
@@ -193,6 +202,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="seating_capacity"
               id="seating_capacity"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={stage.seating_capacity || ""}
             />
           </div>
@@ -205,6 +215,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
               name="notes"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={stage.notes || ""}
             />
           </div>
@@ -214,7 +225,14 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
         </div>
       </div>
       <div className="flex justify-between">
-        <SubmitButton>Update</SubmitButton>
+        <div>
+          {touched && (
+            <Button type="reset" variant="secondary" className="mr-4">
+              Cancel
+            </Button>
+          )}
+          <SubmitButton>Update</SubmitButton>
+        </div>
         <Button
           type="button"
           variant="alert"

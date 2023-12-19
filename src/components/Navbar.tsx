@@ -9,21 +9,11 @@ import Button from "./ui/Button";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 
-export const Navbar = ({
-  user,
-  children,
-}: {
-  user: any;
-  children: React.ReactNode;
-}) => {
+export const Navbar = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const isSearchPage = pathname === "/search";
 
-  const links = [
-    { href: "/contact", label: "Contact us", hidden: false },
-    { href: "#", label: "Add a theater", hidden: !user },
-    { href: "#", label: "Claim a theater", hidden: !user },
-  ];
+  const links = [{ href: "", label: "", hidden: false }];
 
   return (
     <Disclosure

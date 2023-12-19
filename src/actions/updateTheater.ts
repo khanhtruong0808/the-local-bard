@@ -15,8 +15,6 @@ export default async function updateTheater(form: FormData) {
     city: form.get("city"),
     state: form.get("state"),
     postal_code: form.get("postal_code"),
-    phone: form.get("phone"),
-    email: form.get("email"),
     notes: form.get("notes"),
     parking_instructions: form.get("parking_instructions"),
     url: form.get("url"),
@@ -34,8 +32,6 @@ export default async function updateTheater(form: FormData) {
     .from("theaters")
     .update({
       name: parsed.data.name,
-      phone: parsed.data.phone,
-      email: parsed.data.email,
       notes: parsed.data.notes,
       parking_instructions: parsed.data.parking_instructions,
       url: parsed.data.url,
