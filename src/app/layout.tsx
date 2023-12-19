@@ -46,7 +46,7 @@ export default async function RootLayout({
           height={1080}
           width={1920}
         />
-        <Navbar user={user}>
+        <Navbar>
           <Auth />
         </Navbar>
         <main className="mt-20 flex grow">{children}</main>

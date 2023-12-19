@@ -25,10 +25,10 @@ export default async function StagesPage() {
       <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
-            My Stages
+            {theater.name} Stages
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-500">
-            Add stages to your theater.
+            Manage your theater&apos;s stages.
           </p>
         </div>
         <div className="mt-12">

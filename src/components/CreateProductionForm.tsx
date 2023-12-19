@@ -179,10 +179,10 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
               name="costRange"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
             >
-              <option>$</option>
-              <option>$$</option>
-              <option>$$$</option>
-              <option>$$$$</option>
+              <option value="$">{"$ ($20 or less)"}</option>
+              <option value="$$">{"$$ ($21 to $50)"}</option>
+              <option value="$$$">{" $$$ ($51 to $99)"}</option>
+              <option value="$$$$">{"$$$$ ($100 or more)"}</option>
             </select>
           </div>
         </div>
@@ -215,7 +215,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                 className="mb-8 self-start"
                 onClick={() => handlePosterChange(undefined)}
               >
-                Undo
+                Revert Poster
               </Button>
             )}
           </div>

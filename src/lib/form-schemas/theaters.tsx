@@ -11,8 +11,6 @@ export const updateTheaterSchema = z.object({
     .string()
     .trim()
     .transform((val) => (val ? Number(val) : null)),
-  phone: z.string().trim(),
-  email: z.string().trim().email(),
   notes: z.string().trim(),
   parking_instructions: z.string().trim(),
   url: z.string().trim().url(),

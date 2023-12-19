@@ -34,7 +34,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
   return (
     <form action={handleSubmit}>
       <h2 className="text-base font-semibold leading-7 text-zinc-200">
-        My Theater
+        {theater.name || "My Theater"}
       </h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
         This information will be displayed publicly so be careful what you
@@ -130,31 +130,6 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           </div>
         </div>
         <div className="col-span-full">
-          <Label htmlFor="phone">Phone</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="phone"
-              id="phone"
-              className="w-full"
-              defaultValue={theater.phone || ""}
-            />
-          </div>
-        </div>
-        <div className="col-span-full">
-          <Label htmlFor="email">Contact Email</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="email"
-              id="email"
-              className="w-full"
-              defaultValue={theater.email || ""}
-            />
-          </div>
-        </div>
-
-        <div className="col-span-full">
           <Label htmlFor="notes">Notes</Label>
           <div className="mt-2">
             <textarea
@@ -166,7 +141,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
             />
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
-            Write a few sentences about yourself.
+            Other theater characteristics useful to the attendee.
           </p>
         </div>
 

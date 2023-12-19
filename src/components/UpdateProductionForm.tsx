@@ -33,10 +33,15 @@ export const UpdateProductionForm = ({
   const [imageKey, setImageKey] = useState(0);
   const { openDialog, closeDialog } = useDialog();
 
-  const handlePosterChange = (file: any) => {
+  const handlePosterChange = (file: File | undefined) => {
     const url = file ? URL.createObjectURL(file) : "";
     if (!file) setImageKey(imageKey + 1);
     setPosterUrl(url);
+  };
+
+  const handleRevertPoster = () => {
+    setPosterUrl(production.poster_url);
+    setImageKey(imageKey + 1);
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -230,10 +235,10 @@ export const UpdateProductionForm = ({
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
               defaultValue={production.cost_range || "$"}
             >
-              <option>$</option>
-              <option>$$</option>
-              <option>$$$</option>
-              <option>$$$$</option>
+              <option value="$">{"$ ($20 or less)"}</option>
+              <option value="$$">{"$$ ($21 to $50)"}</option>
+              <option value="$$$">{" $$$ ($51 to $99)"}</option>
+              <option value="$$$$">{"$$$$ ($100 or more)"}</option>
             </select>
           </div>
         </div>
@@ -266,13 +271,14 @@ export const UpdateProductionForm = ({
                 jpeg, png, webp, svg, and xml only!
               </p>
             </div>
-            {posterUrl && (
+            {posterUrl !== production.poster_url && (
               <Button
                 variant="secondary"
                 className="mb-8 self-start"
-                onClick={() => handlePosterChange("")}
+                type="button"
+                onClick={() => handleRevertPoster()}
               >
-                Undo
+                Revert Poster
               </Button>
             )}
           </div>
