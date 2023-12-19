@@ -26,6 +26,7 @@ export const UpdateProductionForm = ({
   production,
   theater,
 }: ProductionFormProps) => {
+  const [touched, setTouched] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [posterUrl, setPosterUrl] = useState<string | null>(
     production.poster_url,
@@ -90,6 +91,7 @@ export const UpdateProductionForm = ({
     <form
       className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
       action={handleSubmit}
+      onReset={() => setTouched(false)}
     >
       <div>
         <h2 className="text-base font-semibold leading-7 text-zinc-200">
@@ -110,6 +112,7 @@ export const UpdateProductionForm = ({
               name="title"
               id="title"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.name || ""}
               required
             />
@@ -123,6 +126,7 @@ export const UpdateProductionForm = ({
               name="summary"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={production.summary || ""}
             />
           </div>
@@ -137,6 +141,7 @@ export const UpdateProductionForm = ({
               id="stage"
               name="stage"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={
                 theater.stages.find((stage) => stage.id === production.stage_id)
                   ?.id
@@ -159,6 +164,7 @@ export const UpdateProductionForm = ({
               name="playwrights"
               id="playwrights"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.writers?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -174,6 +180,7 @@ export const UpdateProductionForm = ({
               name="directors"
               id="directors"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.directors?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -189,6 +196,7 @@ export const UpdateProductionForm = ({
               name="composers"
               id="composers"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.composers?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -203,6 +211,7 @@ export const UpdateProductionForm = ({
               id="genre"
               name="genre"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={production.type || ""}
             >
               <option></option>
@@ -219,6 +228,7 @@ export const UpdateProductionForm = ({
               id="kidFriendly"
               name="kidFriendly"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={production.kid_friendly ? "Yes" : "No"}
             >
               <option>Yes</option>
@@ -233,6 +243,7 @@ export const UpdateProductionForm = ({
               id="costRange"
               name="costRange"
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={production.cost_range || "$"}
             >
               <option value="$">{"$ ($20 or less)"}</option>
@@ -250,6 +261,7 @@ export const UpdateProductionForm = ({
               name="duration"
               id="duration"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.duration_minutes || 0}
             />
           </div>
@@ -319,6 +331,7 @@ export const UpdateProductionForm = ({
               name="url"
               id="url"
               className="w-full"
+              onChange={() => setTouched(true)}
               defaultValue={production.url || ""}
             />
           </div>
@@ -331,6 +344,7 @@ export const UpdateProductionForm = ({
               name="notes"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
+              onChange={() => setTouched(true)}
               defaultValue={production.notes || ""}
             />
           </div>
@@ -347,6 +361,7 @@ export const UpdateProductionForm = ({
               id="openingNight"
               className="w-full"
               required
+              onChange={() => setTouched(true)}
               defaultValue={production.start_date || ""}
             />
           </div>
@@ -360,13 +375,21 @@ export const UpdateProductionForm = ({
               id="closingNight"
               className="w-full"
               required
+              onChange={() => setTouched(true)}
               defaultValue={production.end_date || ""}
             />
           </div>
         </div>
       </div>
       <div className="flex justify-between">
-        <SubmitButton>Update</SubmitButton>
+        <div>
+          {touched && (
+            <Button type="reset" variant="secondary" className="mr-4">
+              Cancel
+            </Button>
+          )}
+          <SubmitButton>Update</SubmitButton>
+        </div>
         <Button
           type="button"
           variant="alert"
