@@ -73,7 +73,7 @@ export default function MapMarker({
             router.push(closeUrl);
           }}
           options={{
-            maxWidth: 1920,
+            maxWidth: 1280,
           }}
         >
           {children}
