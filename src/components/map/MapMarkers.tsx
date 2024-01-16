@@ -15,13 +15,15 @@ export default async function MapMarkers({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { productionId, theaterId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, theaterId, lat, lng, ...filters } =
+    searchParams || {};
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
   const { data: productions, error } = await getFullProductions(
     supabase,
     filters,
+    q,
   );
   if (error) throw error;
   if (!productions) return null;
@@ -115,11 +117,11 @@ export default async function MapMarkers({
         groupedProductionIds={productionsAtAddress.map((p) => p.id)}
         position={{ lat, lng }}
       >
-        <div className="mx-auto max-h-[75vh] p-4 lg:max-w-7xl">
+        <div className="mx-auto max-h-[50vh] p-4 lg:max-w-7xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             Productions at {productionsAtAddress[0].theaters?.name}
           </h2>
-          <div className="mt-4 grid grid-cols-1 gap-y-4 lg:grid-cols-2 lg:gap-x-3 lg:gap-y-5 xl:grid-cols-3 xl:gap-x-4">
+          <div className="mt-4 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-3 lg:gap-y-5 xl:grid-cols-4 xl:gap-x-4">
             {productionsAtAddress.map((production) => (
               <div
                 key={production.id}
@@ -129,12 +131,12 @@ export default async function MapMarkers({
                     "ring-4 ring-fuchsia-600 ring-offset-2",
                 )}
               >
-                <div className="aspect-h-4 aspect-w-3 sm:aspect-none relative bg-gray-200 group-hover:opacity-75 sm:h-72">
+                <div className="aspect-h-4 aspect-w-3 bg-gray-200 group-hover:opacity-75">
                   {production.poster_url && (
                     <Image
                       src={production.poster_url}
                       alt={production.poster_url || "Production poster"}
-                      className="h-full w-full object-cover object-center sm:h-full sm:w-full"
+                      className="h-full w-full object-fill object-center sm:h-full sm:w-full"
                       fill
                     />
                   )}

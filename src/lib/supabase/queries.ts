@@ -97,7 +97,11 @@ export type Production = DbResultOk<ReturnType<typeof getProduction>>;
  * filters comes from searchParams on the map/search page
  */
 export const getFullProductions = cache(
-  async (client: SupabaseClient<Database>, filters?: RouteSearchParams) => {
+  async (
+    client: SupabaseClient<Database>,
+    filters?: RouteSearchParams,
+    search?: string | string[],
+  ) => {
     const query = client
       .from("productions")
       .select("*, theaters (*, addresses (*)), stages (*)");
@@ -113,6 +117,28 @@ export const getFullProductions = cache(
           query.eq(key, value);
         }
       });
+    }
+
+    // If search is provided like ?q=foo, search for productions using fuzzy
+    // search. The search_production_ids function has been implemented in
+    // Supabase, so we can call it with RPC to get all the production IDs that
+    // match the search term and use them to filter the query.
+    // TODO: Implement multi search, and possibly implement this whole query
+    // as a function so that we can just do RPC instead of query + RPC.
+    if (search) {
+      if (Array.isArray(search)) {
+        throw new Error("multi search not implemented");
+      }
+
+      const { data, error } = await client.rpc("search_production_ids", {
+        search_term: search,
+      });
+      if (error) throw error;
+
+      query.in(
+        "id",
+        data.map((d) => d.id),
+      );
     }
 
     return await query;

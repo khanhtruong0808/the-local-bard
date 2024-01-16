@@ -29,7 +29,7 @@ VALUES
     'United States',
     38.580227,
     -121.499657
-  )
+  ),
   (
     '4121 Marconi Ave',
     NULL,
@@ -75,7 +75,7 @@ VALUES
     'Referred by nobody',
     'Plenty of food and drink for sale',
     2
-  )
+  ),
   (
     'McDonalds',
     '1357924680',
@@ -178,7 +178,7 @@ VALUES
     '2024-01-01',
     '2024-01-10',
     'https://upload.wikimedia.org/wikipedia/en/c/c7/SacramentoKings.svg'
-  )
+  ),
   (
     3,
     3,

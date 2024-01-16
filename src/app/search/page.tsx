@@ -15,10 +15,13 @@ export default async function SearchPage({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { productionId, theaterId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, theaterId, lat, lng, ...filters } =
+    searchParams || {};
+
   const searchKey = JSON.stringify(filters);
 
   // TODO: use zod or invariant to validate these params
+  if (Array.isArray(q)) throw new Error("q must be a single value");
   if (Array.isArray(productionId))
     throw new Error("productionId must be a single value");
   if (Array.isArray(theaterId))
@@ -48,12 +51,13 @@ export default async function SearchPage({
             <h2 className="text-xl font-semibold leading-9 tracking-tight text-white">
               Filters
             </h2>
-            <div className="mt-4">
+            <MapFilters />
+            <hr className="my-4 border-slate-500" />
+            <div className="mt-8">
               <Button href={`/search?${clearSearchParams.toString()}`}>
                 Clear Filters
               </Button>
             </div>
-            <MapFilters />
           </div>
         </div>
         {/* Sidebar Productions List */}

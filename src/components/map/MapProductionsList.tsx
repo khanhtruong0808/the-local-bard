@@ -15,7 +15,9 @@ export async function MapProductionsList({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { productionId, theaterId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, theaterId, lat, lng, ...filters } =
+    searchParams || {};
+
   const nextSearchParams = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
@@ -35,7 +37,9 @@ export async function MapProductionsList({
   const { data: productions, error } = await getFullProductions(
     supabase,
     filters,
+    q,
   );
+
   if (error) throw new Error(error.message);
   if (!productions || productions.length === 0)
     return (
