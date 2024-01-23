@@ -1,15 +1,24 @@
 "use client";
+import { PostgrestError } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 import createProduction from "@/actions/createProduction";
 import type { TheaterForNewProduction } from "@/lib/supabase/queries";
+
+import { genres } from "@/lib/constants";
 import Button from "./ui/Button";
-import Input from "./ui/Input";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
-import { PostgrestError } from "@supabase/supabase-js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -86,19 +95,21 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
         <div className="col-span-full">
           <Label htmlFor="stage">Stage</Label>
           <div className="mt-2">
-            <select
-              id="stage"
+            <Select
               name="stage"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              defaultValue={theater.stages[0].id || ""}
+              defaultValue={String(theater.stages[0].id) || ""}
             >
-              <option></option>
-              {theater.stages.map((stage: any) => (
-                <option key={stage.id} value={stage.id}>
-                  {stage.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a stage" />
+              </SelectTrigger>
+              <SelectContent>
+                {theater.stages.map((stage) => (
+                  <SelectItem key={stage.id} value={String(stage.id)}>
+                    {stage.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3 sm:col-start-1">
@@ -146,44 +157,48 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
         <div className="sm:col-span-3 sm:col-start-1">
           <Label htmlFor="genre">Genre</Label>
           <div className="mt-2">
-            <select
-              id="genre"
-              name="genre"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-            >
-              <option></option>
-              <option>Musical</option>
-              <option>Tragedy</option>
-              <option>Comedy</option>
-            </select>
+            <Select name="genre" defaultValue="">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a genre" />
+              </SelectTrigger>
+              <SelectContent>
+                {genres.map((genre) => (
+                  <SelectItem key={genre} value={genre}>
+                    {genre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">
           <Label htmlFor="kidFriendly">Kid Friendly</Label>
           <div className="mt-2">
-            <select
-              id="kidFriendly"
-              name="kidFriendly"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-            >
-              <option>Yes</option>
-              <option>No</option>
-            </select>
+            <Select name="kidFriendly">
+              <SelectTrigger>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Yes">Yes</SelectItem>
+                <SelectItem value="No">No</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">
           <Label htmlFor="costRange">Cost Range</Label>
           <div className="mt-2">
-            <select
-              id="costRange"
-              name="costRange"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-            >
-              <option value="$">{"$ ($20 or less)"}</option>
-              <option value="$$">{"$$ ($21 to $50)"}</option>
-              <option value="$$$">{" $$$ ($51 to $99)"}</option>
-              <option value="$$$$">{"$$$$ ($100 or more)"}</option>
-            </select>
+            <Select name="costRange">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a cost range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="$">{"$ ($20 or less)"}</SelectItem>
+                <SelectItem value="$$">{"$$ ($21 to $50)"}</SelectItem>
+                <SelectItem value="$$$">{" $$$ ($51 to $99)"}</SelectItem>
+                <SelectItem value="$$$$">{"$$$$ ($100 or more)"}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">

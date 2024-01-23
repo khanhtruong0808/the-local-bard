@@ -5,13 +5,21 @@ import toast from "react-hot-toast";
 
 import deleteStage from "@/actions/deleteStage";
 import updateStage from "@/actions/updateStage";
+import { stageTypes } from "@/lib/constants";
 import type { StageWithAddress } from "@/lib/supabase/queries";
-import Button from "./ui/Button";
-import Input from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
 import useDialog from "@/utils/dialogStore";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
+import Button from "./ui/Button";
+import { Input } from "./ui/Input";
+import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -157,30 +165,30 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
         <div className="sm:col-span-3">
           <Label htmlFor="type">Stage Type</Label>
           <div className="mt-2">
-            <select
-              id="type"
+            <Select
               name="type"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
               defaultValue={stage.type || ""}
+              onValueChange={() => setTouched(true)}
             >
-              <option>Proscenium</option>
-              <option>Thrust</option>
-              <option>In-The-Round</option>
-              <option>Black-Box</option>
-              <option>Open-Air</option>
-              <option>Other</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a stage type" />
+              </SelectTrigger>
+              <SelectContent>
+                {stageTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">
           <Label htmlFor="wheelchair_accessible">Wheel Chair Accessible</Label>
           <div className="mt-2">
-            <select
-              id="wheelchair_accessible"
+            <Select
               name="wheelchair_accessible"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
+              onValueChange={() => setTouched(true)}
               defaultValue={
                 stage.wheelchair_accessible === true
                   ? "Yes"
@@ -189,9 +197,14 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
                     : "" // If null, don't default to anything
               }
             >
-              <option>Yes</option>
-              <option>No</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Yes">Yes</SelectItem>
+                <SelectItem value="No">No</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="col-span-full">

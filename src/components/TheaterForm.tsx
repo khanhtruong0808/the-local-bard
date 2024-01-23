@@ -1,24 +1,55 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
+import { z } from "zod";
 
 import updateTheater from "@/actions/updateTheater";
+import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
+import { useFormAction } from "@/lib/hooks";
 import { TheaterForTheaterPage } from "@/lib/supabase/queries";
-import Input from "./ui/Input";
+import { useState } from "react";
+import Button from "./ui/Button";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
-import Button from "./ui/Button";
-import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface TheaterFormProps {
   theater: TheaterForTheaterPage;
 }
 
+type UpdateTheaterSchema = z.infer<typeof updateTheaterSchema>;
+
 export const TheaterForm = ({ theater }: TheaterFormProps) => {
   const [touched, setTouched] = useState(false);
   const address = theater.addresses;
 
-  const handleSubmit = async (formData: FormData) => {
+  const form = useFormAction<UpdateTheaterSchema>({
+    resolver: zodResolver(updateTheaterSchema),
+    defaultValues: {
+      id: theater.id.toString(),
+      address_id: address?.id.toString() || "",
+      name: theater.name || "",
+      street_address: address?.street_address || "",
+      city: address?.city || "",
+      state: address?.state || "",
+      // Skip postal_code for now because it is numeric
+      notes: theater.notes || "",
+      parking_instructions: theater.parking_instructions || "",
+      url: theater.url || "",
+      type: theater.type || "",
+      concessions: theater.concessions || "",
+    },
+  });
+
+  const handleSubmit = async (formData: UpdateTheaterSchema) => {
     toast.promise(
       updateTheater(formData),
       {
@@ -35,7 +66,10 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
   };
 
   return (
-    <form action={handleSubmit} onReset={() => setTouched(false)}>
+    <form
+      action={() => form.handleAction(handleSubmit)}
+      onReset={() => setTouched(false)}
+    >
       <h2 className="text-base font-semibold leading-7 text-zinc-200">
         {theater.name || "My Theater"}
       </h2>
@@ -45,13 +79,8 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
-        <input type="hidden" name="id" id="id" defaultValue={theater.id} />
-        <input
-          type="hidden"
-          name="address_id"
-          id="address_id"
-          defaultValue={address?.id || ""}
-        />
+        <input type="hidden" {...form.register("id")} />
+        <input type="hidden" {...form.register("address_id")} />
         {/* Possibly implement later if that is a feature we'd like? */}
         {/* <div className="col-span-full">
               <label
@@ -71,14 +100,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
         <div className="col-span-full">
           <Label htmlFor="name">Theater Name</Label>
           <div className="mt-2">
-            <Input
-              type="text"
-              name="name"
-              id="name"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.name || ""}
-            />
+            <Input type="text" className="w-full" {...form.register("name")} />
           </div>
         </div>
         <div className="col-span-full">
@@ -86,11 +108,8 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <Input
               type="text"
-              name="street_address"
-              id="street_address"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address?.street_address || ""}
+              {...form.register("street_address")}
             />
           </div>
         </div>
@@ -98,28 +117,14 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
         <div className="sm:col-span-2 sm:col-start-1">
           <Label htmlFor="city">City</Label>
           <div className="mt-2">
-            <Input
-              type="text"
-              name="city"
-              id="city"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address?.city || ""}
-            />
+            <Input type="text" className="w-full" {...form.register("city")} />
           </div>
         </div>
 
         <div className="sm:col-span-2">
           <Label htmlFor="state">State / Province</Label>
           <div className="mt-2">
-            <Input
-              type="text"
-              name="state"
-              id="state"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address?.state || ""}
-            />
+            <Input type="text" className="w-full" {...form.register("state")} />
           </div>
         </div>
 
@@ -128,12 +133,8 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <Input
               type="text"
-              name="postal_code"
-              id="postal_code"
-              autoComplete="postal_code"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address?.postal_code || ""}
+              {...form.register("postal_code")}
             />
           </div>
         </div>
@@ -142,11 +143,9 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <textarea
               id="notes"
-              name="notes"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.notes || ""}
+              {...form.register("notes")}
             />
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
@@ -159,11 +158,9 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <textarea
               id="parking_instructions"
-              name="parking_instructions"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.parking_instructions || ""}
+              {...form.register("parking_instructions")}
             />
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
@@ -175,30 +172,26 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <Input
               type="text"
-              name="url"
-              id="url"
               className="w-full"
               placeholder="www.example.com"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.url || ""}
+              {...form.register("url")}
             />
           </div>
         </div>
         <div className="col-span-full">
           <Label htmlFor="type">Theater Type</Label>
           <div className="mt-2">
-            <select
-              id="type"
-              name="type"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.type || ""}
-            >
-              <option>High School</option>
-              <option>Junior College</option>
-              <option>Equity Theater</option>
-              <option>Play House</option>
-            </select>
+            <Select {...form.register("type")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a theater type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="High School">High School</SelectItem>
+                <SelectItem value="Junior College">Junior College</SelectItem>
+                <SelectItem value="Equity Theater">Equity Theater</SelectItem>
+                <SelectItem value="Play House">Play House</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="col-span-full">
@@ -206,11 +199,8 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
           <div className="mt-2">
             <Input
               type="text"
-              name="concessions"
-              id="concessions"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={theater.concessions || ""}
+              {...form.register("concessions")}
             />
           </div>
         </div>

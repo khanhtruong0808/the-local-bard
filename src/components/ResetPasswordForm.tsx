@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import resetPasswordEmail from "@/actions/resetPasswordEmail";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./ui/Input";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
 

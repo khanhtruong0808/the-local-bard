@@ -1,25 +1,21 @@
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
+import { forwardRef } from "react";
 
-// TODO: Add more input styles depending on need
-const variantStyles = {
-  primary:
-    "bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100",
-};
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-type InputProps = {
-  variant?: keyof typeof variantStyles;
-} & React.ComponentPropsWithoutRef<"input">;
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+    className = cn(
+      "block border-0 rounded-md sm:text-sm sm:leading-6",
+      "bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100",
+      className,
+    );
 
-export default function Input({
-  variant = "primary",
-  className,
-  ...props
-}: InputProps) {
-  className = twMerge(
-    "block border-0 rounded-md sm:text-sm sm:leading-6",
-    variantStyles[variant],
-    className,
-  );
+    return <input type={type} className={className} ref={ref} {...props} />;
+  },
+);
 
-  return <input className={className} {...props} />;
-}
+Input.displayName = "Input";
+
+export { Input };

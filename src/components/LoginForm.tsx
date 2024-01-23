@@ -1,11 +1,13 @@
 "use client";
-import signInWithEmail from "@/actions/signInWithEmail";
+
 import Link from "next/link";
 import { useState } from "react";
+
+import signInWithEmail from "@/actions/signInWithEmail";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./ui/Input";
-import SubmitButton from "./ui/SubmitButton";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
+import SubmitButton from "./ui/SubmitButton";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);

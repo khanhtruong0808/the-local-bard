@@ -17,3 +17,5 @@ export const updateTheaterSchema = z.object({
   type: z.string().trim(),
   concessions: z.string().trim(),
 });
+
+export type UpdateTheaterSchema = z.infer<typeof updateTheaterSchema>;

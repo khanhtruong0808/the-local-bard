@@ -3,23 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
+import {
+  UpdateTheaterSchema,
+  updateTheaterSchema,
+} from "@/lib/form-schemas/theaters";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function updateTheater(form: FormData) {
+export default async function updateTheater(form: UpdateTheaterSchema) {
   const parsed = updateTheaterSchema.safeParse({
-    id: form.get("id"),
-    address_id: form.get("address_id"),
-    name: form.get("name"),
-    street_address: form.get("street_address"),
-    city: form.get("city"),
-    state: form.get("state"),
-    postal_code: form.get("postal_code"),
-    notes: form.get("notes"),
-    parking_instructions: form.get("parking_instructions"),
-    url: form.get("url"),
-    type: form.get("type"),
-    concessions: form.get("concessions"),
+    id: form.id,
+    address_id: form.address_id,
+    name: form.name,
+    street_address: form.street_address,
+    city: form.city,
+    state: form.state,
+    postal_code: form.postal_code,
+    notes: form.notes,
+    parking_instructions: form.parking_instructions,
+    url: form.url,
+    type: form.type,
+    concessions: form.concessions,
   });
   if (!parsed.success) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));

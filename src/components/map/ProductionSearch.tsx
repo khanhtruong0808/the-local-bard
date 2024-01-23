@@ -3,9 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import Label from "@/components/ui/Label";
+import { Input } from "@/components/ui/Input";
 import { createUrl } from "@/lib/utils";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 

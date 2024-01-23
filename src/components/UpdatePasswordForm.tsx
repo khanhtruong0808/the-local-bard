@@ -3,7 +3,7 @@
 import toast from "react-hot-toast";
 
 import updatePassword from "@/actions/updatePassword";
-import Input from "./ui/Input";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
 

@@ -1,8 +1,10 @@
 "use client";
-import signUp from "@/actions/signUp";
+
 import { useState } from "react";
+
+import signUp from "@/actions/signUp";
 import ErrorMessage from "./ErrorMessage";
-import Input from "./ui/Input";
+import { Input } from "./ui/Input";
 import SubmitButton from "./ui/SubmitButton";
 
 export default function SignUpForm() {

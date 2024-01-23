@@ -59,6 +59,7 @@ export default function Map({ children }: { children: React.ReactNode }) {
       onClick={handleMapClick}
       options={{
         backgroundColor: "black",
+        gestureHandling: "greedy", // Allow zooming without holding ctrl
         mapId: clientEnv.NEXT_PUBLIC_GOOGLE_MAP_ID,
       }}
     >

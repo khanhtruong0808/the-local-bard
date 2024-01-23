@@ -2,22 +2,9 @@
 
 import { FilterItem } from "@/components/map/MapFilterItem";
 import { ProductionSearch } from "./ProductionSearch";
+import { genres } from "@/lib/constants";
 
 export default async function MapFilters() {
-  const genres = [
-    "Comedy",
-    "Classic",
-    "Contemporary/Original",
-    "Fantasy/Science",
-    "Fiction",
-    "Historical",
-    "Tragedy",
-    "Romance",
-    "Mystery/Thriller",
-    "Drama",
-    "Play",
-    "Musical",
-  ];
   return (
     <>
       <div className="mt-4">

@@ -6,16 +6,24 @@ import toast from "react-hot-toast";
 
 import deleteProduction from "@/actions/deleteProduction";
 import updateProduction from "@/actions/updateProduction";
+import { genres } from "@/lib/constants";
 import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
+import useDialog from "@/utils/dialogStore";
+import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
 import Button from "./ui/Button";
-import Input from "./ui/Input";
+import { Input } from "./ui/Input";
 import Label from "./ui/Label";
 import SubmitButton from "./ui/SubmitButton";
-import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import useDialog from "@/utils/dialogStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface ProductionFormProps {
   production: Production;
@@ -137,23 +145,25 @@ export const UpdateProductionForm = ({
         <div className="col-span-full">
           <Label htmlFor="stage">Stage</Label>
           <div className="mt-2">
-            <select
-              id="stage"
+            <Select
               name="stage"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
               defaultValue={
-                theater.stages.find((stage) => stage.id === production.stage_id)
-                  ?.id
+                theater.stages
+                  .find((stage) => stage.id === production.stage_id)
+                  ?.id?.toString() || ""
               }
             >
-              <option></option>
-              {theater.stages.map((stage) => (
-                <option key={stage.id} value={stage.id}>
-                  {stage.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a stage" />
+              </SelectTrigger>
+              <SelectContent>
+                {theater.stages.map((stage) => (
+                  <SelectItem key={stage.id} value={String(stage.id)}>
+                    {stage.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3 sm:col-start-1">
@@ -207,50 +217,60 @@ export const UpdateProductionForm = ({
         <div className="sm:col-span-3 sm:col-start-1">
           <Label htmlFor="genre">Genre</Label>
           <div className="mt-2">
-            <select
-              id="genre"
+            <Select
               name="genre"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
               defaultValue={production.type || ""}
+              onValueChange={() => setTouched(true)}
             >
-              <option></option>
-              <option>Musical</option>
-              <option>Tragedy</option>
-              <option>Comedy</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a genre" />
+              </SelectTrigger>
+              <SelectContent>
+                {genres.map((genre) => (
+                  <SelectItem key={genre} value={genre}>
+                    {genre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">
           <Label htmlFor="kidFriendly">Kid Friendly</Label>
           <div className="mt-2">
-            <select
-              id="kidFriendly"
+            <Select
               name="kidFriendly"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
+              onValueChange={() => setTouched(true)}
               defaultValue={production.kid_friendly ? "Yes" : "No"}
             >
-              <option>Yes</option>
-              <option>No</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Yes">Yes</SelectItem>
+                <SelectItem value="No">No</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">
           <Label htmlFor="costRange">Cost Range</Label>
           <div className="mt-2">
-            <select
-              id="costRange"
+            <Select
               name="costRange"
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
+              onValueChange={() => setTouched(true)}
               defaultValue={production.cost_range || "$"}
             >
-              <option value="$">{"$ ($20 or less)"}</option>
-              <option value="$$">{"$$ ($21 to $50)"}</option>
-              <option value="$$$">{" $$$ ($51 to $99)"}</option>
-              <option value="$$$$">{"$$$$ ($100 or more)"}</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a cost range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="$">{"$ ($20 or less)"}</SelectItem>
+                <SelectItem value="$$">{"$$ ($21 to $50)"}</SelectItem>
+                <SelectItem value="$$$">{" $$$ ($51 to $99)"}</SelectItem>
+                <SelectItem value="$$$$">{"$$$$ ($100 or more)"}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="sm:col-span-3">

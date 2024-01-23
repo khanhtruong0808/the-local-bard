@@ -31,7 +31,8 @@ export default async function RootLayout({
   const { data } = await supabase.auth.getUser();
   const { user } = data;
   return (
-    <html lang="en" className="h-full">
+    // Only dark mode enabled for now.
+    <html lang="en" className="dark h-full">
       <body className="flex h-full flex-col overscroll-none bg-fixed">
         <Image
           src="/spotlights.png"
