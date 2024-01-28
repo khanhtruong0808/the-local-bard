@@ -1,5 +1,5 @@
-import Button from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default async function ContactPage() {
   return (
@@ -66,7 +66,7 @@ export default async function ContactPage() {
             />
           </div>
         </div>
-        <Button size="large" className="mt-4 self-start px-7" type="submit">
+        <Button size="lg" className="mt-4 self-start px-7" type="submit">
           Send
         </Button>
       </form>

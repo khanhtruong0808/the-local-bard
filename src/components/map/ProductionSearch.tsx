@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/input";
 import { createUrl } from "@/lib/utils";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
@@ -19,7 +19,6 @@ export function ProductionSearch() {
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     newParams.set("q", q);
-    console.log("newParams", newParams.toString());
     router.push(createUrl(pathname, newParams));
   }
 

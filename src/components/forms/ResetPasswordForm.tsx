@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 import resetPasswordEmail from "@/actions/resetPasswordEmail";
-import ErrorMessage from "./ErrorMessage";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import ErrorMessage from "@/components/ErrorMessage";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SubmitButton from "@/components/ui/SubmitButton";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export default function ResetPasswordForm() {
           />
         </div>
       </div>
-      <SubmitButton size="large" className="flex w-full justify-center">
+      <SubmitButton size="lg" className="flex w-full justify-center">
         Reset Password
       </SubmitButton>
       <ErrorMessage error={error} />

@@ -1,13 +1,13 @@
 "use client";
+import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import React from "react";
-import { usePathname } from "next/navigation";
-
-import { Disclosure } from "@headlessui/react";
-import Button from "./ui/Button";
-import { twMerge } from "tailwind-merge";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { twMerge } from "tailwind-merge";
+
+import { Button } from "@/components/ui/button";
 
 export const Navbar = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -90,10 +90,10 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                 <Disclosure.Button
                   key={item.label}
                   as={Button}
-                  href={item.href}
+                  asChild
                   className="block bg-transparent text-zinc-200 shadow-none"
                 >
-                  {item.label}
+                  <Link href={item.href}>{item.label}</Link>
                 </Disclosure.Button>
               ))}
             </div>

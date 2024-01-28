@@ -1,46 +1,32 @@
 "use client";
-
+import { PostgrestError } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import deleteProduction from "@/actions/deleteProduction";
-import updateProduction from "@/actions/updateProduction";
-import { genres } from "@/lib/constants";
-import type {
-  Production,
-  TheaterForUpdateProduction,
-} from "@/lib/supabase/queries";
-import useDialog from "@/utils/dialogStore";
-import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import Button from "./ui/Button";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import createProduction from "@/actions/createProduction";
+import type { TheaterForNewProduction } from "@/lib/supabase/queries";
+
+import SubmitButton from "@/components/ui/SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
+import { genres } from "@/lib/constants";
 
 interface ProductionFormProps {
-  production: Production;
-  theater: TheaterForUpdateProduction;
+  theater: TheaterForNewProduction;
 }
 
-export const UpdateProductionForm = ({
-  production,
-  theater,
-}: ProductionFormProps) => {
-  const [touched, setTouched] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [posterUrl, setPosterUrl] = useState<string | null>(
-    production.poster_url,
-  );
+export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
+  const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
-  const { openDialog, closeDialog } = useDialog();
 
   const handlePosterChange = (file: File | undefined) => {
     const url = file ? URL.createObjectURL(file) : "";
@@ -48,18 +34,13 @@ export const UpdateProductionForm = ({
     setPosterUrl(url);
   };
 
-  const handleRevertPoster = () => {
-    setPosterUrl(production.poster_url);
-    setImageKey(imageKey + 1);
-  };
-
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     toast.promise(
-      updateProduction(formData),
+      createProduction(formData),
       {
-        loading: "Updating Production...",
-        success: "Production Updated!",
-        error: (error: Error) => error.message,
+        loading: "Creating Production...",
+        success: "Production Created!",
+        error: (error: PostgrestError) => error.message,
       },
       {
         style: {
@@ -67,51 +48,24 @@ export const UpdateProductionForm = ({
         },
       },
     );
-  };
-
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    await toast.promise(
-      deleteProduction(production.id),
-      {
-        loading: "Deleting Production...",
-        success: "Production Deleted!",
-        error: (error: Error) => error.message,
-      },
-      {
-        style: {
-          minWidth: "250px",
-        },
-      },
-    );
-    setIsDeleting(false);
-    closeDialog();
-  };
-
-  const handleConfirmDelete = () => {
-    openDialog({
-      title: "Delete production",
-      content: <ConfirmDeleteForm handleDelete={handleDelete} />,
-    });
   };
 
   return (
     <form
       className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
       action={handleSubmit}
-      onReset={() => setTouched(false)}
     >
       <div>
         <h2 className="text-base font-semibold leading-7 text-zinc-200">
-          {production.name}
+          Create a production
         </h2>
         <p className="mt-1 text-sm leading-6 text-gray-500">
-          Make changes to your production here.
+          Add a production to your theater.
         </p>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
-        <input type="hidden" name="id" id="id" value={production.id} />
+        <input type="hidden" name="theater_id" value={theater.id} />
         <div className="col-span-full">
           <Label htmlFor="title">Title</Label>
           <div className="mt-2">
@@ -120,8 +74,6 @@ export const UpdateProductionForm = ({
               name="title"
               id="title"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.name || ""}
               required
             />
           </div>
@@ -134,8 +86,6 @@ export const UpdateProductionForm = ({
               name="summary"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={production.summary || ""}
             />
           </div>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -147,11 +97,7 @@ export const UpdateProductionForm = ({
           <div className="mt-2">
             <Select
               name="stage"
-              defaultValue={
-                theater.stages
-                  .find((stage) => stage.id === production.stage_id)
-                  ?.id?.toString() || ""
-              }
+              defaultValue={String(theater.stages[0].id) || ""}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a stage" />
@@ -174,8 +120,6 @@ export const UpdateProductionForm = ({
               name="playwrights"
               id="playwrights"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.writers?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
               Seperate multiple playwrights with commas.
@@ -190,8 +134,6 @@ export const UpdateProductionForm = ({
               name="directors"
               id="directors"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.directors?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
               Seperate multiple directors with commas.
@@ -206,8 +148,6 @@ export const UpdateProductionForm = ({
               name="composers"
               id="composers"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.composers?.join(", ") || ""}
             />
             <p className="mt-2 text-sm leading-6 text-zinc-400">
               Seperate multiple composers with commas.
@@ -217,11 +157,7 @@ export const UpdateProductionForm = ({
         <div className="sm:col-span-3 sm:col-start-1">
           <Label htmlFor="genre">Genre</Label>
           <div className="mt-2">
-            <Select
-              name="genre"
-              defaultValue={production.type || ""}
-              onValueChange={() => setTouched(true)}
-            >
+            <Select name="genre" defaultValue="">
               <SelectTrigger>
                 <SelectValue placeholder="Select a genre" />
               </SelectTrigger>
@@ -238,11 +174,7 @@ export const UpdateProductionForm = ({
         <div className="sm:col-span-3">
           <Label htmlFor="kidFriendly">Kid Friendly</Label>
           <div className="mt-2">
-            <Select
-              name="kidFriendly"
-              onValueChange={() => setTouched(true)}
-              defaultValue={production.kid_friendly ? "Yes" : "No"}
-            >
+            <Select name="kidFriendly">
               <SelectTrigger>
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
@@ -256,11 +188,7 @@ export const UpdateProductionForm = ({
         <div className="sm:col-span-3">
           <Label htmlFor="costRange">Cost Range</Label>
           <div className="mt-2">
-            <Select
-              name="costRange"
-              onValueChange={() => setTouched(true)}
-              defaultValue={production.cost_range || "$"}
-            >
+            <Select name="costRange">
               <SelectTrigger>
                 <SelectValue placeholder="Select a cost range" />
               </SelectTrigger>
@@ -281,34 +209,26 @@ export const UpdateProductionForm = ({
               name="duration"
               id="duration"
               className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.duration_minutes || 0}
             />
           </div>
         </div>
         <div className="h-full sm:col-span-3">
           <Label htmlFor="poster">Poster</Label>
           <div className="mt-2 flex h-full flex-col justify-between">
-            <div>
-              <Input
-                type="file"
-                key={imageKey}
-                name="poster"
-                id="poster"
-                accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
-                className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
-                onChange={(e) => handlePosterChange(e.target.files?.[0])}
-              />
-              <p className="mt-2 text-sm leading-6 text-zinc-400">
-                jpeg, png, webp, svg, and xml only!
-              </p>
-            </div>
-            {posterUrl !== production.poster_url && (
+            <Input
+              type="file"
+              key={imageKey}
+              name="poster"
+              id="poster"
+              accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
+              className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
+              onChange={(e) => handlePosterChange(e.target.files?.[0])}
+            />
+            {posterUrl && (
               <Button
                 variant="secondary"
                 className="mb-8 self-start"
-                type="button"
-                onClick={() => handleRevertPoster()}
+                onClick={() => handlePosterChange(undefined)}
               >
                 Revert Poster
               </Button>
@@ -316,13 +236,13 @@ export const UpdateProductionForm = ({
           </div>
         </div>
         <div className="mx-auto mt-8 max-w-fit sm:col-span-3">
-          <div className="overflow-hidden rounded-lg bg-zinc-700 shadow">
+          <div className="cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow">
             <div className="sm:flex">
               <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
                 {posterUrl && (
                   <Image
-                    src={posterUrl}
-                    alt={production.name || "Production poster"}
+                    src={posterUrl || ""}
+                    alt={"Production poster"}
                     width={100}
                     height={100}
                   />
@@ -330,10 +250,10 @@ export const UpdateProductionForm = ({
               </div>
               <div className="px-4 py-5 sm:p-6">
                 <h3 className="text-lg font-medium leading-6 text-zinc-200">
-                  {production.name}
+                  {"Production Title"}
                 </h3>
                 <div className="mt-2 max-w-xl text-sm text-zinc-400">
-                  <p>{theater?.name}</p>
+                  <p>{theater.name}</p>
                   <p>{theater.addresses?.street_address}</p>
                   <p>
                     {theater.addresses?.city}, {theater.addresses?.state}
@@ -346,14 +266,7 @@ export const UpdateProductionForm = ({
         <div className="col-span-full">
           <Label htmlFor="url">URL</Label>
           <div className="mt-2">
-            <Input
-              type="text"
-              name="url"
-              id="url"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={production.url || ""}
-            />
+            <Input type="text" name="url" id="url" className="w-full" />
           </div>
         </div>
         <div className="col-span-full">
@@ -364,8 +277,6 @@ export const UpdateProductionForm = ({
               name="notes"
               rows={3}
               className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={production.notes || ""}
             />
           </div>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -379,10 +290,8 @@ export const UpdateProductionForm = ({
               type="date"
               name="openingNight"
               id="openingNight"
-              className="w-full"
               required
-              onChange={() => setTouched(true)}
-              defaultValue={production.start_date || ""}
+              className="w-full"
             />
           </div>
         </div>
@@ -393,32 +302,13 @@ export const UpdateProductionForm = ({
               type="date"
               name="closingNight"
               id="closingNight"
-              className="w-full"
               required
-              onChange={() => setTouched(true)}
-              defaultValue={production.end_date || ""}
+              className="w-full"
             />
           </div>
         </div>
       </div>
-      <div className="flex justify-between">
-        <div>
-          {touched && (
-            <Button type="reset" variant="secondary" className="mr-4">
-              Cancel
-            </Button>
-          )}
-          <SubmitButton>Update</SubmitButton>
-        </div>
-        <Button
-          type="button"
-          variant="alert"
-          onClick={handleConfirmDelete}
-          disabled={isDeleting}
-        >
-          Delete Production
-        </Button>
-      </div>
+      <SubmitButton>Create new production</SubmitButton>
     </form>
   );
 };

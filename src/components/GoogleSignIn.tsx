@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
-import Button from "./ui/Button";
+import { Button } from "@/components/ui/button";
 
 export default function GoogleSignInButton() {
   const router = useRouter();

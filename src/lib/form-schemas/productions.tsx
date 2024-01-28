@@ -7,29 +7,29 @@ export const createProductionSchema = z.object({
   stage_id: z
     .string()
     .trim()
-    .transform((val) => (val ? Number(val) : null)),
+    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
   writers: z
     .string()
     .trim()
-    .transform((val) => (val ? val.replace(/\s*,\s*/g, ",").split(",") : null)),
+    .transform((val) => (val ? val.split(",").map((v) => v.trim()) : null)),
   directors: z
     .string()
     .trim()
-    .transform((val) => (val ? val.replace(/\s*,\s*/g, ",").split(",") : null)),
+    .transform((val) => (val ? val.split(",").map((v) => v.trim()) : null)),
   composers: z
     .string()
     .trim()
-    .transform((val) => (val ? val.replace(/\s*,\s*/g, ",").split(",") : null)),
+    .transform((val) => (val ? val.split(",").map((v) => v.trim()) : null)),
   type: z.string().trim(),
   kid_friendly: z
     .string()
     .trim()
-    .transform((val) => (val ? val === "Yes" : null)),
+    .transform((val) => (val === "Yes" ? true : val === "No" ? false : null)),
   cost_range: z.string().trim(),
   duration_minutes: z
     .string()
     .trim()
-    .transform((val) => (val ? Number(val) : null)),
+    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
   poster: z.custom<File>(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
   poster_url: z.string().trim().url().optional().nullable(),
   url: z.string().trim(),
@@ -40,6 +40,10 @@ export const createProductionSchema = z.object({
 
 export const updateProductionSchema = createProductionSchema
   .extend({
-    id: z.string().min(1),
+    id: z
+      .string()
+      .trim()
+      .min(1)
+      .transform((val) => parseInt(val)),
   })
   .omit({ theater_id: true });

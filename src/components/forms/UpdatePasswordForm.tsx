@@ -3,9 +3,9 @@
 import toast from "react-hot-toast";
 
 import updatePassword from "@/actions/updatePassword";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SubmitButton from "@/components/ui/SubmitButton";
 
 export const UpdatePasswordForm = () => {
   const handleSubmit = async (formData: FormData) => {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/components/forms/LoginForm";
 
 export default async function Login() {
   return (

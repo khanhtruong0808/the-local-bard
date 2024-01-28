@@ -4,11 +4,16 @@ import { SelectContent } from "@radix-ui/react-select";
 import toast from "react-hot-toast";
 
 import createStage from "@/actions/createStage";
+import SubmitButton from "@/components/ui/SubmitButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { stageTypes } from "@/lib/constants";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
-import { Select, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 export const CreateStageForm = () => {
   const handleSubmit = (formData: FormData) => {

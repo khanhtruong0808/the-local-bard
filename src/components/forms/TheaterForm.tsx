@@ -5,21 +5,21 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import updateTheater from "@/actions/updateTheater";
-import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
-import { useFormAction } from "@/lib/hooks";
-import { TheaterForTheaterPage } from "@/lib/supabase/queries";
-import { useState } from "react";
-import Button from "./ui/Button";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import SubmitButton from "@/components/ui/SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
+import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
+import { useFormWithAction } from "@/lib/hooks";
+import { TheaterForTheaterPage } from "@/lib/supabase/queries";
+import { useState } from "react";
 
 interface TheaterFormProps {
   theater: TheaterForTheaterPage;
@@ -31,7 +31,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
   const [touched, setTouched] = useState(false);
   const address = theater.addresses;
 
-  const form = useFormAction<UpdateTheaterSchema>({
+  const form = useFormWithAction<UpdateTheaterSchema>({
     resolver: zodResolver(updateTheaterSchema),
     defaultValues: {
       id: theater.id.toString(),

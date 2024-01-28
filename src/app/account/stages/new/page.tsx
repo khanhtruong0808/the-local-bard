@@ -1,4 +1,4 @@
-import { CreateStageForm } from "@/components/CreateStageForm";
+import { CreateStageForm } from "@/components/forms/CreateStageForm";
 
 export default async function EditStagePage() {
   return (

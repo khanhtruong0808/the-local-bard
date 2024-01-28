@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { CreateProductionForm } from "@/components/CreateProductionForm";
+import { CreateProductionForm } from "@/components/forms/CreateProductionForm";
 import { getTheaterForNewProduction } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 

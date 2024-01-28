@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import signInWithEmail from "@/actions/signInWithEmail";
-import ErrorMessage from "./ErrorMessage";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import ErrorMessage from "@/components/ErrorMessage";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SubmitButton from "@/components/ui/SubmitButton";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export default function LoginForm() {
           />
         </div>
       </div>
-      <SubmitButton size="large" className="flex w-full justify-center">
+      <SubmitButton size="lg" className="flex w-full justify-center">
         Sign In
       </SubmitButton>
       <p className="mt-6 text-center text-sm text-neutral-400">

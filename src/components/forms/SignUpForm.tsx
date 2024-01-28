@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 import signUp from "@/actions/signUp";
-import ErrorMessage from "./ErrorMessage";
-import { Input } from "./ui/Input";
-import SubmitButton from "./ui/SubmitButton";
+import ErrorMessage from "@/components/ErrorMessage";
+import { Input } from "@/components/ui/input";
+import SubmitButton from "@/components/ui/SubmitButton";
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export default function SignUpForm() {
           />
         </div>
       </div>
-      <SubmitButton size="large" className="flex w-full justify-center">
+      <SubmitButton size="lg" className="flex w-full justify-center">
         Sign Up
       </SubmitButton>
       <ErrorMessage error={error} />

@@ -5,21 +5,21 @@ import toast from "react-hot-toast";
 
 import deleteStage from "@/actions/deleteStage";
 import updateStage from "@/actions/updateStage";
-import { stageTypes } from "@/lib/constants";
-import type { StageWithAddress } from "@/lib/supabase/queries";
-import useDialog from "@/utils/dialogStore";
-import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import Button from "./ui/Button";
-import { Input } from "./ui/Input";
-import Label from "./ui/Label";
-import SubmitButton from "./ui/SubmitButton";
+import SubmitButton from "@/components/ui/SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
+import { stageTypes } from "@/lib/constants";
+import type { StageWithAddress } from "@/lib/supabase/queries";
+import useDialog from "@/utils/dialogStore";
+import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
 
 export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -248,7 +248,7 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
         </div>
         <Button
           type="button"
-          variant="alert"
+          variant="destructive"
           onClick={handleConfirmDelete}
           disabled={isDeleting}
         >

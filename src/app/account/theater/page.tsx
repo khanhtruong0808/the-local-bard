@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { TheaterForm } from "@/components/TheaterForm";
+import { TheaterForm } from "@/components/forms/TheaterForm";
 import { getTheaterForTheaterPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 

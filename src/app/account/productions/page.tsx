@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { getTheaterForProductionsPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -45,7 +45,7 @@ export default async function ProductionsPage() {
                   {production.name}
                 </div>
                 <a href={`productions/${production.id}`}>
-                  <Button type="button" variant="secondary" size="small">
+                  <Button type="button" variant="secondary" size="sm">
                     Update
                   </Button>
                 </a>

@@ -9,34 +9,38 @@ import { createClient } from "@/lib/supabase/server";
 export default async function updateProduction(form: FormData) {
   const parsed = updateProductionSchema.safeParse({
     id: form.get("id"),
-    name: form.get("title"),
+    name: form.get("name"),
     summary: form.get("summary"),
-    stage_id: form.get("stage"),
-    writers: form.get("playwrights"),
+    stage_id: form.get("stage_id"),
+    writers: form.get("writers"),
     directors: form.get("directors"),
     composers: form.get("composers"),
-    type: form.get("genre"),
-    kid_friendly: form.get("kidFriendly"),
-    cost_range: form.get("costRange"),
-    duration_minutes: form.get("duration"),
+    type: form.get("type"),
+    kid_friendly: form.get("kid_friendly"),
+    cost_range: form.get("cost_range"),
+    duration_minutes: form.get("duration_minutes"),
     poster: form.get("poster"),
     url: form.get("url"),
     notes: form.get("notes"),
-    start_date: form.get("openingNight"),
-    end_date: form.get("closingNight"),
+    start_date: form.get("start_date"),
+    end_date: form.get("end_date"),
   });
 
   if (!parsed.success) {
-    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+    return Promise.reject(
+      parsed.error.errors.map((e) => `${e.path}: ${e.message}`).join("\n"),
+    );
   }
+
+  const payload = parsed.data;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  if (parsed.data.poster.size > 0) {
+  if (payload.poster && payload.poster.size > 0) {
     const { error: fileError } = await supabase.storage
       .from("posters")
-      .upload(parsed.data.poster.name, parsed.data.poster, {
+      .upload(payload.poster.name, payload.poster, {
         upsert: true,
       });
 
@@ -46,16 +50,16 @@ export default async function updateProduction(form: FormData) {
 
     const { data } = supabase.storage
       .from("posters")
-      .getPublicUrl(parsed.data.poster.name);
+      .getPublicUrl(payload.poster.name);
 
     const { publicUrl: poster_url } = data;
-    parsed.data.poster_url = poster_url;
+    payload.poster_url = poster_url;
   } else {
     // TODO: Figure out how to actually delete orphaned posters from storage?
     // keep old poster_url if no file is given
   }
 
-  const { id, poster, ...updatedProduction } = parsed.data;
+  const { id, poster, ...updatedProduction } = payload;
 
   const { error } = await supabase
     .from("productions")
@@ -64,8 +68,10 @@ export default async function updateProduction(form: FormData) {
 
   if (error) {
     console.error(error);
-    throw error.message;
+    return Promise.reject(error.message);
   }
 
   revalidatePath(`/account/productions/${id}`);
+
+  return { status: "success" };
 }
