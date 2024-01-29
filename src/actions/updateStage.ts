@@ -21,8 +21,12 @@ export default async function updateStage(form: FormData) {
     seating_capacity: form.get("seating_capacity"),
   });
   if (!parsed.success) {
-    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+    return Promise.reject(
+      parsed.error.errors.map((e) => `${e.path}: ${e.message}`).join("\n"),
+    );
   }
+
+  const payload = parsed.data;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -30,27 +34,29 @@ export default async function updateStage(form: FormData) {
   const { error: stageError } = await supabase
     .from("stages")
     .update({
-      name: parsed.data.name,
-      type: parsed.data.type,
-      notes: parsed.data.notes,
-      wheelchair_accessible: parsed.data.wheelchair_accessible,
-      seating_capacity: parsed.data.seating_capacity,
+      name: payload.name,
+      type: payload.type,
+      notes: payload.notes,
+      wheelchair_accessible: payload.wheelchair_accessible,
+      seating_capacity: payload.seating_capacity,
     })
-    .eq("id", parsed.data.id);
+    .eq("id", payload.id ?? 0);
 
   if (stageError) throw stageError;
 
   const { error: addressesError } = await supabase
     .from("addresses")
     .update({
-      street_address: parsed.data.street_address,
-      city: parsed.data.city,
-      state: parsed.data.state,
-      postal_code: parsed.data.postal_code,
+      street_address: payload.street_address,
+      city: payload.city,
+      state: payload.state,
+      postal_code: payload.postal_code,
     })
-    .eq("id", parsed.data.address_id);
+    .eq("id", payload.address_id ?? 0);
 
   if (addressesError) throw addressesError;
 
-  revalidatePath(`/account/stages/${parsed.data.id}`);
+  revalidatePath(`/account/stages/${payload.id}`);
+
+  return { status: "success" };
 }

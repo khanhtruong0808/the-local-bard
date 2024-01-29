@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { z } from "zod";
 
-import deleteStage from "@/actions/deleteStage";
-import updateStage from "@/actions/updateStage";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -16,32 +25,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { stageTypes } from "@/lib/constants";
-import type { StageWithAddress } from "@/lib/supabase/queries";
+import { Textarea } from "@/components/ui/textarea";
+import { useFormWithLocalStorage } from "@/lib/hooks";
 import useDialog from "@/utils/dialogStore";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
+import { StageWithAddress } from "@/lib/supabase/queries";
+import { updateStageSchema } from "@/lib/form-schemas/stages";
+import updateStage from "@/actions/updateStage";
+import deleteStage from "@/actions/deleteStage";
+import { stageTypes } from "@/lib/constants";
 
-export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
+interface UpdateStageFormProps {
+  stage: StageWithAddress;
+}
+
+export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
+  const LOCAL_STORAGE_KEY = `update-stage-form-${stage.id}`;
+
   const [isDeleting, setIsDeleting] = useState(false);
-  const [touched, setTouched] = useState(false);
   const { openDialog, closeDialog } = useDialog();
   // Not sure why addresses is typed as an array
   const address = stage.addresses;
 
+  const defaultValues = useMemo(
+    () => ({
+      id: stage.id,
+      name: stage.name || "",
+      street_address: address.street_address || undefined,
+      city: address.city || "",
+      state: address.state || "",
+      postal_code: address.postal_code || undefined,
+      type: stage.type || "",
+      wheelchair_accessible: stage.wheelchair_accessible || undefined,
+      seating_capacity: stage.seating_capacity || undefined,
+      notes: stage.notes || "",
+      address_id: stage.address_id || undefined,
+    }),
+    [stage, address],
+  );
+
+  const form = useFormWithLocalStorage<z.infer<typeof updateStageSchema>>({
+    resolver: zodResolver(updateStageSchema),
+    defaultValues: defaultValues,
+    localStorageKey: LOCAL_STORAGE_KEY,
+  });
+
   const handleSubmit = async (formData: FormData) => {
-    toast.promise(
-      updateStage(formData),
-      {
-        loading: "Updating Stage...",
-        success: "Stage Updated!",
-        error: (error: Error) => error.message,
-      },
-      {
-        style: {
-          minWidth: "250px",
+    toast
+      .promise(
+        updateStage(formData),
+        {
+          loading: "Updating Stage...",
+          success: "Stage Updated!",
+          error: (error: Error) => error.message,
         },
-      },
-    );
+        {
+          style: {
+            minWidth: "250px",
+          },
+        },
+      )
+      .then(({ status }) => {
+        if (status === "success") {
+          form.cleanup();
+        }
+      });
   };
 
   const handleDelete = async () => {
@@ -71,190 +119,221 @@ export const UpdateStageForm = ({ stage }: { stage: StageWithAddress }) => {
   };
 
   return (
-    <form
-      className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-      action={handleSubmit}
-      onReset={() => setTouched(false)}
-    >
-      <div>
-        <h2 className="text-base font-semibold leading-7 text-zinc-200">
-          {stage.name}
-        </h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
-          Make changes to your stage here.
-        </p>
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
-        <input type="hidden" name="id" id="id" defaultValue={stage.id} />
-        <input
-          type="hidden"
-          name="address_id"
-          id="address_id"
-          defaultValue={address.id}
-        />
-        <div className="col-span-full">
-          <Label htmlFor="name">Name</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="name"
-              id="name"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={stage.name || ""}
-            />
-          </div>
-        </div>
-        <div className="col-span-full">
-          <Label htmlFor="street_address">Street Address</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="street_address"
-              id="street_address"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address.street_address || ""}
-            />
-          </div>
-        </div>
-
-        <div className="sm:col-span-2 sm:col-start-1">
-          <Label htmlFor="city">City</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="city"
-              id="city"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address.city || ""}
-            />
-          </div>
-        </div>
-
-        <div className="sm:col-span-2">
-          <Label htmlFor="state">State / Province</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="state"
-              id="state"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address.state || ""}
-            />
-          </div>
-        </div>
-
-        <div className="sm:col-span-2">
-          <Label htmlFor="postal_code">ZIP / Postal Code</Label>
-          <div className="mt-2">
-            <Input
-              type="text"
-              name="postal_code"
-              id="postal_code"
-              autoComplete="postal_code"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={address.postal_code || ""}
-            />
-          </div>
-        </div>
-        <div className="sm:col-span-3">
-          <Label htmlFor="type">Stage Type</Label>
-          <div className="mt-2">
-            <Select
-              name="type"
-              defaultValue={stage.type || ""}
-              onValueChange={() => setTouched(true)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a stage type" />
-              </SelectTrigger>
-              <SelectContent>
-                {stageTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="sm:col-span-3">
-          <Label htmlFor="wheelchair_accessible">Wheel Chair Accessible</Label>
-          <div className="mt-2">
-            <Select
-              name="wheelchair_accessible"
-              onValueChange={() => setTouched(true)}
-              defaultValue={
-                stage.wheelchair_accessible === true
-                  ? "Yes"
-                  : stage.wheelchair_accessible === false
-                    ? "No"
-                    : "" // If null, don't default to anything
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="col-span-full">
-          <Label htmlFor="seating_capacity">Seating Capacity</Label>
-          <div className="mt-2">
-            <Input
-              type="number"
-              name="seating_capacity"
-              id="seating_capacity"
-              className="w-full"
-              onChange={() => setTouched(true)}
-              defaultValue={stage.seating_capacity || ""}
-            />
-          </div>
-        </div>
-        <div className="col-span-full">
-          <Label htmlFor="notes">Notes</Label>
-          <div className="mt-2">
-            <textarea
-              id="notes"
-              name="notes"
-              rows={3}
-              className="block w-full rounded-md border-0 bg-transparent py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-zinc-500 placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-100 sm:text-sm sm:leading-6"
-              onChange={() => setTouched(true)}
-              defaultValue={stage.notes || ""}
-            />
-          </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            Include anything else you&apos;d like to add.
-          </p>
-        </div>
-      </div>
-      <div className="flex justify-between">
+    <Form {...form}>
+      <form
+        className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
+        action={handleSubmit}
+        onReset={() => form.reset(defaultValues)}
+      >
         <div>
-          {touched && (
-            <Button type="reset" variant="secondary" className="mr-4">
-              Cancel
-            </Button>
+          <h2 className="text-base font-semibold leading-7 text-zinc-200">
+            {stage.name}
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-gray-500">
+            Make changes to your stage here.
+          </p>
+          {form.isFormDirty && (
+            <p className="text-sm font-medium text-red-500 dark:text-red-600">
+              You have unsaved changes. Make sure to press{" "}
+              <strong>Update</strong> to save them before leaving.
+            </p>
           )}
-          <SubmitButton>Update</SubmitButton>
         </div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleConfirmDelete}
-          disabled={isDeleting}
-        >
-          Delete Stage
-        </Button>
-      </div>
-    </form>
+
+        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
+          <input type="hidden" id="id" {...form.register("id")} />
+          <input
+            type="hidden"
+            id="address_id"
+            {...form.register("address_id")}
+          />
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Stage 123" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="street_address"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Street Address</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="123 Sesame Street"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Sacramento" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel>State / Province</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="California" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="postal_code"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel>ZIP / Postal Code</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="12345"
+                    {...field}
+                    value={field.value ?? undefined}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-3">
+                <FormLabel>Stage Type</FormLabel>
+                <FormControl>
+                  <Select {...field} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a stage type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stageTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="wheelchair_accessible"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-3">
+                <FormLabel>Wheel Chair Accessible</FormLabel>
+                <FormControl>
+                  <Select
+                    name="wheelchair_accessible"
+                    onValueChange={field.onChange}
+                    defaultValue={
+                      stage.wheelchair_accessible === true
+                        ? "Yes"
+                        : stage.wheelchair_accessible === false
+                          ? "No"
+                          : "" // If null, don't default to anything
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="seating_capacity"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Seating Compacity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="100"
+                    {...field}
+                    value={field.value ?? undefined}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    rows={3}
+                    placeholder="Include anything else you'd like to add."
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Include anything else you&apos;d like to add.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="flex justify-between">
+          <div>
+            {form.isFormDirty && (
+              <Button type="reset" variant="secondary" className="mr-4">
+                Cancel
+              </Button>
+            )}
+            <SubmitButton isFormDirty={form.isFormDirty}>Update</SubmitButton>
+          </div>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+          >
+            Delete Stage
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

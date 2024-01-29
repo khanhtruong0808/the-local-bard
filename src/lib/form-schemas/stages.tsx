@@ -22,6 +22,12 @@ export const createStageSchema = z.object({
 });
 
 export const updateStageSchema = createStageSchema.extend({
-  id: z.string().min(1),
-  address_id: z.string().min(1),
+  id: z
+    .string()
+    .trim()
+    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
+  address_id: z
+    .string()
+    .trim()
+    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
 });

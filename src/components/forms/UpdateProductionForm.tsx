@@ -43,12 +43,12 @@ interface ProductionFormProps {
   theater: TheaterForUpdateProduction;
 }
 
-const LOCAL_STORAGE_KEY = "update-production-form";
-
 export const UpdateProductionForm = ({
   production,
   theater,
 }: ProductionFormProps) => {
+  const LOCAL_STORAGE_KEY = `update-production-form-${production.id}`;
+
   const defaultValues = useMemo(
     () => ({
       id: production.id,
@@ -113,6 +113,7 @@ export const UpdateProductionForm = ({
       .then(({ status }) => {
         if (status === "success") {
           form.cleanup();
+          handleRevertPoster();
         }
       });
   };
@@ -143,11 +144,17 @@ export const UpdateProductionForm = ({
     });
   };
 
+  const handleReset = () => {
+    handleRevertPoster();
+    form.reset(defaultValues);
+  };
+
   return (
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
         action={handleSubmit}
+        onReset={handleReset}
       >
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
@@ -156,7 +163,7 @@ export const UpdateProductionForm = ({
           <p className="mt-1 text-sm leading-6 text-gray-500">
             Make changes to your production here.
           </p>
-          {form.isFormDirty && (
+          {(form.isFormDirty || posterUrl !== production.poster_url) && (
             <p className="text-sm font-medium text-red-500 dark:text-red-600">
               You have unsaved changes. Make sure to press{" "}
               <strong>Update</strong> to save them before leaving.
@@ -215,7 +222,6 @@ export const UpdateProductionForm = ({
                       <SelectValue placeholder="Select a stage" />
                     </SelectTrigger>
                   </FormControl>
-
                   <SelectContent>
                     {theater.stages.map((stage) => (
                       <SelectItem key={stage.id} value={stage.id.toString()}>
@@ -239,7 +245,7 @@ export const UpdateProductionForm = ({
                     type="text"
                     placeholder="Roger Allers, Irene Mecchi"
                     {...field}
-                    value={field.value?.join(", ") || ""}
+                    value={field.value ? field.value.join(", ") : ""}
                   />
                 </FormControl>
                 <FormDescription>
@@ -515,12 +521,18 @@ export const UpdateProductionForm = ({
         </div>
         <div className="flex justify-between">
           <div>
-            {form.isFormDirty && (
+            {(form.isFormDirty || posterUrl !== production.poster_url) && (
               <Button type="reset" variant="secondary" className="mr-4">
                 Cancel
               </Button>
             )}
-            <SubmitButton>Update</SubmitButton>
+            <SubmitButton
+              isFormDirty={
+                form.isFormDirty || posterUrl !== production.poster_url
+              }
+            >
+              Update
+            </SubmitButton>
           </div>
           <Button
             type="button"
