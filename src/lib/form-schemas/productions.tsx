@@ -4,10 +4,7 @@ export const createProductionSchema = z.object({
   theater_id: z.string().transform((val) => (val ? Number(val) : null)),
   name: z.string().trim().min(1, "Title is required."),
   summary: z.string().trim(),
-  stage_id: z
-    .string()
-    .trim()
-    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
+  stage_id: z.string().trim(), // workaround for local storage bug where it doesn't like number type
   writers: z
     .string()
     .trim()

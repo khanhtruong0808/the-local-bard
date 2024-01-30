@@ -55,7 +55,7 @@ export const UpdateProductionForm = ({
       id: production.id,
       name: production.name || "",
       summary: production.summary || "",
-      stage_id: production.stage_id || undefined,
+      stage_id: String(production.stage_id) || undefined,
       writers: production.writers || undefined,
       directors: production.directors || undefined,
       composers: production.composers || undefined,
@@ -63,7 +63,7 @@ export const UpdateProductionForm = ({
       kid_friendly: production.kid_friendly,
       cost_range: production.cost_range || undefined,
       duration_minutes: production.duration_minutes || undefined,
-      poster: undefined,
+      poster: undefined, // TODO: Figure out how to get local storage to work with file input?
       url: production.url || "",
       notes: production.notes || "",
       start_date: production.start_date || undefined,
@@ -114,7 +114,6 @@ export const UpdateProductionForm = ({
       .then(({ status }) => {
         if (status === "success") {
           form.cleanup();
-          handleRevertPoster();
         }
       });
   };
@@ -164,7 +163,7 @@ export const UpdateProductionForm = ({
           <p className="mt-1 text-sm leading-6 text-gray-500">
             Make changes to your production here.
           </p>
-          {(form.isFormDirty || posterUrl !== production.poster_url) && (
+          {form.isFormDirty && (
             <p className="text-sm font-medium text-red-500 dark:text-red-600">
               You have unsaved changes. Make sure to press{" "}
               <strong>Update</strong> to save them before leaving.
@@ -549,7 +548,7 @@ export const UpdateProductionForm = ({
         </div>
         <div className="flex justify-between">
           <div>
-            {(form.isFormDirty || posterUrl !== production.poster_url) && (
+            {form.isFormDirty && (
               <Button type="reset" variant="secondary" className="mr-4">
                 Cancel
               </Button>
