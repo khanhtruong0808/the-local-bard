@@ -26,10 +26,7 @@ export const createProductionSchema = z.object({
     .trim()
     .transform((val) => (val === "Yes" ? true : val === "No" ? false : null)),
   cost_range: z.string().trim(),
-  duration_minutes: z
-    .string()
-    .trim()
-    .transform((val) => (val && !isNaN(parseInt(val)) ? parseInt(val) : null)),
+  duration_minutes: z.coerce.number().int().max(9999, "Duration is too long."),
   poster: z.custom<File>(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
   poster_url: z.string().trim().url().optional().nullable(),
   url: z.string().trim(),

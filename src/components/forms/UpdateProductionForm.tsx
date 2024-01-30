@@ -62,7 +62,7 @@ export const UpdateProductionForm = ({
       type: production.type || "",
       kid_friendly: production.kid_friendly,
       cost_range: production.cost_range || undefined,
-      duration_minutes: production.duration_minutes || null,
+      duration_minutes: production.duration_minutes || undefined,
       poster: undefined,
       url: production.url || "",
       notes: production.notes || "",
@@ -410,7 +410,13 @@ export const UpdateProductionForm = ({
                     {...field}
                     type="number"
                     placeholder="120"
-                    value={field.value ?? undefined}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== ""
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />

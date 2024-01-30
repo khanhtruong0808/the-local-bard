@@ -50,7 +50,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
       street_address: address?.street_address || undefined,
       city: address?.city || "",
       state: address?.state || "",
-      postal_code: address?.postal_code || null,
+      postal_code: address?.postal_code || undefined,
       notes: theater.notes || "",
       parking_instructions: theater.parking_instructions || "",
       url: theater.url || "",
@@ -202,10 +202,16 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
                 <FormLabel>ZIP / Postal Code</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="number"
                     placeholder="12345"
-                    {...field}
-                    value={field.value ?? undefined}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== ""
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />

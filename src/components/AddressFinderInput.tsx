@@ -62,7 +62,7 @@ export default function AddressFinderInput() {
       if (streetAddress) setValue("street_address", streetAddress);
       if (city) setValue("city", city);
       if (state) setValue("state", state);
-      if (postalCode) setValue("postal_code", postalCode);
+      if (postalCode) setValue("postal_code", parseInt(postalCode));
     }
   };
 
