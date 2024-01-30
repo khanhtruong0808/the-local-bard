@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import deleteStage from "@/actions/deleteStage";
+import updateStage from "@/actions/updateStage";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,14 +27,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { stageTypes } from "@/lib/constants";
+import { updateStageSchema } from "@/lib/form-schemas/stages";
 import { useFormWithLocalStorage } from "@/lib/hooks";
+import { StageWithAddress } from "@/lib/supabase/queries";
+import { boolToYN, ynToBool } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import { StageWithAddress } from "@/lib/supabase/queries";
-import { updateStageSchema } from "@/lib/form-schemas/stages";
-import updateStage from "@/actions/updateStage";
-import deleteStage from "@/actions/deleteStage";
-import { stageTypes } from "@/lib/constants";
+import AddressFinderInput from "../AddressFinderInput";
 
 interface UpdateStageFormProps {
   stage: StageWithAddress;
@@ -44,7 +45,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const { openDialog, closeDialog } = useDialog();
-  // Not sure why addresses is typed as an array
+
   const address = stage.addresses;
 
   const defaultValues = useMemo(
@@ -56,7 +57,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
       state: address.state || "",
       postal_code: address.postal_code || undefined,
       type: stage.type || "",
-      wheelchair_accessible: stage.wheelchair_accessible || undefined,
+      wheelchair_accessible: stage.wheelchair_accessible ?? undefined,
       seating_capacity: stage.seating_capacity || undefined,
       notes: stage.notes || "",
       address_id: stage.address_id || undefined,
@@ -160,6 +161,19 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
               </FormItem>
             )}
           />
+          <hr className="col-span-full mt-6" />
+          <div className="col-span-full">
+            <h3 className="text-base font-semibold leading-7 text-zinc-200">
+              Address
+            </h3>
+            <p className="text-sm dark:text-zinc-400">
+              Either use the address finder below or enter your address
+              manually.
+            </p>
+          </div>
+          <div className="col-span-full">
+            <AddressFinderInput />
+          </div>
           <FormField
             control={form.control}
             name="street_address"
@@ -211,16 +225,23 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
                 <FormLabel>ZIP / Postal Code</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="number"
                     placeholder="12345"
-                    {...field}
-                    value={field.value ?? undefined}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== ""
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <hr className="col-span-full mt-6" />
           <FormField
             control={form.control}
             name="type"
@@ -253,15 +274,12 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
                 <FormLabel>Wheel Chair Accessible</FormLabel>
                 <FormControl>
                   <Select
+                    {...field}
                     name="wheelchair_accessible"
-                    onValueChange={field.onChange}
-                    defaultValue={
-                      stage.wheelchair_accessible === true
-                        ? "Yes"
-                        : stage.wheelchair_accessible === false
-                          ? "No"
-                          : "" // If null, don't default to anything
-                    }
+                    onValueChange={(v) => {
+                      field.onChange(ynToBool(v));
+                    }}
+                    value={boolToYN(field.value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -281,13 +299,13 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
             name="seating_capacity"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Seating Compacity</FormLabel>
+                <FormLabel>Seating Capacity</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="number"
                     placeholder="100"
-                    {...field}
-                    value={field.value ?? undefined}
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -322,7 +340,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
                 Cancel
               </Button>
             )}
-            <SubmitButton isFormDirty={form.isFormDirty}>Update</SubmitButton>
+            <SubmitButton>Update</SubmitButton>
           </div>
           <Button
             type="button"

@@ -28,7 +28,7 @@ export default async function updateProduction(form: FormData) {
 
   if (!parsed.success) {
     return Promise.reject(
-      parsed.error.errors.map((e) => `${e.path}: ${e.message}`).join("\n"),
+      new Error(parsed.error.errors.map((e) => e.message).join("\n")),
     );
   }
 
@@ -45,7 +45,7 @@ export default async function updateProduction(form: FormData) {
       });
 
     if (fileError) {
-      throw fileError;
+      return Promise.reject(fileError);
     }
 
     const { data } = supabase.storage
@@ -68,7 +68,7 @@ export default async function updateProduction(form: FormData) {
 
   if (error) {
     console.error(error);
-    return Promise.reject(error.message);
+    return Promise.reject(new Error(error.message));
   }
 
   revalidatePath(`/account/productions/${id}`);

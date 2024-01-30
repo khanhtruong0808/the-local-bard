@@ -18,7 +18,6 @@ export default async function GeneralPage() {
     user.id,
   );
   if (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 

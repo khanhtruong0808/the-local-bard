@@ -4,6 +4,7 @@ import {
   type FieldValues,
   type SubmitHandler,
   type UseFormProps,
+  UseFormReset,
 } from "react-hook-form";
 
 import { deepEqual } from "./utils";
@@ -50,6 +51,7 @@ export function useFormWithLocalStorage<
     const isDifferent = Object.entries(defaultValues).some(
       ([key, value]) => !deepEqual(initialValues[key], value),
     );
+
     if (isDifferent) {
       setIsLocalStorageApplied(true);
     }
@@ -68,15 +70,26 @@ export function useFormWithLocalStorage<
   const isFormDirty = form.formState.isDirty || isLocalStorageApplied;
 
   const cleanup = () => {
+    console.log("clearing ", props.localStorageKey, "from local storage");
     window.localStorage.removeItem(props.localStorageKey);
     setIsLocalStorageApplied(false);
     form.reset(form.getValues(), { keepValues: true });
+  };
+
+  /**
+   * Extend RHF's reset function to also remove the localStorage item
+   */
+  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions) => {
+    window.localStorage.removeItem(props.localStorageKey);
+    setIsLocalStorageApplied(false);
+    form.reset(values, keepStateOptions);
   };
 
   return {
     ...form,
     isFormDirty,
     cleanup,
+    reset,
   };
 }
 

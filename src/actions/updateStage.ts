@@ -21,9 +21,7 @@ export default async function updateStage(form: FormData) {
     seating_capacity: form.get("seating_capacity"),
   });
   if (!parsed.success) {
-    return Promise.reject(
-      parsed.error.errors.map((e) => `${e.path}: ${e.message}`).join("\n"),
-    );
+    return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
   const payload = parsed.data;
@@ -42,7 +40,7 @@ export default async function updateStage(form: FormData) {
     })
     .eq("id", payload.id ?? 0);
 
-  if (stageError) throw stageError;
+  if (stageError) return Promise.reject(stageError.message);
 
   const { error: addressesError } = await supabase
     .from("addresses")
@@ -54,7 +52,7 @@ export default async function updateStage(form: FormData) {
     })
     .eq("id", payload.address_id ?? 0);
 
-  if (addressesError) throw addressesError;
+  if (addressesError) return Promise.reject(addressesError.message);
 
   revalidatePath(`/account/stages/${payload.id}`);
 

@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
+import updateTheater from "@/actions/updateTheater";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,13 +25,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useFormWithLocalStorage } from "@/lib/hooks";
-import type { TheaterForTheaterPage } from "@/lib/supabase/queries";
-import updateTheater from "@/actions/updateTheater";
 import {
   UpdateTheaterSchema,
   updateTheaterSchema,
 } from "@/lib/form-schemas/theaters";
+import { useFormWithLocalStorage } from "@/lib/hooks";
+import type { TheaterForTheaterPage } from "@/lib/supabase/queries";
+import AddressFinderInput from "../AddressFinderInput";
 
 interface TheaterFormProps {
   theater: TheaterForTheaterPage;
@@ -136,6 +136,21 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
               </FormItem>
             )}
           />
+
+          <hr className="col-span-full mt-6" />
+
+          <div className="col-span-full">
+            <h3 className="text-base font-semibold leading-7 text-zinc-200">
+              Address
+            </h3>
+            <p className="text-sm dark:text-zinc-400">
+              Either use the address finder below or enter your address
+              manually.
+            </p>
+          </div>
+          <div className="col-span-full">
+            <AddressFinderInput />
+          </div>
           <FormField
             control={form.control}
             name="street_address"
@@ -197,6 +212,9 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
               </FormItem>
             )}
           />
+
+          <hr className="col-span-full mt-6" />
+
           <FormField
             control={form.control}
             name="notes"
@@ -295,9 +313,7 @@ export const TheaterForm = ({ theater }: TheaterFormProps) => {
                 Cancel
               </Button>
             )}
-            <SubmitButton isFormDirty={form.isFormDirty}>
-              Update Theater
-            </SubmitButton>
+            <SubmitButton>Update Theater</SubmitButton>
           </div>
         </div>
       </form>

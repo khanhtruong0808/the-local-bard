@@ -34,8 +34,8 @@ export const createProductionSchema = z.object({
   poster_url: z.string().trim().url().optional().nullable(),
   url: z.string().trim(),
   notes: z.string().trim(),
-  start_date: z.string().trim(),
-  end_date: z.string().trim(),
+  start_date: z.string().trim().min(1, "Opening Night is required."),
+  end_date: z.string().trim().min(1, "Closing Night is required."),
 });
 
 export const updateProductionSchema = createProductionSchema

@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { genres } from "@/lib/constants";
+import { commonPlaywrigthts, commonProductions, genres } from "@/lib/constants";
 import { updateProductionSchema } from "@/lib/form-schemas/productions";
 import { useFormWithLocalStorage } from "@/lib/hooks";
 import type {
@@ -37,6 +37,7 @@ import type {
 } from "@/lib/supabase/queries";
 import useDialog from "@/utils/dialogStore";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
+import { boolToYN, ynToBool } from "@/lib/utils";
 
 interface ProductionFormProps {
   production: Production;
@@ -180,8 +181,18 @@ export const UpdateProductionForm = ({
               <FormItem className="col-span-full">
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="The Lion King" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="The Lion King"
+                    {...field}
+                    list="title"
+                  />
                 </FormControl>
+                <datalist id="titles">
+                  {commonProductions.map((title) => (
+                    <option key={title} value={title} />
+                  ))}
+                </datalist>
                 <FormMessage />
               </FormItem>
             )}
@@ -242,12 +253,21 @@ export const UpdateProductionForm = ({
                 <FormLabel>Playwrights</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="text"
                     placeholder="Roger Allers, Irene Mecchi"
-                    {...field}
-                    value={field.value ? field.value.join(", ") : ""}
+                    onChange={(e) => {
+                      field.onChange(e.target.value.split(", "));
+                    }}
+                    value={field.value?.join(", ") || ""}
+                    list="playwrights"
                   />
                 </FormControl>
+                <datalist id="playwrights">
+                  {commonPlaywrigthts.map((playwright) => (
+                    <option key={playwright} value={playwright} />
+                  ))}
+                </datalist>
                 <FormDescription>
                   Separate multiple playwrights with commas.
                 </FormDescription>
@@ -263,9 +283,12 @@ export const UpdateProductionForm = ({
                 <FormLabel>Directors</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="text"
                     placeholder="John Doe, Jane Doe"
-                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e.target.value.split(", "));
+                    }}
                     value={field.value?.join(", ") || ""}
                   />
                 </FormControl>
@@ -284,9 +307,12 @@ export const UpdateProductionForm = ({
                 <FormLabel>Composers</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="text"
                     placeholder="Elton John, Julie Taymor"
-                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e.target.value.split(", "));
+                    }}
                     value={field.value?.join(", ") || ""}
                   />
                 </FormControl>
@@ -330,14 +356,10 @@ export const UpdateProductionForm = ({
                 <FormControl>
                   <Select
                     {...field}
-                    onValueChange={field.onChange}
-                    value={
-                      field.value
-                        ? "Yes"
-                        : field.value === false
-                          ? "No"
-                          : undefined
-                    }
+                    onValueChange={(v) => {
+                      field.onChange(ynToBool(v));
+                    }}
+                    value={boolToYN(field.value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -385,9 +407,9 @@ export const UpdateProductionForm = ({
                 <FormLabel>Duration (minutes)</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="number"
                     placeholder="120"
-                    {...field}
                     value={field.value ?? undefined}
                   />
                 </FormControl>
@@ -526,13 +548,7 @@ export const UpdateProductionForm = ({
                 Cancel
               </Button>
             )}
-            <SubmitButton
-              isFormDirty={
-                form.isFormDirty || posterUrl !== production.poster_url
-              }
-            >
-              Update
-            </SubmitButton>
+            <SubmitButton>Update</SubmitButton>
           </div>
           <Button
             type="button"

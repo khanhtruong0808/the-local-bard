@@ -23,9 +23,7 @@ export default async function updateTheater(form: FormData) {
   });
 
   if (!parsed.success) {
-    return Promise.reject(
-      parsed.error.errors.map((e) => `${e.path}: ${e.message}`).join("\n"),
-    );
+    return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
   const payload = parsed.data;

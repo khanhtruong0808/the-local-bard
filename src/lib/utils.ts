@@ -23,11 +23,11 @@ export function deepEqual(obj1: any, obj2: any) {
   ) {
     return false;
   }
+
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
+  if (keys1.length !== keys2.length) return false;
+
   for (const key of keys1) {
     if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
       return false;
@@ -38,4 +38,12 @@ export function deepEqual(obj1: any, obj2: any) {
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function ynToBool(yn: string | undefined | null) {
+  return yn === "Yes" ? true : yn === "No" ? false : undefined;
+}
+
+export function boolToYN(bool: boolean | undefined | null) {
+  return bool === true ? "Yes" : bool === false ? "No" : undefined;
 }
