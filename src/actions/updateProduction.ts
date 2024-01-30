@@ -59,11 +59,11 @@ export default async function updateProduction(form: FormData) {
     // keep old poster_url if no file is given
   }
 
-  const { id, poster, ...updatedProduction } = payload;
+  const { id, poster, stage_id, ...updatedProduction } = payload;
 
   const { error } = await supabase
     .from("productions")
-    .update(updatedProduction)
+    .update({ ...updatedProduction, stage_id: Number(stage_id) })
     .eq("id", id);
 
   if (error) {

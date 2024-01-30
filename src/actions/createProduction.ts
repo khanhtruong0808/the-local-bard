@@ -54,8 +54,11 @@ export default async function createProduction(form: FormData) {
   }
 
   // omit the actual file from the data we send to the database
-  const { poster, ...newProduction } = parsed.data;
-  const { error } = await supabase.from("productions").insert(newProduction);
+  const { poster, stage_id, ...newProduction } = parsed.data;
+  const { error } = await supabase.from("productions").insert({
+    ...newProduction,
+    stage_id: Number(stage_id),
+  });
 
   if (error) {
     throw error.message;
