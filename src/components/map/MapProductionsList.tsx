@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getFullProductions } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { RouteSearchParams } from "@/lib/types";

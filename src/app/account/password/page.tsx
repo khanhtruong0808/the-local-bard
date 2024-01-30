@@ -1,4 +1,4 @@
-import { UpdatePasswordForm } from "@/components/UpdatePasswordForm";
+import { UpdatePasswordForm } from "@/components/forms/UpdatePasswordForm";
 
 export default async function PasswordPage() {
   return (

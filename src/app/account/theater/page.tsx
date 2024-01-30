@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { TheaterForm } from "@/components/TheaterForm";
+import { TheaterForm } from "@/components/forms/TheaterForm";
 import { getTheaterForTheaterPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,7 +18,6 @@ export default async function GeneralPage() {
     user.id,
   );
   if (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 

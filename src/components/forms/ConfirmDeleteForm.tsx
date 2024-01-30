@@ -1,6 +1,6 @@
+import SubmitButton from "@/components/ui/SubmitButton";
+import { Button } from "@/components/ui/button";
 import useDialog from "@/utils/dialogStore";
-import Button from "./ui/Button";
-import SubmitButton from "./ui/SubmitButton";
 
 interface ConfirmDeleteFormProps {
   handleDelete: () => Promise<void>;
@@ -16,7 +16,7 @@ export const ConfirmDeleteForm = ({ handleDelete }: ConfirmDeleteFormProps) => {
         <Button variant="secondary" type="button" onClick={closeDialog}>
           Cancel
         </Button>
-        <SubmitButton variant="alert" className="ml-3">
+        <SubmitButton variant="destructive" className="ml-3">
           Delete
         </SubmitButton>
       </div>

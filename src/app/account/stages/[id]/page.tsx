@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { UpdateStageForm } from "@/components/UpdateStageForm";
+import { UpdateStageForm } from "@/components/forms/UpdateStageForm";
 import { StageWithAddress, getStageWithAddress } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 

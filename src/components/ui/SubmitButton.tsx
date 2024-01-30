@@ -7,10 +7,10 @@
 
 import { useFormStatus } from "react-dom";
 
-import Button, { type ButtonProps } from "./Button";
+import { Button, type ButtonProps } from "./button";
 
 export default function SubmitButton(props: ButtonProps) {
   const { pending } = useFormStatus();
 
-  return <Button disabled={pending} {...props} />;
+  return <Button disabled={pending || props.disabled} {...props} />;
 }

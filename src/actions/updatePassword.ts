@@ -24,7 +24,7 @@ export default async function updatePassword(form: FormData) {
   });
 
   if (!parsed.success) {
-    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+    return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
   const cookieStore = cookies();

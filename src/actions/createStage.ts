@@ -19,7 +19,7 @@ export default async function createStage(form: FormData) {
     seating_capacity: form.get("seating_capacity"),
   });
   if (!parsed.success) {
-    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+    return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
   const cookieStore = cookies();
@@ -38,7 +38,7 @@ export default async function createStage(form: FormData) {
     .limit(1)
     .single();
 
-  if (!theater) throw new Error("No theater found");
+  if (!theater) return Promise.reject("No theater found");
 
   const { data: address } = await supabase
     .from("addresses")
@@ -54,7 +54,7 @@ export default async function createStage(form: FormData) {
 
   if (!address) {
     console.error("No address found");
-    throw new Error("No address found");
+    return Promise.reject("No address found");
   }
 
   const { error: stageError } = await supabase.from("stages").insert({
@@ -84,5 +84,5 @@ export default async function createStage(form: FormData) {
     throw new Error(profileError.message);
   }
 
-  redirect("/account/stages");
+  return { status: "success" };
 }

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { getTheaterForStagesPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,7 +40,7 @@ export default async function StagesPage() {
               <li className="flex justify-between gap-x-6 py-6" key={stage.id}>
                 <div className="font-medium text-zinc-300">{stage.name}</div>
                 <Link href={`stages/${stage.id}`}>
-                  <Button type="button" variant="secondary" size="small">
+                  <Button type="button" variant="secondary" size="sm">
                     Update
                   </Button>
                 </Link>

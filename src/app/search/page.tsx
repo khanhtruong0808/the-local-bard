@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import Map from "@/components/map";
@@ -7,8 +8,8 @@ import {
   MapProductionsList,
   MapProductionsListSkeleton,
 } from "@/components/map/MapProductionsList";
+import { Button } from "@/components/ui/button";
 import { RouteSearchParams } from "@/lib/types";
-import Button from "@/components/ui/Button";
 
 export default async function SearchPage({
   searchParams,
@@ -54,8 +55,10 @@ export default async function SearchPage({
             <MapFilters />
             <hr className="my-4 border-slate-500" />
             <div className="mt-8">
-              <Button href={`/search?${clearSearchParams.toString()}`}>
-                Clear Filters
+              <Button asChild>
+                <Link href={`/search?${clearSearchParams.toString()}`}>
+                  Clear Filters
+                </Link>
               </Button>
             </div>
           </div>

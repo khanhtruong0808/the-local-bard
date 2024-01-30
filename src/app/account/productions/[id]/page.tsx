@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { UpdateProductionForm } from "@/components/UpdateProductionForm";
+import { UpdateProductionForm } from "@/components/forms/UpdateProductionForm";
 import {
   getProduction,
   getTheaterForUpdateProduction,

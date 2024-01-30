@@ -9,24 +9,26 @@ import { createClient } from "@/lib/supabase/server";
 export default async function createProduction(form: FormData) {
   const parsed = createProductionSchema.safeParse({
     theater_id: form.get("theater_id"),
-    name: form.get("title"),
+    name: form.get("name"),
     summary: form.get("summary"),
-    stage_id: form.get("stage"),
-    writers: form.get("playwrights"),
+    stage_id: form.get("stage_id"),
+    writers: form.get("writers"),
     directors: form.get("directors"),
     composers: form.get("composers"),
-    type: form.get("genre"),
-    kid_friendly: form.get("kidFriendly"),
-    cost_range: form.get("costRange"),
-    duration_minutes: form.get("duration"),
+    type: form.get("type"),
+    kid_friendly: form.get("kid_friendly"),
+    cost_range: form.get("cost_range"),
+    duration_minutes: form.get("duration_minutes"),
     poster: form.get("poster"),
     url: form.get("url"),
     notes: form.get("notes"),
-    start_date: form.get("openingNight"),
-    end_date: form.get("closingNight"),
+    start_date: form.get("start_date"),
+    end_date: form.get("end_date"),
   });
   if (!parsed.success) {
-    throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
+    return Promise.reject(
+      new Error(parsed.error.errors.map((e) => e.message).join("\n")),
+    );
   }
 
   const cookieStore = cookies();
@@ -52,12 +54,15 @@ export default async function createProduction(form: FormData) {
   }
 
   // omit the actual file from the data we send to the database
-  const { poster, ...newProduction } = parsed.data;
-  const { error } = await supabase.from("productions").insert(newProduction);
+  const { poster, stage_id, ...newProduction } = parsed.data;
+  const { error } = await supabase.from("productions").insert({
+    ...newProduction,
+    stage_id: Number(stage_id),
+  });
 
   if (error) {
     throw error.message;
   }
 
-  redirect("/account/productions");
+  return { status: "success" };
 }
