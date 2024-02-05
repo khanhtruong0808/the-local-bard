@@ -85,12 +85,14 @@ export const UpdateProductionForm = ({
   const [imageKey, setImageKey] = useState(0);
   const { openDialog, closeDialog } = useDialog();
 
+  // Update the poster image when a new file is selected
   const handlePosterChange = (file: File | undefined) => {
     const url = file ? URL.createObjectURL(file) : "";
     if (!file) setImageKey((key) => key + 1);
     setPosterUrl(url);
   };
 
+  // Revert the poster to the original poster
   const handleRevertPoster = () => {
     setPosterUrl(production.poster_url);
     setImageKey((key) => key + 1);
@@ -137,6 +139,7 @@ export const UpdateProductionForm = ({
     closeDialog();
   };
 
+  // Open a confirmation dialog before deleting the production
   const handleConfirmDelete = () => {
     openDialog({
       title: "Delete production",
@@ -147,6 +150,23 @@ export const UpdateProductionForm = ({
   const handleReset = () => {
     handleRevertPoster();
     form.reset(defaultValues);
+  };
+
+  // Show warning if the poster image is not close to 3:4 aspect ratio
+  const handleImageLoad = (e: any) => {
+    const img = e.target;
+    const aspectRatio = img.width / img.height;
+    console.log(aspectRatio);
+    if (aspectRatio < 0.6 || aspectRatio > 0.9) {
+      form.setError("poster", {
+        type: "manual",
+        message:
+          "WARNING: Poster image should be close to 3:4 aspect ratio for best results. (e.g. 300x400px)",
+      });
+    } else {
+      // clear errors if user has fixed the aspect ratio
+      form.clearErrors("poster");
+    }
   };
 
   return (
@@ -461,6 +481,7 @@ export const UpdateProductionForm = ({
                   {posterUrl && (
                     <Image
                       src={posterUrl}
+                      onLoad={handleImageLoad}
                       alt={production.name || "Production poster"}
                       width={100}
                       height={100}

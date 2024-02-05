@@ -73,7 +73,7 @@ export function useFormWithLocalStorage<
     console.log("clearing ", props.localStorageKey, "from local storage");
     window.localStorage.removeItem(props.localStorageKey);
     setIsLocalStorageApplied(false);
-    form.reset(form.getValues(), { keepValues: true });
+    form.reset(form.getValues(), { keepValues: true, keepErrors: true });
   };
 
   /**
