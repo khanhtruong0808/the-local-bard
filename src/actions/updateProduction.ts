@@ -63,7 +63,10 @@ export default async function updateProduction(form: FormData) {
 
   const { error } = await supabase
     .from("productions")
-    .update({ ...updatedProduction, stage_id: Number(stage_id) })
+    .update({
+      ...updatedProduction,
+      stage_id: Number(stage_id),
+    })
     .eq("id", id);
 
   if (error) {

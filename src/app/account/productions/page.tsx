@@ -20,6 +20,13 @@ export default async function ProductionsPage() {
 
   if (!theater) throw new Error("No theater associated with user");
 
+  // sort productions to list most recently updated first
+  const productions = theater.productions.sort((a, b) => {
+    const dateA = new Date(a.updated_at || 0);
+    const dateB = new Date(b.updated_at || 0);
+    return dateB.getTime() - dateA.getTime();
+  });
+
   return (
     <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
       <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
@@ -36,7 +43,7 @@ export default async function ProductionsPage() {
             role="list"
             className="mt-4 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6"
           >
-            {theater.productions.map((production) => (
+            {productions.map((production) => (
               <li
                 className="flex justify-between gap-x-6 py-6"
                 key={production.id}
