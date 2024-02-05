@@ -32,7 +32,6 @@ export const getTheaterForProductionsPage = async (
     .from("theaters")
     .select("*, theater_managers(user_id, theater_id), productions(*)")
     .eq("theater_managers.user_id", userId)
-    .order("updated_at")
     .limit(1)
     .single();
 };

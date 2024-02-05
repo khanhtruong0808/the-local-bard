@@ -71,6 +71,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
   const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
 
+  // Update the posterUrl when the user selects a new poster
   const handlePosterChange = (file: File | undefined) => {
     const url = file ? URL.createObjectURL(file) : "";
     if (!file) setImageKey(imageKey + 1);
@@ -98,6 +99,23 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
           router.push(`/account/productions`);
         }
       });
+  };
+
+  // Show warning if the poster image is not close to 3:4 aspect ratio
+  const handleImageLoad = (e: any) => {
+    const img = e.target;
+    const aspectRatio = img.width / img.height;
+    console.log(aspectRatio);
+    if (aspectRatio < 0.6 || aspectRatio > 0.9) {
+      form.setError("poster", {
+        type: "manual",
+        message:
+          "WARNING: Poster image should be close to 3:4 aspect ratio for best results. (e.g. 300x400px)",
+      });
+    } else {
+      // clear errors if user has fixed the aspect ratio
+      form.clearErrors("poster");
+    }
   };
 
   return (
@@ -405,6 +423,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                   {posterUrl && (
                     <Image
                       src={posterUrl}
+                      onLoad={handleImageLoad}
                       alt={"Production poster"}
                       width={100}
                       height={100}

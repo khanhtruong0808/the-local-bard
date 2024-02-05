@@ -18,7 +18,12 @@ export default async function StagesPage() {
 
   if (!theater) throw new Error("No theater associated with user");
 
-  const { stages } = theater;
+  // sort stages to list most recently updated first
+  const stages = theater.stages.sort((a, b) => {
+    const dateA = new Date(a.updated_at || 0);
+    const dateB = new Date(b.updated_at || 0);
+    return dateB.getTime() - dateA.getTime();
+  });
 
   return (
     <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
