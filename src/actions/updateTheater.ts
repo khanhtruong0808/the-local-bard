@@ -3,27 +3,22 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-import { updateTheaterSchema } from "@/lib/form-schemas/theaters";
+import {
+  updateTheaterSchema,
+  type UpdateTheaterSchema,
+} from "@/lib/form-schemas/theaters";
 import { createClient } from "@/lib/supabase/server";
+import { type FormServerState } from "@/lib/types";
 
-export default async function updateTheater(form: FormData) {
-  const parsed = updateTheaterSchema.safeParse({
-    id: form.get("id"),
-    address_id: form.get("address_id"),
-    name: form.get("name"),
-    street_address: form.get("street_address"),
-    city: form.get("city"),
-    state: form.get("state"),
-    postal_code: form.get("postal_code"),
-    notes: form.get("notes"),
-    parking_instructions: form.get("parking_instructions"),
-    url: form.get("url"),
-    type: form.get("type"),
-    concessions: form.get("concessions"),
-  });
+export default async function updateTheater(
+  currentState: FormServerState,
+  form: UpdateTheaterSchema,
+): Promise<FormServerState> {
+  const parsed = updateTheaterSchema.safeParse(form);
 
   if (!parsed.success) {
-    return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
+    const error = parsed.error.errors.map((e) => e.message).join("\n");
+    return { status: "error", error };
   }
 
   const payload = parsed.data;
@@ -43,7 +38,10 @@ export default async function updateTheater(form: FormData) {
     })
     .eq("id", payload.id || "");
 
-  if (theatersError) throw theatersError;
+  if (theatersError) {
+    console.error(theatersError);
+    return { status: "error", error: theatersError.message };
+  }
 
   const { error: addressesError } = await supabase
     .from("addresses")
@@ -55,7 +53,10 @@ export default async function updateTheater(form: FormData) {
     })
     .eq("id", payload.address_id || "");
 
-  if (addressesError) throw addressesError;
+  if (addressesError) {
+    console.error(addressesError);
+    return { status: "error", error: addressesError.message };
+  }
 
   revalidatePath("/account/theater");
 

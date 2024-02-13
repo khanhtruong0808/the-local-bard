@@ -1,23 +1,21 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
-import { createStageSchema } from "@/lib/form-schemas/stages";
+import {
+  CreateStageSchema,
+  createStageSchema,
+} from "@/lib/form-schemas/stages";
 import { createClient } from "@/lib/supabase/server";
+import { type FormServerState } from "@/lib/types";
+import { ynToBool } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
-export default async function createStage(form: FormData) {
-  const parsed = createStageSchema.safeParse({
-    name: form.get("name"),
-    type: form.get("type"),
-    notes: form.get("notes"),
-    street_address: form.get("street_address"),
-    city: form.get("city"),
-    state: form.get("state"),
-    postal_code: form.get("postal_code"),
-    wheelchair_accessible: form.get("wheelchair_accessible"),
-    seating_capacity: form.get("seating_capacity"),
-  });
+export default async function createStage(
+  currentState: FormServerState,
+  form: CreateStageSchema,
+): Promise<FormServerState> {
+  const parsed = createStageSchema.safeParse(form);
   if (!parsed.success) {
     return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
@@ -32,8 +30,8 @@ export default async function createStage(form: FormData) {
 
   const { data: theater } = await supabase
     .from("theaters")
-    .select("id, theater_managers(user_id)")
-    .eq("theater_managers.user_id", user.id)
+    .select("id")
+    .eq("manager_id", user.id)
     .order("id")
     .limit(1)
     .single();
@@ -62,8 +60,8 @@ export default async function createStage(form: FormData) {
     name: parsed.data.name,
     type: parsed.data.type,
     notes: parsed.data.notes,
-    wheelchair_accessible: parsed.data.wheelchair_accessible,
-    seating_capacity: parsed.data.seating_capacity,
+    wheelchair_accessible: ynToBool(parsed.data.wheelchair_accessible),
+    seating_capacity: parsed.data.seating_capacity || undefined,
     address_id: address.id,
   });
 
@@ -74,7 +72,7 @@ export default async function createStage(form: FormData) {
 
   // update profile with user information so that they can edit the address
   const { error: profileError } = await supabase.from("profiles").insert({
-    id: user.id,
+    user_id: user.id,
     email: user.email,
     address_id: address.id,
   });
@@ -83,6 +81,8 @@ export default async function createStage(form: FormData) {
     console.error(profileError);
     throw new Error(profileError.message);
   }
+
+  revalidatePath("/account/stages");
 
   return { status: "success" };
 }

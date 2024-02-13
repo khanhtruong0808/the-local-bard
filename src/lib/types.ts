@@ -1,8 +1,16 @@
 // For use with useFormState actions
-export interface FormState {
-  message?: string;
-  error?: string;
-}
+export type FormServerState =
+  | {
+      status: "success";
+      data?: any;
+    }
+  | {
+      status: "error";
+      error: string;
+    }
+  | {
+      status: "idle";
+    };
 
 // Search params automatically passed to page.tsx by Next.js
 export interface RouteSearchParams {

@@ -60,9 +60,10 @@ export default function AddressFinderInput() {
         : null;
 
       if (streetAddress) setValue("street_address", streetAddress);
-      if (city) setValue("city", city);
-      if (state) setValue("state", state);
-      if (postalCode) setValue("postal_code", parseInt(postalCode));
+      if (city) setValue("city", city, { shouldDirty: true });
+      if (state) setValue("state", state, { shouldDirty: true });
+      if (postalCode)
+        setValue("postal_code", postalCode, { shouldDirty: true });
     }
   };
 

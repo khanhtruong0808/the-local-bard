@@ -3,33 +3,21 @@ import Image from "next/image";
 
 import "@/app/globals.css";
 import { Auth } from "@/components/Auth";
+import { Footer } from "@/components/Footer";
+import { GlobalDialog } from "@/components/GlobalDialog";
 import { Navbar } from "@/components/Navbar";
 import Toaster from "@/components/toaster";
-import { GlobalDialog } from "@/components/GlobalDialog";
-import { Footer } from "@/components/Footer";
-import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "The Local Bard",
   description: "Local theaters near you",
 };
 
-// TODO: figure why this is necessary to avoid following error:
-// Dynamic server usage: Page couldn't be rendered statically because it used `cookies`.
-// See more info here: https://nextjs.org/docs/messages/dynamic-server-error
-export const dynamic = "force-dynamic";
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-
-  const { data } = await supabase.auth.getUser();
-  const { user } = data;
   return (
     // Only dark mode enabled for now.
     <html lang="en" className="dark h-full">

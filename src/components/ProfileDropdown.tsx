@@ -2,7 +2,7 @@
 
 import { Menu, Transition } from "@headlessui/react";
 import {
-  ArrowRightOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { Fragment } from "react";
 
 import signOut from "@/actions/signOut";
 
-export const ProfileDropdown = () => {
+export const ProfileDropdown = ({ name }: { name: string | undefined }) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="ml-2 inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
@@ -33,6 +33,15 @@ export const ProfileDropdown = () => {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div>
+            <Menu.Item>
+              <div className="group flex items-center px-4 py-2 text-sm">
+                <h3 className="font-semibold text-gray-700">
+                  Welcome{name ? `, ${name}` : ""}!
+                </h3>
+              </div>
+            </Menu.Item>
+          </div>
           <div className="py-1">
             <Menu.Item>
               <Link
@@ -54,7 +63,7 @@ export const ProfileDropdown = () => {
                 type="submit"
                 className="group flex w-full items-center px-4 py-2 text-sm ui-active:bg-gray-100 ui-active:text-gray-900 ui-not-active:text-gray-700"
               >
-                <ArrowRightOnRectangleIcon
+                <ArrowRightStartOnRectangleIcon
                   className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                   aria-hidden="true"
                 />

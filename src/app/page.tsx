@@ -60,9 +60,9 @@ export default async function Home() {
                 return (
                   <Poster
                     key={production.id}
-                    name={production.name as string}
+                    name={production.name}
                     src={production.poster_url as string}
-                    date={new Date(production.start_date as string)}
+                    date={new Date(production.start_date)}
                     address={
                       production?.stages?.addresses as Tables<"addresses">
                     }

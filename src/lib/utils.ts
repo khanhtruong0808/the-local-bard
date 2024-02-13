@@ -40,10 +40,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function ynToBool(yn: string | undefined | null) {
+export function ynToBool(yn: "Yes" | "No" | "") {
   return yn === "Yes" ? true : yn === "No" ? false : undefined;
 }
 
 export function boolToYN(bool: boolean | undefined | null) {
-  return bool === true ? "Yes" : bool === false ? "No" : undefined;
+  return bool === true ? "Yes" : bool === false ? "No" : "";
 }
+
+export type SchemaToFormType<T> = {
+  [P in keyof T]: T[P] extends number
+    ? T[P] | ""
+    : T[P] extends boolean
+      ? T[P] | ""
+      : T[P];
+};

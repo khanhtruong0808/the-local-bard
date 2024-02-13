@@ -7,7 +7,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -37,41 +37,41 @@ export interface Database {
     Tables: {
       addresses: {
         Row: {
-          city: string | null
+          city: string
           country: string | null
           created_at: string | null
           id: number
           latitude: number | null
           longitude: number | null
-          postal_code: number | null
+          postal_code: string | null
           state: string | null
-          street_address: string | null
+          street_address: string
           street_address_line_2: string | null
           updated_at: string | null
         }
         Insert: {
-          city?: string | null
+          city: string
           country?: string | null
           created_at?: string | null
           id?: number
           latitude?: number | null
           longitude?: number | null
-          postal_code?: number | null
+          postal_code?: string | null
           state?: string | null
-          street_address?: string | null
+          street_address: string
           street_address_line_2?: string | null
           updated_at?: string | null
         }
         Update: {
-          city?: string | null
+          city?: string
           country?: string | null
           created_at?: string | null
           id?: number
           latitude?: number | null
           longitude?: number | null
-          postal_code?: number | null
+          postal_code?: string | null
           state?: string | null
-          street_address?: string | null
+          street_address?: string
           street_address_line_2?: string | null
           updated_at?: string | null
         }
@@ -79,67 +79,67 @@ export interface Database {
       }
       productions: {
         Row: {
-          composers: string[] | null
-          cost_range: string | null
-          created_at: string | null
-          directors: string[] | null
-          duration_minutes: number | null
-          end_date: string | null
+          composers: string[]
+          cost_range: string
+          created_at: string
+          directors: string[]
+          duration_minutes: number
+          end_date: string
+          genres: string[]
           id: number
-          kid_friendly: boolean | null
-          name: string | null
+          kid_friendly: boolean
+          name: string
           notes: string | null
+          playwrights: string[]
           poster_url: string | null
-          stage_id: number | null
-          start_date: string | null
+          stage_id: number
+          start_date: string
           summary: string | null
-          theater_id: number | null
-          type: string | null
-          updated_at: string | null
+          theater_id: number
+          updated_at: string
           url: string | null
-          writers: string[] | null
         }
         Insert: {
-          composers?: string[] | null
-          cost_range?: string | null
-          created_at?: string | null
-          directors?: string[] | null
-          duration_minutes?: number | null
-          end_date?: string | null
+          composers?: string[]
+          cost_range: string
+          created_at?: string
+          directors?: string[]
+          duration_minutes: number
+          end_date: string
+          genres?: string[]
           id?: number
-          kid_friendly?: boolean | null
-          name?: string | null
+          kid_friendly?: boolean
+          name: string
           notes?: string | null
+          playwrights?: string[]
           poster_url?: string | null
-          stage_id?: number | null
-          start_date?: string | null
+          stage_id: number
+          start_date: string
           summary?: string | null
-          theater_id?: number | null
-          type?: string | null
-          updated_at?: string | null
+          theater_id: number
+          updated_at?: string
           url?: string | null
-          writers?: string[] | null
         }
         Update: {
-          composers?: string[] | null
-          cost_range?: string | null
-          created_at?: string | null
-          directors?: string[] | null
-          duration_minutes?: number | null
-          end_date?: string | null
+          composers?: string[]
+          cost_range?: string
+          created_at?: string
+          directors?: string[]
+          duration_minutes?: number
+          end_date?: string
+          genres?: string[]
           id?: number
-          kid_friendly?: boolean | null
-          name?: string | null
+          kid_friendly?: boolean
+          name?: string
           notes?: string | null
+          playwrights?: string[]
           poster_url?: string | null
-          stage_id?: number | null
-          start_date?: string | null
+          stage_id?: number
+          start_date?: string
           summary?: string | null
-          theater_id?: number | null
-          type?: string | null
-          updated_at?: string | null
+          theater_id?: number
+          updated_at?: string
           url?: string | null
-          writers?: string[] | null
         }
         Relationships: [
           {
@@ -167,15 +167,17 @@ export interface Database {
           id: string
           last_name: string | null
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           address_id?: number | null
           created_at?: string | null
           email?: string | null
           first_name?: string | null
-          id: string
+          id?: string
           last_name?: string | null
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           address_id?: number | null
@@ -185,6 +187,7 @@ export interface Database {
           id?: string
           last_name?: string | null
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -195,8 +198,8 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
+            foreignKeyName: "profiles_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -257,89 +260,47 @@ export interface Database {
           }
         ]
       }
-      theater_managers: {
-        Row: {
-          created_at: string | null
-          id: number
-          theater_id: number | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          theater_id?: number | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          theater_id?: number | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "theater_managers_theater_id_fkey"
-            columns: ["theater_id"]
-            isOneToOne: false
-            referencedRelation: "theaters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "theater_managers_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       theaters: {
         Row: {
-          address_id: number | null
+          address_id: number
           concessions: string | null
-          created_at: string | null
-          email: string | null
+          created_at: string
           id: number
-          name: string | null
+          manager_id: string
+          name: string
           notes: string | null
           parking_instructions: string | null
-          phone: string | null
           referred: string | null
           type: string | null
-          updated_at: string | null
+          updated_at: string
           url: string | null
         }
         Insert: {
-          address_id?: number | null
+          address_id: number
           concessions?: string | null
-          created_at?: string | null
-          email?: string | null
+          created_at?: string
           id?: number
-          name?: string | null
+          manager_id: string
+          name: string
           notes?: string | null
           parking_instructions?: string | null
-          phone?: string | null
           referred?: string | null
           type?: string | null
-          updated_at?: string | null
+          updated_at?: string
           url?: string | null
         }
         Update: {
-          address_id?: number | null
+          address_id?: number
           concessions?: string | null
-          created_at?: string | null
-          email?: string | null
+          created_at?: string
           id?: number
-          name?: string | null
+          manager_id?: string
+          name?: string
           notes?: string | null
           parking_instructions?: string | null
-          phone?: string | null
           referred?: string | null
           type?: string | null
-          updated_at?: string | null
+          updated_at?: string
           url?: string | null
         }
         Relationships: [
@@ -348,6 +309,13 @@ export interface Database {
             columns: ["address_id"]
             isOneToOne: false
             referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theaters_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]

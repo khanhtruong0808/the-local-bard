@@ -2,14 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useFormState } from "react-dom";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
 import deleteProduction from "@/actions/deleteProduction";
 import updateProduction from "@/actions/updateProduction";
+import FormToaster from "@/components/FormToaster";
+import { ConfirmDeleteForm } from "@/components/forms/ConfirmDeleteForm";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -29,50 +33,71 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { commonPlaywrigthts, commonProductions, genres } from "@/lib/constants";
-import { updateProductionSchema } from "@/lib/form-schemas/productions";
-import { useFormWithLocalStorage } from "@/lib/hooks";
+import {
+  updateProductionSchema,
+  type UpdateProductionSchema,
+} from "@/lib/form-schemas/productions";
+import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
+import { FormServerState } from "@/lib/types";
+import { boolToYN } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
-import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import { boolToYN, ynToBool } from "@/lib/utils";
 
 interface ProductionFormProps {
   production: Production;
   theater: TheaterForUpdateProduction;
 }
 
-export const UpdateProductionForm = ({
+export const UpdateProductionForm = (props: ProductionFormProps) => {
+  // This is a janky way to set formState back to idle after a success/error.
+  const [formKey, setFormKey] = useState(0);
+  const resetFormState = () => {
+    setFormKey((k) => k + 1);
+  };
+  return (
+    <UpdateProductionFormInternal
+      {...props}
+      key={formKey}
+      resetFormState={resetFormState}
+    />
+  );
+};
+
+export const UpdateProductionFormInternal = ({
   production,
   theater,
-}: ProductionFormProps) => {
+  resetFormState,
+}: ProductionFormProps & { resetFormState: () => void }) => {
   const LOCAL_STORAGE_KEY = `update-production-form-${production.id}`;
 
-  const defaultValues = useMemo(
-    () => ({
-      id: production.id,
-      name: production.name || "",
-      summary: production.summary || "",
-      stage_id: String(production.stage_id) || undefined,
-      writers: production.writers || undefined,
-      directors: production.directors || undefined,
-      composers: production.composers || undefined,
-      type: production.type || "",
-      kid_friendly: production.kid_friendly,
-      cost_range: production.cost_range || undefined,
-      duration_minutes: production.duration_minutes || undefined,
-      poster: undefined, // TODO: Figure out how to get local storage to work with file input?
-      url: production.url || "",
-      notes: production.notes || "",
-      start_date: production.start_date || undefined,
-      end_date: production.end_date || undefined,
-    }),
-    [production],
-  );
+  const [state, formAction] = useFormState<
+    FormServerState,
+    UpdateProductionSchema
+  >(updateProduction, { status: "idle" });
 
-  const form = useFormWithLocalStorage<z.infer<typeof updateProductionSchema>>({
+  const defaultValues: UpdateProductionSchema = {
+    id: production.id,
+    name: production.name || "",
+    summary: production.summary || "",
+    stage_id: production.stage_id,
+    playwrights: production.playwrights || [],
+    directors: production.directors || [],
+    composers: production.composers || [],
+    genres: production.genres || [],
+    kid_friendly: boolToYN(production.kid_friendly),
+    cost_range: production.cost_range || "",
+    duration_minutes: production.duration_minutes || 0,
+    poster: undefined,
+    url: production.url || "",
+    notes: production.notes || "",
+    start_date: production.start_date,
+    end_date: production.end_date,
+  };
+
+  const form = useFormCustom<z.infer<typeof updateProductionSchema>>({
     resolver: zodResolver(updateProductionSchema),
     defaultValues: defaultValues,
     localStorageKey: LOCAL_STORAGE_KEY,
@@ -84,40 +109,34 @@ export const UpdateProductionForm = ({
   );
   const [imageKey, setImageKey] = useState(0);
   const { openDialog, closeDialog } = useDialog();
+  const { key, updateKey } = useSelectKey();
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+    if (state.status === "success") {
+      timeoutId = setTimeout(() => {
+        resetFormState();
+      }, 2000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [state, resetFormState]);
 
   // Update the poster image when a new file is selected
   const handlePosterChange = (file: File | undefined) => {
-    const url = file ? URL.createObjectURL(file) : "";
-    if (!file) setImageKey((key) => key + 1);
-    setPosterUrl(url);
+    if (file) {
+      setPosterUrl(URL.createObjectURL(file));
+    } else {
+      setPosterUrl(production.poster_url);
+      setImageKey((key) => key + 1);
+    }
   };
 
   // Revert the poster to the original poster
   const handleRevertPoster = () => {
     setPosterUrl(production.poster_url);
     setImageKey((key) => key + 1);
-  };
-
-  const handleSubmit = async (formData: FormData) => {
-    toast
-      .promise(
-        updateProduction(formData),
-        {
-          loading: "Updating Production...",
-          success: "Production Updated!",
-          error: (error: Error) => error.message,
-        },
-        {
-          style: {
-            minWidth: "250px",
-          },
-        },
-      )
-      .then(({ status }) => {
-        if (status === "success") {
-          form.cleanup();
-        }
-      });
   };
 
   const handleDelete = async () => {
@@ -156,7 +175,6 @@ export const UpdateProductionForm = ({
   const handleImageLoad = (e: any) => {
     const img = e.target;
     const aspectRatio = img.width / img.height;
-    console.log(aspectRatio);
     if (aspectRatio < 0.6 || aspectRatio > 0.9) {
       form.setError("poster", {
         type: "manual",
@@ -173,9 +191,16 @@ export const UpdateProductionForm = ({
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={handleSubmit}
+        action={() => form.handleAction(formAction)}
         onReset={handleReset}
       >
+        <FormToaster
+          state={state}
+          msgs={{
+            loading: "Updating production...",
+            success: "Production updated!",
+          }}
+        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             {production.name}
@@ -183,7 +208,7 @@ export const UpdateProductionForm = ({
           <p className="mt-1 text-sm leading-6 text-gray-500">
             Make changes to your production here.
           </p>
-          {form.isFormDirty && (
+          {form.isDirty && (
             <p className="text-sm font-medium text-red-500 dark:text-red-600">
               You have unsaved changes. Make sure to press{" "}
               <strong>Update</strong> to save them before leaving.
@@ -240,12 +265,14 @@ export const UpdateProductionForm = ({
             control={form.control}
             name="stage_id"
             render={({ field }) => (
-              <FormItem className="col-span-full">
+              <FormItem className="col-span-full" key={key}>
                 <FormLabel>Stage</FormLabel>
                 <Select
-                  {...field}
-                  onValueChange={field.onChange}
-                  value={field.value?.toString()}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    updateKey();
+                  }}
+                  defaultValue={field.value === 0 ? "" : field.value.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -266,7 +293,57 @@ export const UpdateProductionForm = ({
           />
           <FormField
             control={form.control}
-            name="writers"
+            name="genres"
+            render={() => (
+              <FormItem className="col-span-full">
+                <div className="mb-4">
+                  <FormLabel className="text-base">Genres</FormLabel>
+                  <FormDescription>
+                    Select all genres that apply to your production.
+                  </FormDescription>
+                </div>
+                <div className="grid grid-cols-3 gap-x-2 gap-y-2">
+                  {genres.map((genre) => (
+                    <FormField
+                      key={genre}
+                      control={form.control}
+                      name="genres"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={genre}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(genre)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, genre])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== genre,
+                                        ),
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {genre}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="playwrights"
             render={({ field }) => (
               <FormItem className="sm:col-span-3 sm:col-start-1">
                 <FormLabel>Playwrights</FormLabel>
@@ -344,41 +421,17 @@ export const UpdateProductionForm = ({
           />
           <FormField
             control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3 sm:col-start-1">
-                <FormLabel>Genre</FormLabel>
-                <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a genre" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {genres.map((genre) => (
-                        <SelectItem key={genre} value={genre}>
-                          {genre}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="kid_friendly"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Kid Friendly</FormLabel>
                 <FormControl>
                   <Select
-                    {...field}
                     onValueChange={(v) => {
-                      field.onChange(ynToBool(v));
+                      field.onChange(v);
+                      updateKey();
                     }}
-                    value={boolToYN(field.value)}
+                    defaultValue={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -397,10 +450,16 @@ export const UpdateProductionForm = ({
             control={form.control}
             name="cost_range"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Cost Range</FormLabel>
                 <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    onValueChange={(v) => {
+                      field.onChange(v);
+                      updateKey();
+                    }}
+                    defaultValue={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a cost range" />
                     </SelectTrigger>
@@ -451,12 +510,15 @@ export const UpdateProductionForm = ({
                 <FormControl>
                   <Input
                     {...field}
-                    value={field.value?.name || undefined}
                     type="file"
                     key={imageKey}
                     accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
                     className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
-                    onChange={(e) => handlePosterChange(e.target.files?.[0])}
+                    onChange={(e) => {
+                      field.onChange(e.target.files?.[0]);
+                      handlePosterChange(e.target.files?.[0]);
+                    }}
+                    value={undefined}
                   />
                 </FormControl>
                 <FormDescription>jpeg, png, webp, or svg only!</FormDescription>
@@ -569,12 +631,12 @@ export const UpdateProductionForm = ({
         </div>
         <div className="flex justify-between">
           <div>
-            {form.isFormDirty && (
+            {form.isDirty && (
               <Button type="reset" variant="secondary" className="mr-4">
                 Cancel
               </Button>
             )}
-            <SubmitButton>Update</SubmitButton>
+            <SubmitButton disabled={!form.isDirty}>Update</SubmitButton>
           </div>
           <Button
             type="button"

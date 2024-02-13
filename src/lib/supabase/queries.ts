@@ -11,10 +11,8 @@ export const getTheaterForNewProduction = async (
 ) => {
   return await client
     .from("theaters")
-    .select(
-      "*, theater_managers(user_id), addresses(*), productions(*), stages(*)",
-    )
-    .eq("theater_managers.user_id", userId)
+    .select("*, addresses(*), productions(*), stages(*)")
+    .eq("manager_id", userId)
     .order("id")
     .limit(1)
     .single();
@@ -30,8 +28,8 @@ export const getTheaterForProductionsPage = async (
 ) => {
   return await client
     .from("theaters")
-    .select("*, theater_managers(user_id, theater_id), productions(*)")
-    .eq("theater_managers.user_id", userId)
+    .select("*, productions(*)")
+    .eq("manager_id", userId)
     .limit(1)
     .single();
 };
@@ -46,8 +44,8 @@ export const getTheaterForStagesPage = async (
 ) => {
   return await client
     .from("theaters")
-    .select("*, theater_managers(user_id, theater_id), stages(*)")
-    .eq("theater_managers.user_id", userId)
+    .select("*, stages(*)")
+    .eq("manager_id", userId)
     .order("updated_at")
     .limit(1)
     .single();
@@ -64,10 +62,8 @@ export const getTheaterForUpdateProduction = async (
 ) => {
   return await client
     .from("theaters")
-    .select(
-      "*, theater_managers(user_id), addresses(*), productions(*), stages(*)",
-    )
-    .eq("theater_managers.user_id", userId)
+    .select("*, addresses(*), productions(*), stages(*)")
+    .eq("manager_id", userId)
     .eq("productions.id", productionId)
     .order("id")
     .limit(1)
@@ -190,8 +186,8 @@ export const getTheaterForTheaterPage = async (
 ) => {
   return await client
     .from("theaters")
-    .select("*, theater_managers(user_id), addresses(*)")
-    .eq("theater_managers.user_id", userId)
+    .select("*, addresses(*)")
+    .eq("manager_id", userId)
     .order("id")
     .limit(1)
     .single();
