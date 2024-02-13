@@ -2,10 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { z } from "zod";
+import { useFormState } from "react-dom";
 
 import createStage from "@/actions/createStage";
+import AddressFinderInput from "@/components/AddressFinderInput";
+import FormToaster from "@/components/FormToaster";
 import SubmitButton from "@/components/ui/SubmitButton";
 import {
   Form,
@@ -19,34 +20,42 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Select,
+  SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectContent,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { stageTypes } from "@/lib/constants";
-import { createStageSchema } from "@/lib/form-schemas/stages";
-import { useFormWithLocalStorage } from "@/lib/hooks";
-import { boolToYN, ynToBool } from "@/lib/utils";
-import AddressFinderInput from "../AddressFinderInput";
+import {
+  CreateStageSchema,
+  createStageSchema,
+} from "@/lib/form-schemas/stages";
+import { useFormCustom, useSelectKey } from "@/lib/hooks";
+import { FormServerState } from "@/lib/types";
+import { useEffect } from "react";
 
 export const CreateStageForm = () => {
   const LOCAL_STORAGE_KEY = `create-stage-form`;
 
-  const defaultValues = {
+  const [state, formAction] = useFormState<FormServerState, CreateStageSchema>(
+    createStage,
+    { status: "idle" },
+  );
+
+  const defaultValues: CreateStageSchema = {
     name: "",
     street_address: "",
     city: "",
     state: "",
-    postal_code: undefined,
+    postal_code: "",
     notes: "",
     type: "",
-    wheelchair_accessible: undefined,
-    seating_capacity: undefined,
+    wheelchair_accessible: "",
+    seating_capacity: 0,
   };
 
-  const form = useFormWithLocalStorage<z.infer<typeof createStageSchema>>({
+  const form = useFormCustom<CreateStageSchema>({
     resolver: zodResolver(createStageSchema),
     localStorageKey: LOCAL_STORAGE_KEY,
     defaultValues: defaultValues,
@@ -54,35 +63,24 @@ export const CreateStageForm = () => {
 
   const router = useRouter();
 
-  const handleSubmit = (formData: FormData) => {
-    toast
-      .promise(
-        createStage(formData),
-        {
-          loading: "Creating Stage...",
-          success: "Stage Created!",
-          error: (error: Error) => error.message,
-        },
-        {
-          style: {
-            minWidth: "250px",
-          },
-        },
-      )
-      .then(({ status }) => {
-        if (status === "success") {
-          form.reset(defaultValues);
-          router.push("/account/stages");
-        }
-      });
-  };
+  useEffect(() => {
+    if (state.status === "success") {
+      router.push("/account/stages");
+    }
+  }, [router, state]);
+
+  const { key, updateKey } = useSelectKey();
 
   return (
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={handleSubmit}
+        action={() => form.handleAction(formAction)}
       >
+        <FormToaster
+          state={state}
+          msgs={{ loading: "Creating stage...", success: "Stage created!" }}
+        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Create a stage
@@ -129,9 +127,9 @@ export const CreateStageForm = () => {
                 <FormLabel>Street Address</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="text"
                     placeholder="123 Sesame Street"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -171,16 +169,7 @@ export const CreateStageForm = () => {
               <FormItem className="sm:col-span-2">
                 <FormLabel>ZIP / Postal Code</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder="12345"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value !== "" ? parseInt(e.target.value) : null,
-                      )
-                    }
-                  />
+                  <Input {...field} type="text" placeholder="12345" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -193,10 +182,16 @@ export const CreateStageForm = () => {
             control={form.control}
             name="type"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Stage Type</FormLabel>
                 <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    onValueChange={(v) => {
+                      field.onChange(v);
+                      updateKey();
+                    }}
+                    value={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a stage type" />
                     </SelectTrigger>
@@ -217,16 +212,15 @@ export const CreateStageForm = () => {
             control={form.control}
             name="wheelchair_accessible"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Wheel Chair Accessible</FormLabel>
                 <FormControl>
                   <Select
-                    {...field}
-                    name="wheelchair_accessible"
                     onValueChange={(v) => {
-                      field.onChange(ynToBool(v));
+                      field.onChange(v);
+                      updateKey();
                     }}
-                    value={boolToYN(field.value)}
+                    value={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -252,7 +246,11 @@ export const CreateStageForm = () => {
                     {...field}
                     type="number"
                     placeholder="100"
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== "" ? parseInt(e.target.value) : "",
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />

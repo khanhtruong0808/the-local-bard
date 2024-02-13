@@ -3,76 +3,60 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-import { updateProductionSchema } from "@/lib/form-schemas/productions";
+import {
+  updateProductionServerSchema,
+  type UpdateProductionSchema,
+} from "@/lib/form-schemas/productions";
 import { createClient } from "@/lib/supabase/server";
+import { FormServerState } from "@/lib/types";
 
-export default async function updateProduction(form: FormData) {
-  const parsed = updateProductionSchema.safeParse({
-    id: form.get("id"),
-    name: form.get("name"),
-    summary: form.get("summary"),
-    stage_id: form.get("stage_id"),
-    writers: form.get("writers"),
-    directors: form.get("directors"),
-    composers: form.get("composers"),
-    type: form.get("type"),
-    kid_friendly: form.get("kid_friendly"),
-    cost_range: form.get("cost_range"),
-    duration_minutes: form.get("duration_minutes"),
-    poster: form.get("poster"),
-    url: form.get("url"),
-    notes: form.get("notes"),
-    start_date: form.get("start_date"),
-    end_date: form.get("end_date"),
-  });
-
+export default async function updateProduction(
+  currentState: FormServerState,
+  form: UpdateProductionSchema,
+): Promise<FormServerState> {
+  const parsed = updateProductionServerSchema.safeParse(form);
   if (!parsed.success) {
-    return Promise.reject(
-      new Error(parsed.error.errors.map((e) => e.message).join("\n")),
-    );
+    const error = parsed.error.errors.map((e) => e.message).join("\n");
+    return { status: "error", error: error };
   }
-
-  const payload = parsed.data;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  if (payload.poster && payload.poster.size > 0) {
+  const { id, poster, ...updatedProduction } = parsed.data;
+
+  const posterFile = poster ? poster.get("poster") : null;
+
+  if (posterFile && posterFile instanceof File && posterFile.size > 0) {
     const { error: fileError } = await supabase.storage
       .from("posters")
-      .upload(payload.poster.name, payload.poster, {
+      .upload(posterFile.name, posterFile, {
         upsert: true,
       });
 
     if (fileError) {
-      return Promise.reject(fileError);
+      throw fileError.message; // We actually want to see this error logged
     }
 
     const { data } = supabase.storage
       .from("posters")
-      .getPublicUrl(payload.poster.name);
+      .getPublicUrl(posterFile.name);
 
     const { publicUrl: poster_url } = data;
-    payload.poster_url = poster_url;
+    updatedProduction.poster_url = poster_url;
   } else {
     // TODO: Figure out how to actually delete orphaned posters from storage?
     // keep old poster_url if no file is given
   }
 
-  const { id, poster, stage_id, ...updatedProduction } = payload;
-
   const { error } = await supabase
     .from("productions")
     .update({
       ...updatedProduction,
-      stage_id: Number(stage_id),
     })
     .eq("id", id);
 
-  if (error) {
-    console.error(error);
-    return Promise.reject(new Error(error.message));
-  }
+  if (error) return { status: "error", error: error.message };
 
   revalidatePath(`/account/productions/${id}`);
 

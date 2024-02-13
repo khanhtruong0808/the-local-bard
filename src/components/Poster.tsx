@@ -26,13 +26,13 @@ export const Poster = ({ src, name, date, address, url }: Props) => {
     >
       <div>
         <Image
-          height={250}
-          width={250}
+          height={300}
+          width={225}
           src={src}
           alt=""
-          className="h-[250px] w-[250px] overflow-hidden rounded"
+          className="h-[300px] w-[225px] overflow-hidden rounded"
         />
-        <div className="mt-2 flex max-w-[250px] flex-wrap justify-between text-sm">
+        <div className="mt-2 flex max-w-[225px] flex-wrap justify-between text-sm">
           <p className="text-zinc-300">{name}</p>
           <p className="text-zinc-400">
             {date.toLocaleDateString("en-us", options)}

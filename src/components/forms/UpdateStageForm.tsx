@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useFormState } from "react-dom";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
 import deleteStage from "@/actions/deleteStage";
 import updateStage from "@/actions/updateStage";
+import AddressFinderInput from "@/components/AddressFinderInput";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,70 +29,89 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { stageTypes } from "@/lib/constants";
-import { updateStageSchema } from "@/lib/form-schemas/stages";
-import { useFormWithLocalStorage } from "@/lib/hooks";
+import {
+  UpdateStageSchema,
+  updateStageSchema,
+} from "@/lib/form-schemas/stages";
+import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { StageWithAddress } from "@/lib/supabase/queries";
-import { boolToYN, ynToBool } from "@/lib/utils";
+import { type FormServerState } from "@/lib/types";
+import { boolToYN } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
+import FormToaster from "../FormToaster";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
-import AddressFinderInput from "../AddressFinderInput";
 
 interface UpdateStageFormProps {
   stage: StageWithAddress;
 }
 
 export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
+  // This is a janky way to set formState back to idle after a success/error.
+  const [formKey, setFormKey] = useState(0);
+  const resetFormState = () => {
+    setFormKey((k) => k + 1);
+  };
+  return (
+    <UpdateStageFormInternal
+      stage={stage}
+      key={formKey}
+      resetFormState={resetFormState}
+    />
+  );
+};
+
+const UpdateStageFormInternal = ({
+  stage,
+  resetFormState,
+}: UpdateStageFormProps & { resetFormState: () => void }) => {
   const LOCAL_STORAGE_KEY = `update-stage-form-${stage.id}`;
+
+  const [state, formAction] = useFormState<FormServerState, UpdateStageSchema>(
+    updateStage,
+    {
+      status: "idle",
+    },
+  );
 
   const [isDeleting, setIsDeleting] = useState(false);
   const { openDialog, closeDialog } = useDialog();
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+    if (state.status === "success") {
+      timeoutId = setTimeout(() => {
+        resetFormState();
+      }, 2000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [state, resetFormState]);
+
   const address = stage.addresses;
 
-  const defaultValues = useMemo(
-    () => ({
-      id: stage.id,
-      name: stage.name || "",
-      street_address: address.street_address || undefined,
-      city: address.city || "",
-      state: address.state || "",
-      postal_code: address.postal_code || undefined,
-      type: stage.type || "",
-      wheelchair_accessible: stage.wheelchair_accessible ?? undefined,
-      seating_capacity: stage.seating_capacity || undefined,
-      notes: stage.notes || "",
-      address_id: stage.address_id || undefined,
-    }),
-    [stage, address],
-  );
+  const defaultValues: UpdateStageSchema = {
+    id: stage.id,
+    name: stage.name || "",
+    street_address: address.street_address,
+    city: address.city,
+    state: address.state || "",
+    postal_code: address.postal_code || "",
+    type: stage.type || "",
+    wheelchair_accessible:
+      stage.wheelchair_accessible !== null
+        ? boolToYN(stage.wheelchair_accessible)
+        : "",
+    seating_capacity: stage.seating_capacity || 0,
+    notes: stage.notes || "",
+    address_id: stage.address_id || "",
+  };
 
-  const form = useFormWithLocalStorage<z.infer<typeof updateStageSchema>>({
+  const form = useFormCustom<UpdateStageSchema>({
     resolver: zodResolver(updateStageSchema),
     defaultValues: defaultValues,
     localStorageKey: LOCAL_STORAGE_KEY,
   });
-
-  const handleSubmit = async (formData: FormData) => {
-    toast
-      .promise(
-        updateStage(formData),
-        {
-          loading: "Updating Stage...",
-          success: "Stage Updated!",
-          error: (error: Error) => error.message,
-        },
-        {
-          style: {
-            minWidth: "250px",
-          },
-        },
-      )
-      .then(({ status }) => {
-        if (status === "success") {
-          form.cleanup();
-        }
-      });
-  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -119,13 +139,21 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
     });
   };
 
+  const { key, updateKey } = useSelectKey();
+
   return (
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={handleSubmit}
+        action={() => {
+          form.handleAction(formAction);
+        }}
         onReset={() => form.reset(defaultValues)}
       >
+        <FormToaster
+          state={state}
+          msgs={{ loading: "Updating stage...", success: "Stage updated!" }}
+        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             {stage.name}
@@ -133,7 +161,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
           <p className="mt-1 text-sm leading-6 text-gray-500">
             Make changes to your stage here.
           </p>
-          {form.isFormDirty && (
+          {form.isDirty && (
             <p className="text-sm font-medium text-red-500 dark:text-red-600">
               You have unsaved changes. Make sure to press{" "}
               <strong>Update</strong> to save them before leaving.
@@ -211,7 +239,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
               <FormItem className="sm:col-span-2">
                 <FormLabel>State / Province</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="California" {...field} />
+                  <Input type="text" placeholder="CA" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -224,18 +252,7 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
               <FormItem className="sm:col-span-2">
                 <FormLabel>ZIP / Postal Code</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder="12345"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value !== ""
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      )
-                    }
-                  />
+                  <Input {...field} type="text" placeholder="12345" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -246,10 +263,16 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
             control={form.control}
             name="type"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Stage Type</FormLabel>
                 <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    onValueChange={(v) => {
+                      field.onChange(v);
+                      updateKey();
+                    }}
+                    value={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a stage type" />
                     </SelectTrigger>
@@ -270,16 +293,15 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
             control={form.control}
             name="wheelchair_accessible"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
-                <FormLabel>Wheel Chair Accessible</FormLabel>
+              <FormItem className="sm:col-span-3" key={key}>
+                <FormLabel>Wheelchair Accessible?</FormLabel>
                 <FormControl>
                   <Select
-                    {...field}
-                    name="wheelchair_accessible"
                     onValueChange={(v) => {
-                      field.onChange(ynToBool(v));
+                      field.onChange(v);
+                      updateKey();
                     }}
-                    value={boolToYN(field.value)}
+                    value={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -305,7 +327,11 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
                     {...field}
                     type="number"
                     placeholder="100"
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== "" ? parseInt(e.target.value) : "",
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -335,12 +361,12 @@ export const UpdateStageForm = ({ stage }: UpdateStageFormProps) => {
         </div>
         <div className="flex justify-between">
           <div>
-            {form.isFormDirty && (
+            {form.isDirty && (
               <Button type="reset" variant="secondary" className="mr-4">
                 Cancel
               </Button>
             )}
-            <SubmitButton>Update</SubmitButton>
+            <SubmitButton disabled={!form.isDirty}>Update</SubmitButton>
           </div>
           <Button
             type="button"

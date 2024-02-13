@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState, type ReactEventHandler } from "react";
+import { useFormState } from "react-dom";
 import { z } from "zod";
 
 import createProduction from "@/actions/createProduction";
+import FormToaster from "@/components/FormToaster";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -27,12 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { commonPlaywrigthts, commonProductions, genres } from "@/lib/constants";
-import { createProductionSchema } from "@/lib/form-schemas/productions";
-import { useFormWithLocalStorage } from "@/lib/hooks";
+import {
+  createProductionSchema,
+  type CreateProductionSchema,
+} from "@/lib/form-schemas/productions";
+import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import type { TheaterForNewProduction } from "@/lib/supabase/queries";
-import { boolToYN, ynToBool } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
+import { type FormServerState } from "@/lib/types";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -41,35 +46,47 @@ interface ProductionFormProps {
 export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
   const LOCAL_STORAGE_KEY = `create-production-form`;
 
-  const defaultValues = {
+  const [state, formAction] = useFormState<
+    FormServerState,
+    CreateProductionSchema
+  >(createProduction, { status: "idle" });
+
+  const defaultValues: CreateProductionSchema = {
     theater_id: theater.id,
+    stage_id: 0,
     name: "",
     summary: "",
-    writers: [],
+    playwrights: [],
     directors: [],
     composers: [],
-    type: "",
-    kid_friendly: undefined,
+    genres: [],
+    kid_friendly: "Yes",
     cost_range: "",
-    duration_minutes: undefined,
+    duration_minutes: 0,
     poster: undefined,
     url: "",
     notes: "",
     start_date: "",
     end_date: "",
-    stage_id: undefined,
   };
 
-  const form = useFormWithLocalStorage<z.infer<typeof createProductionSchema>>({
+  const form = useFormCustom<z.infer<typeof createProductionSchema>>({
     resolver: zodResolver(createProductionSchema),
     localStorageKey: LOCAL_STORAGE_KEY,
     defaultValues: defaultValues,
   });
 
   const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success") {
+      router.push("/account/productions");
+    }
+  }, [router, state]);
 
   const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
+
+  const { key, updateKey } = useSelectKey();
 
   // Update the posterUrl when the user selects a new poster
   const handlePosterChange = (file: File | undefined) => {
@@ -78,34 +95,10 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
     setPosterUrl(url);
   };
 
-  const handleSubmit = async (formData: FormData) => {
-    toast
-      .promise(
-        createProduction(formData),
-        {
-          loading: "Creating Production...",
-          success: "Production Created!",
-          error: (error: Error) => error.message,
-        },
-        {
-          style: {
-            minWidth: "250px",
-          },
-        },
-      )
-      .then(({ status }) => {
-        if (status === "success") {
-          form.reset(defaultValues);
-          router.push(`/account/productions`);
-        }
-      });
-  };
-
   // Show warning if the poster image is not close to 3:4 aspect ratio
-  const handleImageLoad = (e: any) => {
-    const img = e.target;
+  const handleImageLoad: ReactEventHandler<HTMLImageElement> = (e) => {
+    const img = e.currentTarget;
     const aspectRatio = img.width / img.height;
-    console.log(aspectRatio);
     if (aspectRatio < 0.6 || aspectRatio > 0.9) {
       form.setError("poster", {
         type: "manual",
@@ -122,8 +115,15 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={handleSubmit}
+        action={() => form.handleAction(formAction)}
       >
+        <FormToaster
+          state={state}
+          msgs={{
+            loading: "Creating production...",
+            success: "Production created!",
+          }}
+        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Create a Production
@@ -131,7 +131,7 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
           <p className="mt-1 text-sm leading-6 text-gray-500">
             Add a production to your theater.
           </p>
-          {(form.isFormDirty || posterUrl !== undefined) && (
+          {(form.isDirty || posterUrl !== undefined) && (
             <p className="text-sm font-medium text-red-500 dark:text-red-600">
               You have unsaved changes. Make sure to submit this form before
               leaving.
@@ -188,12 +188,14 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
             control={form.control}
             name="stage_id"
             render={({ field }) => (
-              <FormItem className="col-span-full">
+              <FormItem className="col-span-full" key={key}>
                 <FormLabel>Stage</FormLabel>
                 <Select
-                  {...field}
-                  onValueChange={field.onChange}
-                  value={field.value?.toString()}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    updateKey();
+                  }}
+                  defaultValue={field.value === 0 ? "" : field.value.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -214,7 +216,57 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
           />
           <FormField
             control={form.control}
-            name="writers"
+            name="genres"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <div className="mb-4">
+                  <FormLabel className="text-base">Genres</FormLabel>
+                  <FormDescription>
+                    Select all genres that apply to your production.
+                  </FormDescription>
+                </div>
+                <div className="grid grid-cols-3 gap-x-2 gap-y-2">
+                  {genres.map((genre) => (
+                    <FormField
+                      key={genre}
+                      control={form.control}
+                      name="genres"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={genre}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(genre)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, genre])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== genre,
+                                        ),
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {genre}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="playwrights"
             render={({ field }) => (
               <FormItem className="sm:col-span-3 sm:col-start-1">
                 <FormLabel>Playwrights</FormLabel>
@@ -223,10 +275,6 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                     {...field}
                     type="text"
                     placeholder="Roger Allers, Irene Mecchi"
-                    onChange={(e) => {
-                      field.onChange(e.target.value.split(", "));
-                    }}
-                    value={field.value?.join(", ") || ""}
                     list="playwrights"
                   />
                 </FormControl>
@@ -253,10 +301,6 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                     {...field}
                     type="text"
                     placeholder="John Doe, Jane Doe"
-                    onChange={(e) => {
-                      field.onChange(e.target.value.split(", "));
-                    }}
-                    value={field.value?.join(", ") || ""}
                   />
                 </FormControl>
                 <FormDescription>
@@ -277,10 +321,6 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                     {...field}
                     type="text"
                     placeholder="Elton John, Julie Taymor"
-                    onChange={(e) => {
-                      field.onChange(e.target.value.split(", "));
-                    }}
-                    value={field.value?.join(", ") || ""}
                   />
                 </FormControl>
                 <FormDescription>
@@ -292,41 +332,17 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
           />
           <FormField
             control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3 sm:col-start-1">
-                <FormLabel>Genre</FormLabel>
-                <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a genre" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {genres.map((genre) => (
-                        <SelectItem key={genre} value={genre}>
-                          {genre}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="kid_friendly"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Kid Friendly</FormLabel>
                 <FormControl>
                   <Select
-                    {...field}
                     onValueChange={(v) => {
-                      field.onChange(ynToBool(v));
+                      field.onChange(v);
+                      updateKey();
                     }}
-                    value={boolToYN(field.value)}
+                    defaultValue={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an option" />
@@ -345,10 +361,15 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
             control={form.control}
             name="cost_range"
             render={({ field }) => (
-              <FormItem className="sm:col-span-3">
+              <FormItem className="sm:col-span-3" key={key}>
                 <FormLabel>Cost Range</FormLabel>
                 <FormControl>
-                  <Select {...field} onValueChange={field.onChange}>
+                  <Select
+                    onValueChange={(v) => {
+                      field.onChange(v);
+                      updateKey();
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a cost range" />
                     </SelectTrigger>
@@ -377,7 +398,11 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                     {...field}
                     type="number"
                     placeholder="120"
-                    value={field.value ?? undefined}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value !== "" ? parseInt(e.target.value) : 0,
+                      )
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -509,7 +534,9 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
             )}
           />
         </div>
-        <SubmitButton>Create new production</SubmitButton>
+        <SubmitButton disabled={!form.isDirty}>
+          Create new production
+        </SubmitButton>
       </form>
     </Form>
   );
