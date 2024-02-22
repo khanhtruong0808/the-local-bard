@@ -95,7 +95,7 @@ const TheaterFormInternal = ({
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
-    if (state.status === "success") {
+    if (state.status !== "idle") {
       timeoutId = setTimeout(() => {
         resetFormState();
       }, 2000);

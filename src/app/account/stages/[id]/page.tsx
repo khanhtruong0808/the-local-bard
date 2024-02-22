@@ -2,8 +2,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { UpdateStageForm } from "@/components/forms/UpdateStageForm";
-import { StageWithAddress, getStageWithAddress } from "@/lib/supabase/queries";
+import {
+  StageWithAddress,
+  getStageWithAddress,
+  getUser,
+} from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
+import { NotAuthorized } from "@/components/NotAuthorized";
 
 export default async function EditStagePage({
   params,
@@ -12,9 +17,7 @@ export default async function EditStagePage({
 }) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
-
-  //TODO: Need to redirect page to something else if the user is not a theater manager
-  // for the associated theater's stage
+  const user = await getUser(supabase);
 
   const { data: stage } = await getStageWithAddress(
     supabase,
@@ -23,14 +26,12 @@ export default async function EditStagePage({
 
   if (!stage) redirect("/account/stages");
 
+  if (stage.theaters?.manager_id !== user.id) return <NotAuthorized />;
+
   // TODO: This is a hack to get around the fact that the stage returned from
   // the query is typed with an array of addresses for some reason whereas the
   // actual return value is an object with a single address.
   const stageWithAddress = stage as unknown as StageWithAddress;
 
-  return (
-    <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
-      <UpdateStageForm stage={stageWithAddress} />
-    </div>
-  );
+  return <UpdateStageForm stage={stageWithAddress} />;
 }

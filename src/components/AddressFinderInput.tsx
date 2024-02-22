@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useLoadGoogleApi } from "@/lib/googleMaps";
 import { useFormContext } from "react-hook-form";
 import { Input } from "./ui/input";
+import { FormItem, FormLabel } from "./ui/form";
 
 // Geographic boundary to bias the search results to Sacramento County.
 // Results outside of this area will still be returned, but will be lower priority.
@@ -77,11 +78,14 @@ export default function AddressFinderInput() {
   // libraries are loading so there's no flash of a disabled input
   if (!isLoaded)
     return (
-      <Input
-        type="text"
-        placeholder="Type here to search for an address."
-        disabled
-      />
+      <FormItem>
+        <FormLabel>Address Search (optional)</FormLabel>
+        <Input
+          type="text"
+          placeholder="Type here to search for an address."
+          disabled
+        />
+      </FormItem>
     );
 
   return (
@@ -90,13 +94,16 @@ export default function AddressFinderInput() {
       onPlacesChanged={handlePlacesChanged}
       bounds={SAC_COUNTY_BOUNDS}
     >
-      <Input
-        type="text"
-        placeholder="Type here to search for an address"
-        onKeyDown={(e) => {
-          if (e.code === "Enter") e.preventDefault();
-        }}
-      />
+      <FormItem>
+        <FormLabel>Address Search (optional)</FormLabel>
+        <Input
+          type="text"
+          placeholder="Type here to search for an address"
+          onKeyDown={(e) => {
+            if (e.code === "Enter") e.preventDefault();
+          }}
+        />
+      </FormItem>
     </StandaloneSearchBox>
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import {
@@ -9,7 +10,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { type FormServerState } from "@/lib/types";
 import { ynToBool } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
+import { getUser } from "@/lib/supabase/queries";
 
 export default async function createStage(
   currentState: FormServerState,
@@ -23,10 +24,7 @@ export default async function createStage(
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No user found");
+  const user = await getUser(supabase);
 
   const { data: theater } = await supabase
     .from("theaters")
@@ -38,7 +36,7 @@ export default async function createStage(
 
   if (!theater) return Promise.reject("No theater found");
 
-  const { data: address } = await supabase
+  const { data: address, error } = await supabase
     .from("addresses")
     .insert({
       street_address: parsed.data.street_address,
@@ -49,6 +47,7 @@ export default async function createStage(
     .select()
     .limit(1)
     .single();
+  if (error) throw new Error(error.message);
 
   if (!address) {
     console.error("No address found");
