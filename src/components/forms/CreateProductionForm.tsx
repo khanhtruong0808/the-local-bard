@@ -3,12 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type ReactEventHandler } from "react";
-import { useFormState } from "react-dom";
-import { z } from "zod";
+import { useState, type ReactEventHandler } from "react";
+import { SubmitHandler } from "react-hook-form";
+import toast from "react-hot-toast";
 
-import createProduction from "@/actions/createProduction";
-import FormToaster from "@/components/FormToaster";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -37,19 +35,21 @@ import {
 } from "@/lib/form-schemas/productions";
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import type { TheaterForNewProduction } from "@/lib/supabase/queries";
-import { type FormServerState } from "@/lib/types";
+
+import { createClient } from "@/lib/supabase/client";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
 }
 
-export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
+export function CreateProductionForm({ theater }: ProductionFormProps) {
   const LOCAL_STORAGE_KEY = `create-production-form`;
+  const supabase = createClient();
 
-  const [state, formAction] = useFormState<
-    FormServerState,
-    CreateProductionSchema
-  >(createProduction, { status: "idle" });
+  const router = useRouter();
+  // if (state.status === "success") {
+  //   router.push("/account/productions");
+  // }
 
   const defaultValues: CreateProductionSchema = {
     theater_id: theater.id,
@@ -70,18 +70,11 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
     end_date: "",
   };
 
-  const form = useFormCustom<z.infer<typeof createProductionSchema>>({
+  const form = useFormCustom<CreateProductionSchema>({
     resolver: zodResolver(createProductionSchema),
     localStorageKey: LOCAL_STORAGE_KEY,
     defaultValues: defaultValues,
   });
-
-  const router = useRouter();
-  useEffect(() => {
-    if (state.status === "success") {
-      router.push("/account/productions");
-    }
-  }, [router, state]);
 
   const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
@@ -111,19 +104,60 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
     }
   };
 
+  const onSubmit: SubmitHandler<CreateProductionSchema> = async (formData) => {
+    await toast.promise(
+      (async () => {
+        // Upload new poster image if included in form data
+        const poster = formData.poster;
+        if (poster && poster.name && poster.size) {
+          const { error: fileError } = await supabase.storage
+            .from("posters")
+            .upload(poster.name, poster, {
+              upsert: true,
+            });
+
+          if (fileError) return Promise.reject(fileError);
+
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("posters").getPublicUrl(poster.name);
+
+          formData.poster_url = publicUrl;
+          delete formData.poster;
+        }
+
+        const endpoint = "/api/productions";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+          const { error } = (await res.json()) as { error: string };
+          console.error(error);
+          return Promise.reject(new Error(error));
+        }
+        form.reset(defaultValues);
+        router.push("/account/productions/new/success");
+      })(),
+      {
+        loading: "Creating production...",
+        success: "Production created!",
+        error: (err: Error) => err.message,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+      },
+    );
+  };
+
   return (
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={() => form.handleAction(formAction)}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
-        <FormToaster
-          state={state}
-          msgs={{
-            loading: "Creating production...",
-            success: "Production created!",
-          }}
-        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Create a Production
@@ -418,12 +452,15 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    value={field.value?.name || undefined}
                     type="file"
                     key={imageKey}
                     accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
                     className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
-                    onChange={(e) => handlePosterChange(e.target.files?.[0])}
+                    onChange={(e) => {
+                      field.onChange(e.target.files?.[0]);
+                      handlePosterChange(e.target.files?.[0]);
+                    }}
+                    value={undefined}
                   />
                 </FormControl>
                 <FormDescription>jpeg, png, webp, or svg only!</FormDescription>
@@ -534,10 +571,10 @@ export const CreateProductionForm = ({ theater }: ProductionFormProps) => {
             )}
           />
         </div>
-        <SubmitButton disabled={!form.isDirty}>
+        <SubmitButton disabled={!form.isDirty || form.formState.isSubmitting}>
           Create new production
         </SubmitButton>
       </form>
     </Form>
   );
-};
+}

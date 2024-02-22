@@ -54,8 +54,9 @@ export default async function MapFilters() {
               key={genre}
               name={genre}
               label={genre}
-              field="type"
+              field="genres"
               value={genre}
+              multi={true}
             />
           ))}
         </div>

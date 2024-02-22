@@ -27,8 +27,13 @@ export const createProductionSchema = z.object({
   }),
   kid_friendly: z.enum(["Yes", "No", ""]),
   cost_range: z.string().trim(),
-  duration_minutes: z.number().int().min(0).max(9999, "Duration is too long."),
-  poster: z.custom<File>().optional(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
+  duration_minutes: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .max(9999, "Duration is too long."),
+  poster: z.custom<File>().optional(),
+  // z.custom<File>().optional(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
   poster_url: z.string().trim().url().optional().nullable(),
   url: z.string().trim(),
   notes: z.string().trim(),
@@ -47,14 +52,15 @@ export const updateProductionSchema = createProductionSchema
  * Transform empty strings to nulls, and "Yes" and "No" to true and false.
  * This is for non-standard fields like booleans, numbers, and files.
  */
-export const createProductionServerSchema = createProductionSchema.extend({
-  kid_friendly: z.enum(["Yes", "No", ""]).transform((val) => ynToBool(val)),
-  poster: z.instanceof(FormData).optional(), // transformed in form action
-});
+export const createProductionServerSchema = createProductionSchema
+  .extend({
+    kid_friendly: z.enum(["Yes", "No", ""]).transform((val) => ynToBool(val)),
+  })
+  .omit({ poster: true });
 
 export const updateProductionServerSchema = createProductionServerSchema
   .extend({
-    id: z.number().int().positive(),
+    id: z.coerce.number().int().positive(),
   })
   .omit({ theater_id: true });
 

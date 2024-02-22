@@ -78,7 +78,7 @@ const UpdateStageFormInternal = ({
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
-    if (state.status === "success") {
+    if (state.status !== "idle") {
       timeoutId = setTimeout(() => {
         resetFormState();
       }, 2000);
@@ -115,19 +115,29 @@ const UpdateStageFormInternal = ({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    await toast.promise(
-      deleteStage(stage.id),
-      {
-        loading: "Deleting Stage...",
-        success: "Stage Deleted!",
-        error: (error: Error) => error.message,
-      },
-      {
-        style: {
-          minWidth: "250px",
+
+    try {
+      await toast.promise(
+        (async () => {
+          const res = await deleteStage(stage.id);
+          if (res.status === "error") {
+            throw new Error(res.error);
+          }
+        })(),
+        {
+          loading: "Deleting Stage...",
+          success: "Stage Deleted!",
+          error: (error: Error) => error.message,
         },
-      },
-    );
+        {
+          style: {
+            minWidth: "250px",
+          },
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
     setIsDeleting(false);
     closeDialog();
   };

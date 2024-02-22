@@ -1,58 +1,64 @@
 "use server";
 
-import { cookies } from "next/headers";
+/**
+ * This is not in use because it was hard to integrate server actions with RHF
+ * and file uploads. Currently just using handleSubmit and an API route handler
+ * until server actions are better integrated with RHF.
+ */
 
-import {
-  createProductionServerSchema,
-  type CreateProductionSchema,
-} from "@/lib/form-schemas/productions";
-import { createClient } from "@/lib/supabase/server";
-import { FormServerState } from "@/lib/types";
-import { revalidatePath } from "next/cache";
+// import { cookies } from "next/headers";
 
-export default async function createProduction(
-  currentState: FormServerState,
-  form: CreateProductionSchema,
-): Promise<FormServerState> {
-  const parsed = createProductionServerSchema.safeParse(form);
-  if (!parsed.success) {
-    const error = parsed.error.errors.map((e) => e.message).join("\n");
-    return { status: "error", error };
-  }
+// import {
+//   createProductionServerSchema,
+//   type CreateProductionSchema,
+// } from "@/lib/form-schemas/productions";
+// import { createClient } from "@/lib/supabase/server";
+// import { FormServerState } from "@/lib/types";
+// import { revalidatePath } from "next/cache";
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+// export default async function createProduction(
+//   currentState: FormServerState,
+//   form: CreateProductionSchema,
+// ): Promise<FormServerState> {
+//   const parsed = createProductionServerSchema.safeParse(form);
+//   if (!parsed.success) {
+//     const error = parsed.error.errors.map((e) => e.message).join("\n");
+//     return { status: "error", error };
+//   }
 
-  const { poster, ...newProduction } = parsed.data;
+//   const cookieStore = cookies();
+//   const supabase = createClient(cookieStore);
 
-  const posterFile = poster ? poster.get("poster") : null;
+//   const { poster, ...newProduction } = parsed.data;
 
-  if (posterFile && posterFile instanceof File && posterFile.size > 0) {
-    const { error: fileError } = await supabase.storage
-      .from("posters")
-      .upload(posterFile.name, posterFile, {
-        upsert: true,
-      });
+//   const posterFile = poster ? poster.get("poster") : null;
 
-    if (fileError) {
-      throw fileError.message; // We actually want to see this error logged
-    }
+//   if (posterFile && posterFile instanceof File && posterFile.size > 0) {
+//     const { error: fileError } = await supabase.storage
+//       .from("posters")
+//       .upload(posterFile.name, posterFile, {
+//         upsert: true,
+//       });
 
-    const { data } = supabase.storage
-      .from("posters")
-      .getPublicUrl(posterFile.name);
+//     if (fileError) {
+//       throw fileError.message; // We actually want to see this error logged
+//     }
 
-    const { publicUrl } = data;
-    newProduction.poster_url = publicUrl;
-  }
+//     const { data } = supabase.storage
+//       .from("posters")
+//       .getPublicUrl(posterFile.name);
 
-  const { error } = await supabase.from("productions").insert({
-    ...newProduction,
-  });
+//     const { publicUrl } = data;
+//     newProduction.poster_url = publicUrl;
+//   }
 
-  if (error) return { status: "error", error: error.message };
+//   const { error } = await supabase.from("productions").insert({
+//     ...newProduction,
+//   });
 
-  revalidatePath("/account/productions");
+//   if (error) return { status: "error", error: error.message };
 
-  return { status: "success" };
-}
+//   revalidatePath("/account/productions");
+
+//   return { status: "success" };
+// }

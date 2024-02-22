@@ -15,7 +15,7 @@ export const getTheaterForNewProduction = async (
     .eq("manager_id", userId)
     .order("id")
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type TheaterForNewProduction = DbResultOk<
@@ -31,7 +31,7 @@ export const getTheaterForProductionsPage = async (
     .select("*, productions(*)")
     .eq("manager_id", userId)
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type TheaterForProductionsPage = DbResultOk<
@@ -48,7 +48,7 @@ export const getTheaterForStagesPage = async (
     .eq("manager_id", userId)
     .order("updated_at")
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type TheaterForStagesPage = DbResultOk<
@@ -57,17 +57,15 @@ export type TheaterForStagesPage = DbResultOk<
 
 export const getTheaterForUpdateProduction = async (
   client: SupabaseClient<Database>,
-  userId: string,
   productionId: string,
 ) => {
   return await client
     .from("theaters")
     .select("*, addresses(*), productions(*), stages(*)")
-    .eq("manager_id", userId)
     .eq("productions.id", productionId)
     .order("id")
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type TheaterForUpdateProduction = DbResultOk<
@@ -83,7 +81,7 @@ export const getProduction = async (
     .select("*")
     .eq("id", productionId)
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type Production = DbResultOk<ReturnType<typeof getProduction>>;
@@ -105,6 +103,15 @@ export const getFullProductions = cache(
       Object.entries(filters).forEach(([key, value]) => {
         if (value === undefined) {
           return; // Skip undefined values
+        } else if (
+          ["genres", "directors", "composers", "playwrights"].includes(key)
+        ) {
+          // Hard-code these array-type columns for now
+          if (Array.isArray(value)) {
+            query.contains(key, value);
+          } else {
+            query.contains(key, [value]);
+          }
         } else if (Array.isArray(value)) {
           query.in(key, value);
           return;
@@ -168,10 +175,10 @@ export const getStageWithAddress = async (
 ) => {
   return await client
     .from("stages")
-    .select("*, addresses(*)")
+    .select("*, addresses(*), theaters(*)")
     .eq("id", stageId)
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 // I manually defined this because the query above says addresses is an array
@@ -190,9 +197,20 @@ export const getTheaterForTheaterPage = async (
     .eq("manager_id", userId)
     .order("id")
     .limit(1)
-    .single();
+    .maybeSingle();
 };
 
 export type TheaterForTheaterPage = DbResultOk<
   ReturnType<typeof getTheaterForTheaterPage>
 >;
+
+/**
+ * Gets user from Supabase Auth or throws an error.
+ */
+export const getUser = async (client: SupabaseClient<Database>) => {
+  const { data, error } = await client.auth.getUser();
+
+  if (data.user) return data.user;
+  if (error) throw new Error(error.message);
+  throw new Error("No user found");
+};

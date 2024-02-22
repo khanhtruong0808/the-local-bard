@@ -17,8 +17,6 @@ export default function FormToaster({
   const { pending } = useFormStatus();
   const id = useId();
 
-  console.log("FormToaster status:", state.status);
-
   const options = useMemo(() => ({ id, style }), [id]);
 
   useEffect(() => {

@@ -2,14 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useState } from "react";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
 import deleteProduction from "@/actions/deleteProduction";
-import updateProduction from "@/actions/updateProduction";
-import FormToaster from "@/components/FormToaster";
 import { ConfirmDeleteForm } from "@/components/forms/ConfirmDeleteForm";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
@@ -38,45 +34,26 @@ import {
   type UpdateProductionSchema,
 } from "@/lib/form-schemas/productions";
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
+import { createClient } from "@/lib/supabase/client";
 import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
-import { FormServerState } from "@/lib/types";
 import { boolToYN } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
+import { SubmitHandler } from "react-hook-form";
 
 interface ProductionFormProps {
   production: Production;
   theater: TheaterForUpdateProduction;
 }
 
-export const UpdateProductionForm = (props: ProductionFormProps) => {
-  // This is a janky way to set formState back to idle after a success/error.
-  const [formKey, setFormKey] = useState(0);
-  const resetFormState = () => {
-    setFormKey((k) => k + 1);
-  };
-  return (
-    <UpdateProductionFormInternal
-      {...props}
-      key={formKey}
-      resetFormState={resetFormState}
-    />
-  );
-};
-
-export const UpdateProductionFormInternal = ({
+export function UpdateProductionForm({
   production,
   theater,
-  resetFormState,
-}: ProductionFormProps & { resetFormState: () => void }) => {
+}: ProductionFormProps) {
   const LOCAL_STORAGE_KEY = `update-production-form-${production.id}`;
-
-  const [state, formAction] = useFormState<
-    FormServerState,
-    UpdateProductionSchema
-  >(updateProduction, { status: "idle" });
+  const supabase = createClient();
 
   const defaultValues: UpdateProductionSchema = {
     id: production.id,
@@ -97,7 +74,7 @@ export const UpdateProductionFormInternal = ({
     end_date: production.end_date,
   };
 
-  const form = useFormCustom<z.infer<typeof updateProductionSchema>>({
+  const form = useFormCustom<UpdateProductionSchema>({
     resolver: zodResolver(updateProductionSchema),
     defaultValues: defaultValues,
     localStorageKey: LOCAL_STORAGE_KEY,
@@ -110,18 +87,6 @@ export const UpdateProductionFormInternal = ({
   const [imageKey, setImageKey] = useState(0);
   const { openDialog, closeDialog } = useDialog();
   const { key, updateKey } = useSelectKey();
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-    if (state.status === "success") {
-      timeoutId = setTimeout(() => {
-        resetFormState();
-      }, 2000);
-    }
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [state, resetFormState]);
 
   // Update the poster image when a new file is selected
   const handlePosterChange = (file: File | undefined) => {
@@ -171,6 +136,53 @@ export const UpdateProductionFormInternal = ({
     form.reset(defaultValues);
   };
 
+  const onSubmit: SubmitHandler<UpdateProductionSchema> = async (formData) => {
+    await toast.promise(
+      (async () => {
+        // Upload new poster image if included in form data
+        const poster = formData.poster;
+        if (poster && poster.name && poster.size) {
+          const { error: fileError } = await supabase.storage
+            .from("posters")
+            .upload(poster.name, poster, {
+              upsert: true,
+            });
+
+          if (fileError) return Promise.reject(fileError);
+
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("posters").getPublicUrl(poster.name);
+
+          formData.poster_url = publicUrl;
+          delete formData.poster;
+        }
+
+        const endpoint = `/api/productions/${production.id}`;
+        const res = await fetch(endpoint, {
+          method: "PUT",
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+          const { error } = (await res.json()) as { error: string };
+          console.error(error);
+          return Promise.reject(new Error(error));
+        }
+        form.reset(formData);
+      })(),
+      {
+        loading: "Updating production...",
+        success: "Production updated!",
+        error: (err: Error) => err.message,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+      },
+    );
+  };
+
   // Show warning if the poster image is not close to 3:4 aspect ratio
   const handleImageLoad = (e: any) => {
     const img = e.target;
@@ -191,16 +203,9 @@ export const UpdateProductionFormInternal = ({
     <Form {...form}>
       <form
         className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none"
-        action={() => form.handleAction(formAction)}
+        onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
       >
-        <FormToaster
-          state={state}
-          msgs={{
-            loading: "Updating production...",
-            success: "Production updated!",
-          }}
-        />
         <div>
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             {production.name}
@@ -488,13 +493,11 @@ export const UpdateProductionFormInternal = ({
                     {...field}
                     type="number"
                     placeholder="120"
-                    onChange={(e) =>
+                    onChange={(e) => {
                       field.onChange(
-                        e.target.value !== ""
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      )
-                    }
+                        e.target.value !== "" ? parseInt(e.target.value) : "",
+                      );
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -636,7 +639,11 @@ export const UpdateProductionFormInternal = ({
                 Cancel
               </Button>
             )}
-            <SubmitButton disabled={!form.isDirty}>Update</SubmitButton>
+            <SubmitButton
+              disabled={!form.isDirty || form.formState.isSubmitting}
+            >
+              Update
+            </SubmitButton>
           </div>
           <Button
             type="button"
@@ -650,4 +657,4 @@ export const UpdateProductionFormInternal = ({
       </form>
     </Form>
   );
-};
+}

@@ -5,37 +5,33 @@ import { UpdateProductionForm } from "@/components/forms/UpdateProductionForm";
 import {
   getProduction,
   getTheaterForUpdateProduction,
+  getUser,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
+import { NoTheater } from "@/components/NoTheater";
+import { NotAuthorized } from "@/components/NotAuthorized";
 
 export default async function EditProductionPage({
   params,
 }: {
   params: { id: string };
 }) {
-  //TODO: Need to redirect page to something else if the user is not a theater manager
-  // for the associated theater's production
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No user found");
+  const user = await getUser(supabase);
 
   const { data: production } = await getProduction(supabase, params.id);
   if (!production) redirect("/account/productions");
 
-  const { data: theater } = await getTheaterForUpdateProduction(
+  const { data: theater, error } = await getTheaterForUpdateProduction(
     supabase,
-    user.id,
     params.id,
   );
-  if (!theater) throw new Error("No theater associated with user");
+  if (error) throw new Error(error.message);
+  if (!theater)
+    throw new Error(`No theater found for production ${params.id}.`);
+  if (theater.manager_id !== user.id) return <NotAuthorized />;
 
-  return (
-    <div className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
-      <UpdateProductionForm production={production} theater={theater} />
-    </div>
-  );
+  return <UpdateProductionForm production={production} theater={theater} />;
 }

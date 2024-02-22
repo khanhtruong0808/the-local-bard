@@ -33,7 +33,6 @@ import {
 } from "@/lib/form-schemas/stages";
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { FormServerState } from "@/lib/types";
-import { useEffect } from "react";
 
 export const CreateStageForm = () => {
   const LOCAL_STORAGE_KEY = `create-stage-form`;
@@ -42,6 +41,11 @@ export const CreateStageForm = () => {
     createStage,
     { status: "idle" },
   );
+
+  const router = useRouter();
+  if (state.status === "success") {
+    router.push("/account/stages");
+  }
 
   const defaultValues: CreateStageSchema = {
     name: "",
@@ -60,14 +64,6 @@ export const CreateStageForm = () => {
     localStorageKey: LOCAL_STORAGE_KEY,
     defaultValues: defaultValues,
   });
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (state.status === "success") {
-      router.push("/account/stages");
-    }
-  }, [router, state]);
 
   const { key, updateKey } = useSelectKey();
 

@@ -79,6 +79,7 @@ export type Database = {
       }
       productions: {
         Row: {
+          approved: boolean
           composers: string[]
           cost_range: string
           created_at: string
@@ -100,6 +101,7 @@ export type Database = {
           url: string | null
         }
         Insert: {
+          approved?: boolean
           composers?: string[]
           cost_range: string
           created_at?: string
@@ -121,6 +123,7 @@ export type Database = {
           url?: string | null
         }
         Update: {
+          approved?: boolean
           composers?: string[]
           cost_range?: string
           created_at?: string
@@ -143,14 +146,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "productions_stage_id_fkey"
+            foreignKeyName: "public_productions_stage_id_fkey"
             columns: ["stage_id"]
             isOneToOne: false
             referencedRelation: "stages"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "productions_theater_id_fkey"
+            foreignKeyName: "public_productions_theater_id_fkey"
             columns: ["theater_id"]
             isOneToOne: false
             referencedRelation: "theaters"

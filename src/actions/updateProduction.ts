@@ -1,64 +1,72 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+/**
+ * This is not in use because it was hard to integrate server actions with RHF
+ * and file uploads. Currently just using handleSubmit and an API route handler
+ * until server actions are better integrated with RHF.
+ */
 
-import {
-  updateProductionServerSchema,
-  type UpdateProductionSchema,
-} from "@/lib/form-schemas/productions";
-import { createClient } from "@/lib/supabase/server";
-import { FormServerState } from "@/lib/types";
+// import { revalidatePath } from "next/cache";
+// import { cookies } from "next/headers";
 
-export default async function updateProduction(
-  currentState: FormServerState,
-  form: UpdateProductionSchema,
-): Promise<FormServerState> {
-  const parsed = updateProductionServerSchema.safeParse(form);
-  if (!parsed.success) {
-    const error = parsed.error.errors.map((e) => e.message).join("\n");
-    return { status: "error", error: error };
-  }
+// import {
+//   updateProductionServerSchema,
+//   type UpdateProductionSchema,
+// } from "@/lib/form-schemas/productions";
+// import { createClient } from "@/lib/supabase/server";
+// import { FormServerState } from "@/lib/types";
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+// export default async function updateProduction(
+//   currentState: FormServerState,
+//   form: UpdateProductionSchema,
+// ): Promise<FormServerState> {
+//   console.log("form from updateProduction:", form);
+//   const parsed = updateProductionServerSchema.safeParse(form);
+//   if (!parsed.success) {
+//     console.log(form);
+//     const error = parsed.error.errors.map((e) => e.message).join("\n");
+//     return { status: "error", error: error };
+//   }
 
-  const { id, poster, ...updatedProduction } = parsed.data;
+//   const cookieStore = cookies();
+//   const supabase = createClient(cookieStore);
 
-  const posterFile = poster ? poster.get("poster") : null;
+//   const { id, poster, ...updatedProduction } = parsed.data;
 
-  if (posterFile && posterFile instanceof File && posterFile.size > 0) {
-    const { error: fileError } = await supabase.storage
-      .from("posters")
-      .upload(posterFile.name, posterFile, {
-        upsert: true,
-      });
+//   const posterFile = poster ? poster.get("poster") : null;
 
-    if (fileError) {
-      throw fileError.message; // We actually want to see this error logged
-    }
+//   if (posterFile && posterFile instanceof File && posterFile.size > 0) {
+//     const { error: fileError } = await supabase.storage
+//       .from("posters")
+//       .upload(posterFile.name, posterFile, {
+//         upsert: true,
+//       });
 
-    const { data } = supabase.storage
-      .from("posters")
-      .getPublicUrl(posterFile.name);
+//     if (fileError) {
+//       throw fileError.message; // We actually want to see this error logged
+//     }
 
-    const { publicUrl: poster_url } = data;
-    updatedProduction.poster_url = poster_url;
-  } else {
-    // TODO: Figure out how to actually delete orphaned posters from storage?
-    // keep old poster_url if no file is given
-  }
+//     const { data } = supabase.storage
+//       .from("posters")
+//       .getPublicUrl(posterFile.name);
 
-  const { error } = await supabase
-    .from("productions")
-    .update({
-      ...updatedProduction,
-    })
-    .eq("id", id);
+//     const { publicUrl: poster_url } = data;
+//     updatedProduction.poster_url = poster_url;
+//   } else {
+//     // TODO: Figure out how to actually delete orphaned posters from storage?
+//     // keep old poster_url if no file is given
+//   }
 
-  if (error) return { status: "error", error: error.message };
+//   const { error } = await supabase
+//     .from("productions")
+//     .update({
+//       ...updatedProduction,
+//     })
+//     .eq("id", id);
 
-  revalidatePath(`/account/productions/${id}`);
+//   if (error) return { status: "error", error: error.message };
 
-  return { status: "success" };
-}
+//   revalidatePath(`/account/productions/${id}`);
+
+//   return { status: "success" };
+// }
