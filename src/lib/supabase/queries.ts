@@ -206,6 +206,8 @@ export type TheaterForTheaterPage = DbResultOk<
 
 /**
  * Gets user from Supabase Auth or throws an error.
+ * This circumvents the issue where we DO get a user response, but there is also
+ * an error saying that the sub claim is missing.
  */
 export const getUser = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client.auth.getUser();

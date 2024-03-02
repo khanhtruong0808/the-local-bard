@@ -1,11 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import Image from "next/image";
 import { useState } from "react";
+import { SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import deleteProduction from "@/actions/deleteProduction";
+import { DatePickerWithRange } from "@/components/DatePickerWithRange";
 import { ConfirmDeleteForm } from "@/components/forms/ConfirmDeleteForm";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
@@ -30,6 +33,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { commonPlaywrigthts, commonProductions, genres } from "@/lib/constants";
 import {
+  UpdateProductionServerSchema,
   updateProductionSchema,
   type UpdateProductionSchema,
 } from "@/lib/form-schemas/productions";
@@ -39,9 +43,8 @@ import type {
   Production,
   TheaterForUpdateProduction,
 } from "@/lib/supabase/queries";
-import { boolToYN } from "@/lib/utils";
+import { boolToYN, parseDateString, ynToBool } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
-import { SubmitHandler } from "react-hook-form";
 
 interface ProductionFormProps {
   production: Production;
@@ -70,8 +73,11 @@ export function UpdateProductionForm({
     poster: undefined,
     url: production.url || "",
     notes: production.notes || "",
-    start_date: production.start_date,
-    end_date: production.end_date,
+    // Custom field that we will convert on submit to start_date and end_date
+    date_range: {
+      from: parseDateString(production.start_date),
+      to: parseDateString(production.end_date),
+    },
   };
 
   const form = useFormCustom<UpdateProductionSchema>({
@@ -139,8 +145,10 @@ export function UpdateProductionForm({
   const onSubmit: SubmitHandler<UpdateProductionSchema> = async (formData) => {
     await toast.promise(
       (async () => {
+        // Extract fields that need to be processed before sending to the server
+        const { poster, date_range, kid_friendly, ...rest } = formData;
+
         // Upload new poster image if included in form data
-        const poster = formData.poster;
         if (poster && poster.name && poster.size) {
           const { error: fileError } = await supabase.storage
             .from("posters")
@@ -155,13 +163,21 @@ export function UpdateProductionForm({
           } = supabase.storage.from("posters").getPublicUrl(poster.name);
 
           formData.poster_url = publicUrl;
-          delete formData.poster;
         }
+
+        // Update
+        const payload = {
+          ...rest,
+          poster_url: formData.poster_url,
+          start_date: format(date_range.from, "yyyy-MM-dd"),
+          end_date: format(date_range.to || date_range.from, "yyyy-MM-dd"),
+          kid_friendly: ynToBool(kid_friendly),
+        } as UpdateProductionServerSchema;
 
         const endpoint = `/api/productions/${production.id}`;
         const res = await fetch(endpoint, {
           method: "PUT",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const { error } = (await res.json()) as { error: string };
@@ -515,7 +531,7 @@ export function UpdateProductionForm({
                     {...field}
                     type="file"
                     key={imageKey}
-                    accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
+                    accept="image/*"
                     className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
                     onChange={(e) => {
                       field.onChange(e.target.files?.[0]);
@@ -524,7 +540,6 @@ export function UpdateProductionForm({
                     value={undefined}
                   />
                 </FormControl>
-                <FormDescription>jpeg, png, webp, or svg only!</FormDescription>
                 <FormMessage />
                 {posterUrl !== production.poster_url && (
                   <Button
@@ -607,26 +622,18 @@ export function UpdateProductionForm({
           />
           <FormField
             control={form.control}
-            name="start_date"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3 sm:col-start-1">
-                <FormLabel>Opening Night</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="end_date"
+            name="date_range"
             render={({ field }) => (
               <FormItem className="sm:col-span-3">
-                <FormLabel>Closing Night</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
+                <FormLabel>Opening/Closing Nights</FormLabel>
+                {/* Do not wrap DatePickerWithRange in FormControl */}
+                <DatePickerWithRange
+                  dateRange={field.value}
+                  onSelect={(v) => {
+                    if (v === undefined) return;
+                    field.onChange(v);
+                  }}
+                />
                 <FormMessage />
               </FormItem>
             )}

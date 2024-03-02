@@ -5,6 +5,8 @@ import { createProductionServerSchema } from "@/lib/form-schemas/productions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+export const runtime = "edge";
+
 export async function POST(request: Request) {
   const body = await request.json();
   const parsed = createProductionServerSchema.safeParse(body);

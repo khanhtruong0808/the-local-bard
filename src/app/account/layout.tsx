@@ -12,11 +12,16 @@ export default async function Layout({
 }) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
-
-  const user = await getUser(supabase);
-  if (!user) {
-    // This route can only be accessed by authenticated users.
-    // Unauthenticated users will be redirected to the `/login` route.
+  try {
+    const user = await getUser(supabase);
+    if (!user) {
+      // This route can only be accessed by authenticated users.
+      // Unauthenticated users will be redirected to the `/login` route.
+      redirect("/login");
+    }
+  } catch (error) {
+    console.error(error);
+    // If there's an error, redirect to the `/login` route.
     redirect("/login");
   }
 

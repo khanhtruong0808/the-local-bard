@@ -1,12 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type ReactEventHandler } from "react";
 import { SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 
+import { DatePickerWithRange } from "@/components/DatePickerWithRange";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,11 +34,12 @@ import { commonPlaywrigthts, commonProductions, genres } from "@/lib/constants";
 import {
   createProductionSchema,
   type CreateProductionSchema,
+  type CreateProductionServerSchema,
 } from "@/lib/form-schemas/productions";
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
-import type { TheaterForNewProduction } from "@/lib/supabase/queries";
-
 import { createClient } from "@/lib/supabase/client";
+import type { TheaterForNewProduction } from "@/lib/supabase/queries";
+import { ynToBool } from "@/lib/utils";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -47,9 +50,9 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
   const supabase = createClient();
 
   const router = useRouter();
-  // if (state.status === "success") {
-  //   router.push("/account/productions");
-  // }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const defaultValues: CreateProductionSchema = {
     theater_id: theater.id,
@@ -66,8 +69,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
     poster: undefined,
     url: "",
     notes: "",
-    start_date: "",
-    end_date: "",
+    date_range: { from: today, to: today },
   };
 
   const form = useFormCustom<CreateProductionSchema>({
@@ -107,8 +109,10 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
   const onSubmit: SubmitHandler<CreateProductionSchema> = async (formData) => {
     await toast.promise(
       (async () => {
+        // Extract fields that need to be processed before sending to the server
+        const { poster, date_range, kid_friendly, ...rest } = formData;
+
         // Upload new poster image if included in form data
-        const poster = formData.poster;
         if (poster && poster.name && poster.size) {
           const { error: fileError } = await supabase.storage
             .from("posters")
@@ -123,13 +127,20 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           } = supabase.storage.from("posters").getPublicUrl(poster.name);
 
           formData.poster_url = publicUrl;
-          delete formData.poster;
         }
+
+        const payload = {
+          ...rest,
+          poster_url: formData.poster_url,
+          start_date: format(date_range.from, "yyyy-MM-dd"),
+          end_date: format(date_range.to || date_range.from, "yyyy-MM-dd"),
+          kid_friendly: ynToBool(kid_friendly),
+        } as CreateProductionServerSchema;
 
         const endpoint = "/api/productions";
         const res = await fetch(endpoint, {
           method: "POST",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const { error } = (await res.json()) as { error: string };
@@ -454,7 +465,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                     {...field}
                     type="file"
                     key={imageKey}
-                    accept={"image/jpeg, image/png, image/webp, image/svg+xml"}
+                    accept="image/*"
                     className="h-min w-full cursor-pointer p-0 text-sm text-zinc-400 file:mr-2 file:cursor-pointer file:rounded-md file:rounded-r-none file:border-none file:bg-transparent file:bg-zinc-700 file:px-2.5 file:py-1.5 file:text-zinc-100 file:hover:bg-zinc-600 file:active:bg-zinc-700 file:active:text-zinc-100/70"
                     onChange={(e) => {
                       field.onChange(e.target.files?.[0]);
@@ -463,7 +474,6 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                     value={undefined}
                   />
                 </FormControl>
-                <FormDescription>jpeg, png, webp, or svg only!</FormDescription>
                 <FormMessage />
                 {posterUrl && (
                   <Button
@@ -546,26 +556,18 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           />
           <FormField
             control={form.control}
-            name="start_date"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3 sm:col-start-1">
-                <FormLabel>Opening Night</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="end_date"
+            name="date_range"
             render={({ field }) => (
               <FormItem className="sm:col-span-3">
-                <FormLabel>Closing Night</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
+                <FormLabel>Opening/Closing Nights</FormLabel>
+                {/* Do not wrap DatePickerWithRange in FormControl */}
+                <DatePickerWithRange
+                  dateRange={field.value}
+                  onSelect={(v) => {
+                    if (v === undefined) return;
+                    field.onChange(v);
+                  }}
+                />
                 <FormMessage />
               </FormItem>
             )}

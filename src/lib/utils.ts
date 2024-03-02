@@ -55,3 +55,16 @@ export type SchemaToFormType<T> = {
       ? T[P] | ""
       : T[P];
 };
+
+/**
+ * Convert a date string to a Date object without timezone offset.
+ */
+export function parseDateString(dateStr: string) {
+  const date = new Date(dateStr);
+  const offset = date.getTimezoneOffset();
+  date.setMinutes(date.getMinutes() + offset);
+  return date;
+}
+
+export const urlRegex =
+  /^(https?:\/\/)[A-Za-z0-9.-]+(?::\d+)?(?:\/[\+~%\/.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[.\!\/\\\w]*)?$/;

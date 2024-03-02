@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 import { updateProductionServerSchema } from "@/lib/form-schemas/productions";
 import { createClient } from "@/lib/supabase/server";
 
+export const runtime = "edge";
+
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } },

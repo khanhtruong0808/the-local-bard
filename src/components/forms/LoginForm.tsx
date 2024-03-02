@@ -31,6 +31,7 @@ export default function LoginForm() {
             aria-label="Email address"
             className="w-full"
             required
+            tabIndex={1}
           />
         </div>
       </div>
@@ -41,6 +42,7 @@ export default function LoginForm() {
             <Link
               href="/reset-password"
               className="font-semibold text-zinc-300 hover:text-zinc-200"
+              tabIndex={4}
             >
               Forgot password?
             </Link>
@@ -54,10 +56,15 @@ export default function LoginForm() {
             className="w-full"
             name="password"
             required
+            tabIndex={2}
           />
         </div>
       </div>
-      <SubmitButton size="lg" className="flex w-full justify-center">
+      <SubmitButton
+        size="lg"
+        className="flex w-full justify-center"
+        tabIndex={3}
+      >
         Sign In
       </SubmitButton>
       <p className="mt-6 text-center text-sm text-neutral-400">

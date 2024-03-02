@@ -13,7 +13,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const isSearchPage = pathname === "/search";
 
-  const links = [{ href: "", label: "", hidden: false }];
+  // const links = [{ href: "", label: "", hidden: false }];
 
   return (
     <Disclosure
@@ -43,7 +43,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
             </Link>
             <div className="flex w-full justify-between">
               <div className="flex items-center gap-x-4 text-sm">
-                {links.map(
+                {/* {links.map(
                   (link) =>
                     !link.hidden && (
                       <Link
@@ -57,7 +57,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                         {link.label}
                       </Link>
                     ),
-                )}
+                )} */}
               </div>
               {children}
             </div>
@@ -86,7 +86,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
 
           <Disclosure.Panel className="md:hidden">
             <div className="space-y-1 divide-none bg-zinc-700 px-2 pb-3 pt-2">
-              {links.map((item) => (
+              {/* {links.map((item) => (
                 <Disclosure.Button
                   key={item.label}
                   as={Button}
@@ -95,7 +95,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                 >
                   <Link href={item.href}>{item.label}</Link>
                 </Disclosure.Button>
-              ))}
+              ))} */}
             </div>
           </Disclosure.Panel>
         </>

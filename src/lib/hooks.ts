@@ -31,7 +31,19 @@ export function useFormCustom<
         props.localStorageKey,
       );
       if (localStorageValStr) {
-        return { ...defaultValues, ...JSON.parse(localStorageValStr) };
+        return {
+          ...defaultValues,
+          ...JSON.parse(localStorageValStr, (key, value) => {
+            // See docs about reviver function for JSON.parse:
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#reviver
+            if (key === "date_range") {
+              const from = new Date(value.from);
+              const to = new Date(value.to);
+              return { from, to };
+            }
+            return value;
+          }),
+        };
       }
     }
     return defaultValues;
@@ -51,11 +63,28 @@ export function useFormCustom<
     // We haven't applied local storage values yet, but they are different from
     // the default values. Apply them to the form now.
     if (!isLocalStorageApplied && isDifferent) {
-      Object.entries(defaultValues).forEach(([key, value]) => {
+      Object.entries(defaultValues).forEach(([key, defaultValue]) => {
         // Exception just for poster image. Maybe a better way to do this...
         if (key === "poster") return;
 
-        if (!deepEqual(localStorageValues[key], value)) {
+        // Excpetion for date_range because localstorage stores dates as strings
+        if (key === "date_range") {
+          const from = new Date(localStorageValues[key].from);
+          const to = new Date(localStorageValues[key].to);
+          const dateRange = { from, to } as TFieldValues["date_range"];
+          const defaultDateRange = defaultValue as TFieldValues["date_range"];
+
+          if (from === defaultDateRange.from && to === defaultDateRange.to) {
+            return;
+          }
+
+          if (from !== defaultDateRange.from || to !== defaultDateRange.to) {
+            form.setValue(key as Path<TFieldValues>, dateRange);
+            return;
+          }
+        }
+
+        if (!deepEqual(localStorageValues[key], defaultValue)) {
           form.setValue(key as Path<TFieldValues>, localStorageValues[key]);
         }
       });
@@ -83,6 +112,7 @@ export function useFormCustom<
       }
 
       if (Object.entries(values).length) {
+        console.log("saving to local storage:", values);
         window.localStorage.setItem(
           props.localStorageKey,
           JSON.stringify(values),
