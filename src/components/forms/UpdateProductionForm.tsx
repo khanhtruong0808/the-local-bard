@@ -247,9 +247,9 @@ export function UpdateProductionForm({
                 <FormLabel>Title</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="text"
                     placeholder="The Lion King"
-                    {...field}
                     list="title"
                   />
                 </FormControl>
@@ -270,9 +270,9 @@ export function UpdateProductionForm({
                 <FormLabel>Summary</FormLabel>
                 <FormControl>
                   <Textarea
+                    {...field}
                     rows={3}
                     placeholder="The stage musical adapted from Disney's animated classic of the same name."
-                    {...field}
                   />
                 </FormControl>
                 <FormDescription>

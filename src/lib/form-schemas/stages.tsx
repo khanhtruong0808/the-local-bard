@@ -14,6 +14,10 @@ export const createStageSchema = z.object({
     .int("Seating capacity must be a whole number.")
     .min(0, "Seating capacity must be a positive number.")
     .max(200_000, "Seating capacity is too high."),
+  parking_instructions: z.string().trim(),
+  concessions: z.string().trim(),
+  latitude: z.coerce.number(),
+  longitude: z.coerce.number(),
 });
 
 export const updateStageSchema = createStageSchema.extend({

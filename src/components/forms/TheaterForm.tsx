@@ -34,6 +34,7 @@ import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import type { TheaterForTheaterPage } from "@/lib/supabase/queries";
 import { FormServerState } from "@/lib/types";
 import { useEffect, useState } from "react";
+import { theaterTypes } from "@/lib/constants";
 
 export const TheaterForm = ({
   theater,
@@ -79,10 +80,10 @@ const TheaterFormInternal = ({
     state: address?.state || "",
     postal_code: address?.postal_code || "",
     notes: theater.notes || "",
-    parking_instructions: theater.parking_instructions || "",
     url: theater.url || "",
     type: theater.type || "",
-    concessions: theater.concessions || "",
+    latitude: address?.latitude || 0,
+    longitude: address?.longitude || 0,
   };
 
   const form = useFormCustom<UpdateTheaterSchema>({
@@ -153,39 +154,11 @@ const TheaterFormInternal = ({
             name="name"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Theater Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="My Theater" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <hr className="col-span-full mt-6" />
-
-          <div className="col-span-full">
-            <h3 className="text-base font-semibold leading-7 text-zinc-200">
-              Address
-            </h3>
-            <p className="text-sm dark:text-zinc-400">
-              Either use the address finder below or enter your address
-              manually.
-            </p>
-          </div>
-          <div className="col-span-full">
-            <AddressFinderInput />
-          </div>
-          <FormField
-            control={form.control}
-            name="street_address"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Street Address</FormLabel>
+                <FormLabel>Theater Company Name</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="123 Sesame Street"
+                    placeholder="My Theater Company"
                     {...field}
                   />
                 </FormControl>
@@ -193,97 +166,118 @@ const TheaterFormInternal = ({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Sacramento" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>State / Province</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="CA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="postal_code"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>ZIP / Postal Code</FormLabel>
-                <FormControl>
-                  <Input {...field} type="text" placeholder="12345" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <hr className="col-span-full mt-6" />
+          <div className="col-span-full">
+            <AddressFinderInput description="Enter your theater company's mailing address." />
+          </div>
 
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    rows={3}
-                    placeholder="Include anything else you'd like to add."
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Other characterstics useful to the attendee.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="parking_instructions"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Parking Instructions</FormLabel>
-                <FormControl>
-                  <Textarea rows={3} {...field} />
-                </FormControl>
-                <FormDescription>
-                  List any parking instructions here.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Website URL</FormLabel>
-                <FormControl>
-                  <Input {...field} type="url" placeholder="www.example.com" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="hidden">
+            <FormField
+              control={form.control}
+              name="street_address"
+              render={({ field }) => (
+                <FormItem className="col-span-full">
+                  <FormLabel>Street Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      readOnly
+                      type="text"
+                      placeholder="123 Sesame Street"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="Sacramento"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>State / Province</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly type="text" placeholder="CA" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="postal_code"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>ZIP / Postal Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="latitude"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Latitude</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="number"
+                      placeholder="38.12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="longitude"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Longitude</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="number"
+                      placeholder="-121.12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          {/* End of hidden fields */}
+
           <FormField
             control={form.control}
             name="type"
@@ -302,14 +296,11 @@ const TheaterFormInternal = ({
                       <SelectValue placeholder="Select a theater type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="High School">High School</SelectItem>
-                      <SelectItem value="Junior College">
-                        Junior College
-                      </SelectItem>
-                      <SelectItem value="Equity Theater">
-                        Equity Theater
-                      </SelectItem>
-                      <SelectItem value="Play House">Play House</SelectItem>
+                      {theaterTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -317,15 +308,36 @@ const TheaterFormInternal = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="concessions"
+            name="url"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Concessions</FormLabel>
+                <FormLabel>Website URL</FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
+                  <Input {...field} type="url" placeholder="www.example.com" />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    rows={3}
+                    placeholder="Include anything else you'd like to add."
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Other characterstics useful to the attendee.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

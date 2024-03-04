@@ -12,7 +12,7 @@ import { twMerge } from "tailwind-merge";
 
 const secondaryNavigation = [
   {
-    name: "Theater",
+    name: "Theater Company",
     href: "/account/theater",
     segment: "theater",
     icon: UserCircleIcon,

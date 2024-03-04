@@ -31,10 +31,8 @@ export default async function updateTheater(
     .update({
       name: payload.name,
       notes: payload.notes,
-      parking_instructions: payload.parking_instructions,
       url: payload.url,
       type: payload.type,
-      concessions: payload.concessions,
     })
     .eq("id", payload.id || "");
 
@@ -50,6 +48,8 @@ export default async function updateTheater(
       city: payload.city,
       state: payload.state,
       postal_code: payload.postal_code,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
     })
     .eq("id", payload.address_id || "");
 

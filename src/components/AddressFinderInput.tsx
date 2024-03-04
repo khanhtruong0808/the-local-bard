@@ -7,7 +7,8 @@ import { useState } from "react";
 import { useLoadGoogleApi } from "@/lib/googleMaps";
 import { useFormContext } from "react-hook-form";
 import { Input } from "./ui/input";
-import { FormItem, FormLabel } from "./ui/form";
+import { FormDescription, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { cn } from "@/lib/utils";
 
 // Geographic boundary to bias the search results to Sacramento County.
 // Results outside of this area will still be returned, but will be lower priority.
@@ -18,9 +19,13 @@ const SAC_COUNTY_BOUNDS = {
   north: 38.736405,
 };
 
-export default function AddressFinderInput() {
+export default function AddressFinderInput({
+  description,
+}: {
+  description?: string;
+}) {
   const { isLoaded, loadError } = useLoadGoogleApi();
-  const { setValue, getValues } = useFormContext();
+  const { setValue, getValues, getFieldState } = useFormContext();
 
   const [search, setSearch] = useState<google.maps.places.SearchBox | null>(
     null,
@@ -40,9 +45,19 @@ export default function AddressFinderInput() {
       }
 
       const place = places[0];
+
       const addressComponents = place.address_components;
       if (addressComponents === undefined) {
-        alert("Could not find any address components");
+        alert(
+          "Could not find any address components. Try a different address.",
+        );
+        return;
+      }
+
+      const lat = place.geometry?.location?.lat();
+      const lng = place.geometry?.location?.lng();
+      if (lat === undefined || lng === undefined) {
+        alert("Could not find latitude or longitude");
         return;
       }
 
@@ -54,17 +69,19 @@ export default function AddressFinderInput() {
       const city = get("locality")?.long_name;
       const state = get("administrative_area_level_1")?.short_name;
       const postalCode = get("postal_code")?.long_name;
-      const streetAddress = streetName
-        ? streetNumber
-          ? `${streetNumber} ${streetName}`
-          : streetName
-        : null;
+      if (!streetNumber || !streetName || !city || !state || !postalCode) {
+        alert("Invalid address. Please try again.");
+        return;
+      }
 
-      if (streetAddress) setValue("street_address", streetAddress);
-      if (city) setValue("city", city, { shouldDirty: true });
-      if (state) setValue("state", state, { shouldDirty: true });
-      if (postalCode)
-        setValue("postal_code", postalCode, { shouldDirty: true });
+      const streetAddress = `${streetNumber} ${streetName}`;
+
+      setValue("street_address", streetAddress, { shouldDirty: true });
+      setValue("city", city, { shouldDirty: true });
+      setValue("state", state, { shouldDirty: true });
+      setValue("postal_code", postalCode, { shouldDirty: true });
+      setValue("latitude", lat, { shouldDirty: true });
+      setValue("longitude", lng, { shouldDirty: true });
     }
   };
 
@@ -79,14 +96,32 @@ export default function AddressFinderInput() {
   if (!isLoaded)
     return (
       <FormItem>
-        <FormLabel>Address Search (optional)</FormLabel>
+        <FormLabel>Address</FormLabel>
         <Input
           type="text"
           placeholder="Type here to search for an address."
           disabled
         />
+        {description && <FormDescription>{description}</FormDescription>}
       </FormItem>
     );
+
+  const currentValues = getValues();
+  const currentStreetAddress = currentValues.street_address;
+  const currentCity = currentValues.city;
+  const currentState = currentValues.state;
+  const currentAddress =
+    currentStreetAddress && currentCity && currentState
+      ? `${currentStreetAddress}, ${currentCity}, ${currentState}`
+      : undefined;
+
+  const currentError =
+    getFieldState("street_address")?.error ||
+    getFieldState("city")?.error ||
+    getFieldState("state")?.error ||
+    getFieldState("postal_code")?.error ||
+    getFieldState("latitude")?.error ||
+    getFieldState("longitude")?.error;
 
   return (
     <StandaloneSearchBox
@@ -95,14 +130,25 @@ export default function AddressFinderInput() {
       bounds={SAC_COUNTY_BOUNDS}
     >
       <FormItem>
-        <FormLabel>Address Search (optional)</FormLabel>
+        <FormLabel
+          className={cn(currentError && "text-red-500 dark:text-red-600")}
+        >
+          Address
+        </FormLabel>
         <Input
           type="text"
           placeholder="Type here to search for an address"
+          defaultValue={currentAddress}
           onKeyDown={(e) => {
             if (e.code === "Enter") e.preventDefault();
           }}
         />
+        {currentError && (
+          <FormMessage className="text-red-500 dark:text-red-600">
+            Invalid address. Try again.
+          </FormMessage>
+        )}
+        {description && <FormDescription>{description}</FormDescription>}
       </FormItem>
     </StandaloneSearchBox>
   );

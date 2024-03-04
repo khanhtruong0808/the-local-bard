@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const navigation = [
   { name: "Contact", href: "/contact" },
-  { name: "Theater Login", href: "/login" },
+  { name: "Theater Company Login", href: "/login" },
 ];
 
 export async function Footer() {
