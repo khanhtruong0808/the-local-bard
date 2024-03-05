@@ -1,6 +1,7 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { parse } from "date-fns";
 
 export const createUrl = (
   pathname: string,
@@ -58,12 +59,19 @@ export type SchemaToFormType<T> = {
 
 /**
  * Convert a date string to a Date object without timezone offset.
+ * "2024-01-01" will be converted to local timezone midnight of that date.
  */
 export function parseDateString(dateStr: string) {
-  const date = new Date(dateStr);
-  const offset = date.getTimezoneOffset();
-  date.setMinutes(date.getMinutes() + offset);
-  return date;
+  return parse(dateStr, "yyyy-MM-dd", new Date());
+}
+
+/**
+ * Get a Date object for today at midnight local time.
+ */
+export function getTodayAtMidnight() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
 }
 
 export const urlRegex =

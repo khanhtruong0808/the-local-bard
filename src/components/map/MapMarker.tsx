@@ -13,13 +13,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface MapMarkerProps extends MarkerProps {
   productionId: number;
-  theaterId?: number;
+  stageId?: number;
   groupedProductionIds?: number[];
 }
 
 export default function MapMarker({
   productionId,
-  theaterId,
+  stageId,
   groupedProductionIds,
   position,
   children,
@@ -29,15 +29,15 @@ export default function MapMarker({
   const router = useRouter();
 
   const currentProductionId = searchParams.get("productionId");
-  const currentTheaterId = searchParams.get("theaterId");
+  const currentTheaterId = searchParams.get("stageId");
 
   const nextSearchParams = new URLSearchParams(searchParams.toString());
-  if (theaterId) {
+  if (stageId) {
     nextSearchParams.delete("productionId");
-    nextSearchParams.set("theaterId", theaterId.toString());
+    nextSearchParams.set("stageId", stageId.toString());
   } else {
     nextSearchParams.set("productionId", productionId.toString());
-    nextSearchParams.delete("theaterId");
+    nextSearchParams.delete("stageId");
   }
   nextSearchParams.set("lat", position.lat.toString());
   nextSearchParams.set("lng", position.lng.toString());
@@ -52,7 +52,7 @@ export default function MapMarker({
   const active =
     groupedProductionIds?.includes(parseInt(currentProductionId || "")) ||
     currentProductionId === productionId.toString() ||
-    currentTheaterId === theaterId?.toString();
+    currentTheaterId === stageId?.toString();
 
   return (
     <Marker

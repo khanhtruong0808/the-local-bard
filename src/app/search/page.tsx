@@ -16,8 +16,7 @@ export default async function SearchPage({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, theaterId, lat, lng, ...filters } =
-    searchParams || {};
+  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
 
   const searchKey = JSON.stringify(filters);
 
@@ -25,8 +24,7 @@ export default async function SearchPage({
   if (Array.isArray(q)) throw new Error("q must be a single value");
   if (Array.isArray(productionId))
     throw new Error("productionId must be a single value");
-  if (Array.isArray(theaterId))
-    throw new Error("theaterId must be a single value");
+  if (Array.isArray(stageId)) throw new Error("stageId must be a single value");
   if (Array.isArray(lat)) throw new Error("lat must be a single value");
   if (Array.isArray(lng)) throw new Error("lng must be a single value");
 
@@ -37,8 +35,7 @@ export default async function SearchPage({
   const clearSearchParams = new URLSearchParams();
   if (productionId !== undefined)
     clearSearchParams.set("productionId", productionId);
-  if (theaterId !== undefined)
-    clearSearchParams.set("theaterId", theaterId || "");
+  if (stageId !== undefined) clearSearchParams.set("stageId", stageId || "");
   if (lat !== undefined) clearSearchParams.set("lat", lat || "");
   if (lng !== undefined) clearSearchParams.set("lng", lng || "");
 

@@ -15,8 +15,7 @@ export default async function MapMarkers({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, theaterId, lat, lng, ...filters } =
-    searchParams || {};
+  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
@@ -31,7 +30,7 @@ export default async function MapMarkers({
   const uniqueAddressIds: number[] = [];
 
   productions.forEach((production) => {
-    const address = production.theaters?.addresses;
+    const address = production.stages?.addresses;
     if (address != null && !uniqueAddressIds.includes(address.id)) {
       uniqueAddressIds.push(address.id);
     }
@@ -39,7 +38,7 @@ export default async function MapMarkers({
 
   const content = uniqueAddressIds.map((addressId) => {
     const productionsAtAddress = productions.filter(
-      (production) => production.theaters?.addresses?.id === addressId,
+      (production) => production.stages?.addresses?.id === addressId,
     );
 
     if (productionsAtAddress.length === 0) {
@@ -48,8 +47,8 @@ export default async function MapMarkers({
 
     if (productionsAtAddress.length === 1) {
       const production = productionsAtAddress[0];
-      const lat = production?.theaters?.addresses?.latitude;
-      const lng = production?.theaters?.addresses?.longitude;
+      const lat = production?.stages?.addresses?.latitude;
+      const lng = production?.stages?.addresses?.longitude;
 
       if (lat == null || lng == null) {
         return null;
@@ -66,10 +65,10 @@ export default async function MapMarkers({
             <div className="mt-2 text-sm">
               <p>Theater: {production.theaters?.name}</p>
               <p>Stage: {production.stages?.name}</p>
-              <p>{production.theaters?.addresses?.street_address}</p>
+              <p>{production.stages?.addresses?.street_address}</p>
               <p>
-                {production.theaters?.addresses?.city},{" "}
-                {production.theaters?.addresses?.state}
+                {production.stages?.addresses?.city},{" "}
+                {production.stages?.addresses?.state}
               </p>
             </div>
             <div className="mt-2">
@@ -102,8 +101,8 @@ export default async function MapMarkers({
     }
 
     // Else group productions together into one marker
-    const lat = productionsAtAddress[0]?.theaters?.addresses?.latitude;
-    const lng = productionsAtAddress[0]?.theaters?.addresses?.longitude;
+    const lat = productionsAtAddress[0]?.stages?.addresses?.latitude;
+    const lng = productionsAtAddress[0]?.stages?.addresses?.longitude;
 
     if (lat == null || lng == null) {
       return null;
@@ -112,14 +111,14 @@ export default async function MapMarkers({
     return (
       <MapMarker
         key={productionsAtAddress[0].id}
-        theaterId={productionsAtAddress[0].theaters?.id}
+        stageId={productionsAtAddress[0].stages?.id}
         productionId={productionsAtAddress[0].id}
         groupedProductionIds={productionsAtAddress.map((p) => p.id)}
         position={{ lat, lng }}
       >
         <div className="mx-auto max-h-[50vh] p-4 lg:max-w-7xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Productions at {productionsAtAddress[0].theaters?.name}
+            Productions at {productionsAtAddress[0].stages?.name}
           </h2>
           <div className="mt-4 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-3 lg:gap-y-5 xl:grid-cols-4 xl:gap-x-4">
             {productionsAtAddress.map((production) => (
@@ -166,49 +165,6 @@ export default async function MapMarkers({
             ))}
           </div>
         </div>
-        {/* <div className="space-y-3 divide-y-2 bg-gray-100 p-4">
-          {productionsAtAddress.map((production) => (
-            <div
-              key={production.id}
-              className="overflow-hidden rounded-md bg-white px-6 py-4 shadow"
-            >
-              <h3 className="text-lg">{production.name}</h3>
-              <div className="mt-2 text-sm">
-                <p>Theater: {production.theaters?.name}</p>
-                <p>Stage: {production.stages?.name}</p>
-                <p>{production.theaters?.addresses?.street_address}</p>
-                <p>
-                  {production.theaters?.addresses?.city},{" "}
-                  {production.theaters?.addresses?.state}
-                </p>
-              </div>
-              <div className="mt-2">
-                <p>Cost: {production.cost_range}</p>
-                <p>Duration: {production.duration_minutes} mins.</p>
-              </div>
-              <div className="mt-2">
-                {production.url && (
-                  <Link
-                    href={production.url}
-                    className="text-blue-600 underline"
-                    target="_blank"
-                  >
-                    Click for more info
-                  </Link>
-                )}
-              </div>
-              {production.poster_url && (
-                <Image
-                  className="mt-2"
-                  src={production.poster_url}
-                  alt={production.name || "Production poster"}
-                  width={300}
-                  height={300}
-                />
-              )}
-            </div>
-          ))}
-        </div> */}
       </MapMarker>
     );
   });

@@ -24,16 +24,16 @@
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.39.7",
     "@types/node": "20.11.24",
-    "@types/react": "18.2.61",
+    "@types/react": "18.2.62",
     "@types/react-dom": "18.2.19",
     "autoprefixer": "10.4.18",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.3.1",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.1.1",
+    "eslint-config-next": "14.1.2",
     "lucide-react": "^0.344.0",
-    "next": "^14.1.1",
+    "next": "^14.1.2",
     "postcss": "8.4.35",
     "react": "18.2.0",
     "react-day-picker": "^8.10.0",
@@ -53,6 +53,6 @@
     "encoding": "^0.1.13",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
-    "supabase": "^1.145.4"
+    "supabase": "^1.148.6"
   }
 }

@@ -32,12 +32,12 @@ export default function Map({ children }: { children: React.ReactNode }) {
   const handleMapClick = useCallback(
     (e: google.maps.MapMouseEvent) => {
       const currentProductionId = searchParams.get("productionId");
-      const currentTheaterId = searchParams.get("theaterId");
+      const currentTheaterId = searchParams.get("stageId");
       if (currentProductionId === null && currentTheaterId === null) return;
 
       const nextSearchParams = new URLSearchParams(searchParams.toString());
       nextSearchParams.delete("productionId");
-      nextSearchParams.delete("theaterId");
+      nextSearchParams.delete("stageId");
       const nextUrl = createUrl(pathname, nextSearchParams);
       router.push(nextUrl);
     },

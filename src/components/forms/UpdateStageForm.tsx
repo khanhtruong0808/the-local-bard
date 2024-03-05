@@ -218,9 +218,10 @@ const UpdateStageFormInternal = ({
                   <FormLabel>Street Address</FormLabel>
                   <FormControl>
                     <Input
+                      {...field}
+                      readOnly
                       type="text"
                       placeholder="123 Sesame Street"
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -234,7 +235,12 @@ const UpdateStageFormInternal = ({
                 <FormItem className="sm:col-span-2">
                   <FormLabel>City</FormLabel>,
                   <FormControl>
-                    <Input type="text" placeholder="Sacramento" {...field} />
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="Sacramento"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -247,7 +253,7 @@ const UpdateStageFormInternal = ({
                 <FormItem className="sm:col-span-2">
                   <FormLabel>State / Province</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="CA" {...field} />
+                    <Input {...field} readOnly type="text" placeholder="CA" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -260,7 +266,12 @@ const UpdateStageFormInternal = ({
                 <FormItem className="sm:col-span-2">
                   <FormLabel>ZIP / Postal Code</FormLabel>
                   <FormControl>
-                    <Input {...field} type="text" placeholder="12345" />
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="12345"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

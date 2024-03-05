@@ -4,6 +4,7 @@ import { cache } from "react";
 import type { Database } from "./database.types";
 import type { DbResultOk, Tables } from "./dbHelperTypes";
 import type { RouteSearchParams } from "../types";
+import { format } from "date-fns";
 
 export const getTheaterForNewProduction = async (
   client: SupabaseClient<Database>,
@@ -87,7 +88,9 @@ export const getProduction = async (
 export type Production = DbResultOk<ReturnType<typeof getProduction>>;
 
 /**
- * filters comes from searchParams on the map/search page
+ * Get all productions that are approved and have not ended yet.
+ * Includes stage with address and theater.
+ * Filters comes from searchParams on the map/search page.
  */
 export const getFullProductions = cache(
   async (
@@ -97,7 +100,9 @@ export const getFullProductions = cache(
   ) => {
     const query = client
       .from("productions")
-      .select("*, theaters (*, addresses (*)), stages (*)");
+      .select("*, stages (*, addresses (*)), theaters (*)")
+      .eq("approved", true)
+      .gte("end_date", format(new Date(), "yyyy-MM-dd"));
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
