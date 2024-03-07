@@ -69,18 +69,6 @@ export default async function createStage(
     return Promise.reject(stageError.message);
   }
 
-  // update profile with user information so that they can edit the address
-  const { error: profileError } = await supabase.from("profiles").insert({
-    user_id: user.id,
-    email: user.email,
-    address_id: address.id,
-  });
-
-  if (profileError) {
-    console.error(profileError);
-    throw new Error(profileError.message);
-  }
-
   revalidatePath("/account/stages");
 
   return { status: "success" };

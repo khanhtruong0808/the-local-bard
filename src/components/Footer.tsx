@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const navigation = [
   { name: "Contact", href: "/contact" },
-  { name: "Theater Login", href: "/login" },
+  { name: "Theater Company Login", href: "/login" },
 ];
 
 export async function Footer() {
@@ -40,7 +40,7 @@ export async function Footer() {
             );
           })}
         </nav>
-        <p className="mt-6 text-center text-xs leading-5 text-gray-500">
+        <p className="mt-6 text-center text-xs leading-5 text-zinc-900">
           &copy; {new Date().getFullYear()} The Local Bard. All rights reserved.
         </p>
       </div>

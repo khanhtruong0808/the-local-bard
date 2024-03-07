@@ -212,10 +212,12 @@ export type Database = {
       stages: {
         Row: {
           address_id: number | null
+          concessions: string | null
           created_at: string | null
           id: number
           name: string | null
           notes: string | null
+          parking_instructions: string | null
           seating_capacity: number | null
           theater_id: number | null
           type: string | null
@@ -224,10 +226,12 @@ export type Database = {
         }
         Insert: {
           address_id?: number | null
+          concessions?: string | null
           created_at?: string | null
           id?: number
           name?: string | null
           notes?: string | null
+          parking_instructions?: string | null
           seating_capacity?: number | null
           theater_id?: number | null
           type?: string | null
@@ -236,10 +240,12 @@ export type Database = {
         }
         Update: {
           address_id?: number | null
+          concessions?: string | null
           created_at?: string | null
           id?: number
           name?: string | null
           notes?: string | null
+          parking_instructions?: string | null
           seating_capacity?: number | null
           theater_id?: number | null
           type?: string | null
@@ -266,13 +272,11 @@ export type Database = {
       theaters: {
         Row: {
           address_id: number
-          concessions: string | null
           created_at: string
           id: number
           manager_id: string
           name: string
           notes: string | null
-          parking_instructions: string | null
           referred: string | null
           type: string | null
           updated_at: string
@@ -280,13 +284,11 @@ export type Database = {
         }
         Insert: {
           address_id: number
-          concessions?: string | null
           created_at?: string
           id?: number
           manager_id: string
           name: string
           notes?: string | null
-          parking_instructions?: string | null
           referred?: string | null
           type?: string | null
           updated_at?: string
@@ -294,13 +296,11 @@ export type Database = {
         }
         Update: {
           address_id?: number
-          concessions?: string | null
           created_at?: string
           id?: number
           manager_id?: string
           name?: string
           notes?: string | null
-          parking_instructions?: string | null
           referred?: string | null
           type?: string | null
           updated_at?: string

@@ -1,6 +1,8 @@
+import { User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { NotAuthorized } from "@/components/NotAuthorized";
 import { UpdateProductionForm } from "@/components/forms/UpdateProductionForm";
 import {
   getProduction,
@@ -8,8 +10,6 @@ import {
   getUser,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
-import { NoTheater } from "@/components/NoTheater";
-import { NotAuthorized } from "@/components/NotAuthorized";
 
 export default async function EditProductionPage({
   params,
@@ -19,7 +19,13 @@ export default async function EditProductionPage({
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  const user = await getUser(supabase);
+  let user: User | undefined;
+  try {
+    user = await getUser(supabase);
+  } catch (e) {
+    console.error(e);
+    redirect("/login");
+  }
 
   const { data: production } = await getProduction(supabase, params.id);
   if (!production) redirect("/account/productions");
@@ -31,7 +37,12 @@ export default async function EditProductionPage({
   if (error) throw new Error(error.message);
   if (!theater)
     throw new Error(`No theater found for production ${params.id}.`);
-  if (theater.manager_id !== user.id) return <NotAuthorized />;
+  if (theater.manager_id !== user.id) {
+    console.error(
+      `User ${user.id} is not authorized to update production ${params.id}, which has theater manager ${theater.manager_id}.`,
+    );
+    return <NotAuthorized />;
+  }
 
   return <UpdateProductionForm production={production} theater={theater} />;
 }

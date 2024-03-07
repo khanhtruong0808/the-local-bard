@@ -26,6 +26,24 @@ export default async function updateStage(
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
+  // Prefer to create a new address, rather than update an existing one.
+  // We can always delete unused addresses later with an RPC.
+  const { data: addressData, error: addressesError } = await supabase
+    .from("addresses")
+    .insert({
+      street_address: payload.street_address,
+      city: payload.city,
+      state: payload.state,
+      postal_code: payload.postal_code,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+    })
+    .select()
+    .limit(1)
+    .single();
+
+  if (addressesError) return { status: "error", error: addressesError.message };
+
   const { error: stageError } = await supabase
     .from("stages")
     .update({
@@ -34,22 +52,11 @@ export default async function updateStage(
       notes: payload.notes,
       wheelchair_accessible: ynToBool(payload.wheelchair_accessible),
       seating_capacity: payload.seating_capacity,
+      address_id: addressData.id,
     })
     .eq("id", payload.id);
 
   if (stageError) return Promise.reject(stageError.message);
-
-  const { error: addressesError } = await supabase
-    .from("addresses")
-    .update({
-      street_address: payload.street_address,
-      city: payload.city,
-      state: payload.state,
-      postal_code: payload.postal_code,
-    })
-    .eq("id", payload.address_id);
-
-  if (addressesError) return { status: "error", error: addressesError.message };
 
   revalidatePath(`/account/stages/${payload.id}`);
 

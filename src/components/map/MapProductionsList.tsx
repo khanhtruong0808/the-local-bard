@@ -15,8 +15,7 @@ export async function MapProductionsList({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, theaterId, lat, lng, ...filters } =
-    searchParams || {};
+  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
 
   const nextSearchParams = new URLSearchParams();
 
@@ -51,13 +50,13 @@ export async function MapProductionsList({
   return (
     <>
       {productions.map((production) => {
-        const theater = production.theaters;
-        const address = theater?.addresses;
+        const stage = production.stages;
+        const stageAddress = stage?.addresses;
         nextSearchParams.set("productionId", production.id.toString());
-        nextSearchParams.delete("theaterId");
-        if (address?.latitude && address?.longitude) {
-          nextSearchParams.set("lat", address.latitude.toString());
-          nextSearchParams.set("lng", address.longitude.toString());
+        nextSearchParams.delete("stageId");
+        if (stageAddress?.latitude && stageAddress?.longitude) {
+          nextSearchParams.set("lat", stageAddress.latitude.toString());
+          nextSearchParams.set("lng", stageAddress.longitude.toString());
         }
         return (
           <Link
@@ -82,10 +81,10 @@ export async function MapProductionsList({
                   {production.name}
                 </h3>
                 <div className="mt-2 max-w-xl text-sm text-zinc-400">
-                  <p>{theater?.name}</p>
-                  <p>{address?.street_address}</p>
+                  <p>{stage?.name}</p>
+                  <p>{stageAddress?.street_address}</p>
                   <p>
-                    {address?.city}, {address?.state}
+                    {stageAddress?.city}, {stageAddress?.state}
                   </p>
                 </div>
               </div>

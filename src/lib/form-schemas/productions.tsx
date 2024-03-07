@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ynToBool } from "@/lib/utils";
+import { urlRegex } from "@/lib/utils";
 
 export const createProductionSchema = z.object({
   theater_id: z.number().int().positive(),
@@ -33,12 +33,19 @@ export const createProductionSchema = z.object({
     .min(0)
     .max(9999, "Duration is too long."),
   poster: z.custom<File>().optional(),
-  // z.custom<File>().optional(), // z.instanceOf(File) gives a weird "File not defined error" even when there is a file
   poster_url: z.string().trim().url().optional().nullable(),
-  url: z.string().trim(),
+  url: z
+    .string()
+    .trim()
+    .regex(urlRegex, "Invalid URL")
+    .or(z.literal(""))
+    .optional(),
   notes: z.string().trim(),
-  start_date: z.string().trim().min(1, "Opening Night is required."),
-  end_date: z.string().trim().min(1, "Closing Night is required."),
+  // Custom field that we will convert to start_date and end_date on submit
+  date_range: z.object({
+    from: z.date(),
+    to: z.date().optional(), // Optional because for one-day events
+  }),
 });
 
 export const updateProductionSchema = createProductionSchema
@@ -54,9 +61,11 @@ export const updateProductionSchema = createProductionSchema
  */
 export const createProductionServerSchema = createProductionSchema
   .extend({
-    kid_friendly: z.enum(["Yes", "No", ""]).transform((val) => ynToBool(val)),
+    kid_friendly: z.boolean().optional(),
+    start_date: z.string(), // Supabase requires dates to be strings
+    end_date: z.string(), // Supabase requires dates to be strings
   })
-  .omit({ poster: true });
+  .omit({ poster: true, date_range: true });
 
 export const updateProductionServerSchema = createProductionServerSchema
   .extend({
@@ -66,3 +75,9 @@ export const updateProductionServerSchema = createProductionServerSchema
 
 export type CreateProductionSchema = z.infer<typeof createProductionSchema>;
 export type UpdateProductionSchema = z.infer<typeof updateProductionSchema>;
+export type UpdateProductionServerSchema = z.infer<
+  typeof updateProductionServerSchema
+>;
+export type CreateProductionServerSchema = z.infer<
+  typeof createProductionServerSchema
+>;

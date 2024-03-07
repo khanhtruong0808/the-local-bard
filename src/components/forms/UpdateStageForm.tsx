@@ -105,6 +105,10 @@ const UpdateStageFormInternal = ({
     seating_capacity: stage.seating_capacity || 0,
     notes: stage.notes || "",
     address_id: stage.address_id || "",
+    concessions: stage.concessions || "",
+    parking_instructions: stage.parking_instructions || "",
+    latitude: address.latitude || 0,
+    longitude: address.longitude || 0,
   };
 
   const form = useFormCustom<UpdateStageSchema>({
@@ -199,76 +203,119 @@ const UpdateStageFormInternal = ({
               </FormItem>
             )}
           />
-          <hr className="col-span-full mt-6" />
+
           <div className="col-span-full">
-            <h3 className="text-base font-semibold leading-7 text-zinc-200">
-              Address
-            </h3>
-            <p className="text-sm dark:text-zinc-400">
-              Either use the address finder below or enter your address
-              manually.
-            </p>
+            <AddressFinderInput description="Enter the address of the stage." />
           </div>
-          <div className="col-span-full">
-            <AddressFinderInput />
+
+          {/* Hidden address field. Unhide if we want to make these manually editable. */}
+          <div className="hidden">
+            <FormField
+              control={form.control}
+              name="street_address"
+              render={({ field }) => (
+                <FormItem className="col-span-full">
+                  <FormLabel>Street Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="123 Sesame Street"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>City</FormLabel>,
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="Sacramento"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>State / Province</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly type="text" placeholder="CA" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="postal_code"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>ZIP / Postal Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="text"
+                      placeholder="12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="latitude"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Latitude</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="number"
+                      placeholder="38.12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="longitude"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Longitude</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      readOnly
+                      type="number"
+                      placeholder="-121.12345"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          <FormField
-            control={form.control}
-            name="street_address"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Street Address</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="123 Sesame Street"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Sacramento" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>State / Province</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="CA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="postal_code"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>ZIP / Postal Code</FormLabel>
-                <FormControl>
-                  <Input {...field} type="text" placeholder="12345" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <hr className="col-span-full mt-6" />
+          {/* End of hidden fields */}
+
           <FormField
             control={form.control}
             name="type"
@@ -343,6 +390,35 @@ const UpdateStageFormInternal = ({
                       )
                     }
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="parking_instructions"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Parking Instructions</FormLabel>
+                <FormControl>
+                  <Textarea rows={3} {...field} />
+                </FormControl>
+                <FormDescription>
+                  List any parking instructions here.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="concessions"
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Concessions</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

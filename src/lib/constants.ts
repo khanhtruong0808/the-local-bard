@@ -21,6 +21,13 @@ export const stageTypes = [
   "Other",
 ] as const;
 
+export const theaterTypes = [
+  "High School",
+  "Junior College",
+  "Equity Theater",
+  "Play House",
+] as const;
+
 export const commonProductions = [
   "The Lion King",
   "Les Misérables",

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { getTheaterForProductionsPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { parse } from "date-fns";
+import { getTodayAtMidnight, parseDateString } from "@/lib/utils";
 
 export default async function ProductionsPage() {
   const cookieStore = cookies();
@@ -19,12 +21,15 @@ export default async function ProductionsPage() {
   if (error) throw new Error(error.message);
   if (!theater) return <NoTheater />;
 
+  // filter out productions that have ended
   // sort productions to list most recently updated first
-  const productions = theater.productions.sort((a, b) => {
-    const dateA = new Date(a.updated_at || 0);
-    const dateB = new Date(b.updated_at || 0);
-    return dateB.getTime() - dateA.getTime();
-  });
+  const productions = theater.productions
+    .filter((p) => parseDateString(p.end_date) >= getTodayAtMidnight())
+    .sort((a, b) => {
+      const dateA = new Date(a.updated_at || 0);
+      const dateB = new Date(b.updated_at || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
 
   return (
     <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
