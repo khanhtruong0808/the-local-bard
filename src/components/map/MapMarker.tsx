@@ -61,10 +61,6 @@ export default function MapMarker({
         router.push(nextUrl);
         map?.setCenter(position);
       }}
-      // icon={{
-      //   url: "/images/map-marker.svg",
-      //   scaledSize: new google.maps.Size(40, 40),
-      // }}
     >
       {active && (
         <InfoWindow

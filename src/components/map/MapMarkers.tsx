@@ -60,41 +60,48 @@ export default async function MapMarkers({
           productionId={production.id}
           position={{ lat, lng }}
         >
-          <div>
-            <h3 className="text-lg">{production.name}</h3>
-            <div className="mt-2 text-sm">
-              <p>Theater: {production.theaters?.name}</p>
-              <p>Stage: {production.stages?.name}</p>
-              <p>{production.stages?.addresses?.street_address}</p>
-              <p>
-                {production.stages?.addresses?.city},{" "}
-                {production.stages?.addresses?.state}
-              </p>
-            </div>
-            <div className="mt-2">
-              <p>Cost: {production.cost_range}</p>
-              <p>Duration: {production.duration_minutes} mins.</p>
-            </div>
-            <div className="mt-2">
-              {production.url && (
-                <Link
-                  href={production.url}
-                  className="text-blue-600 underline"
-                  target="_blank"
-                >
-                  Click for more info
-                </Link>
+          <div className="w-full min-w-[400px] max-w-7xl">
+            <div className="flex w-full justify-center">
+              {production.poster_url && (
+                <Image
+                  className="mt-2 h-[200px] w-[150px]"
+                  src={production.poster_url}
+                  alt={production.name || "Production poster"}
+                  width={200}
+                  height={150}
+                />
               )}
             </div>
-            {production.poster_url && (
-              <Image
-                className="mt-2"
-                src={production.poster_url}
-                alt={production.name || "Production poster"}
-                width={300}
-                height={300}
-              />
-            )}
+            <div className="mt-2 text-center">
+              <h3 className="text-xl font-semibold">{production.name}</h3>
+
+              <div className="mt-2 text-sm">
+                <p>
+                  Presented by {production.theaters?.name} at{" "}
+                  {production.stages?.name}
+                </p>
+                <p>{production.stages?.addresses?.street_address}</p>
+                <p>
+                  {production.stages?.addresses?.city},{" "}
+                  {production.stages?.addresses?.state}
+                </p>
+              </div>
+              <div className="mt-2">
+                <p>Cost: {production.cost_range}</p>
+                <p>Duration: {production.duration_minutes} mins.</p>
+              </div>
+              <div className="mt-2">
+                {production.url && (
+                  <Link
+                    href={production.url}
+                    className="text-blue-600 underline"
+                    target="_blank"
+                  >
+                    Click for more info
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
         </MapMarker>
       );
@@ -116,42 +123,43 @@ export default async function MapMarkers({
         groupedProductionIds={productionsAtAddress.map((p) => p.id)}
         position={{ lat, lng }}
       >
-        <div className="mx-auto max-h-[50vh] p-4 lg:max-w-7xl">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+        <div className="mx-auto max-h-[50vh] w-full p-4 lg:max-w-7xl">
+          <h2 className="text-center text-3xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
             Productions at {productionsAtAddress[0].stages?.name}
           </h2>
-          <div className="mt-4 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-3 lg:gap-y-5 xl:grid-cols-4 xl:gap-x-4">
+          <div className="mt-4 flex justify-center gap-x-4">
             {productionsAtAddress.map((production) => (
               <div
                 key={production.id}
                 className={cn(
-                  "group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white",
+                  "group relative flex w-[300px] shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white",
                   production.id.toString() === productionId &&
                     "ring-4 ring-fuchsia-600 ring-offset-2",
                 )}
               >
-                <div className="aspect-h-4 aspect-w-3 bg-gray-200 group-hover:opacity-75">
+                <div className="flex justify-center group-hover:opacity-75">
                   {production.poster_url && (
                     <Image
                       src={production.poster_url}
                       alt={production.poster_url || "Production poster"}
-                      className="h-full w-full object-fill object-center sm:h-full sm:w-full"
-                      fill
+                      className="h-[300px] w-[225px]"
+                      width={300}
+                      height={225}
                     />
                   )}
                 </div>
                 <div className="flex flex-1 flex-col space-y-2 p-4">
                   <h3 className="text-sm font-medium text-gray-900">
-                    {production.url && (
+                    {production.url ? (
                       <Link href={production.url} target="_blank">
                         <span aria-hidden="true" className="absolute inset-0" />
                         {production.name}
                       </Link>
+                    ) : (
+                      production.name
                     )}
                   </h3>
-                  <p className="truncate text-sm text-gray-500">
-                    {production.summary}
-                  </p>
+                  <p className="text-sm text-gray-500">{production.summary}</p>
                   <div className="flex flex-1 flex-col justify-end">
                     <p className="text-sm italic text-gray-500">
                       Length: {production.duration_minutes} mins.
