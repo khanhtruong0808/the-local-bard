@@ -30,7 +30,7 @@ export default async function deleteStage(
   const { error } = await supabase.from("stages").delete().eq("id", id);
 
   if (error) {
-    console.log(error);
+    console.error(error);
     return { status: "error", error: error.message };
   }
 

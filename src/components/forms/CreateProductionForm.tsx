@@ -508,10 +508,6 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                   </h3>
                   <div className="mt-2 max-w-xl text-sm text-zinc-400">
                     <p>{theater?.name}</p>
-                    <p>{theater.addresses?.street_address}</p>
-                    <p>
-                      {theater.addresses?.city}, {theater.addresses?.state}
-                    </p>
                   </div>
                 </div>
               </div>

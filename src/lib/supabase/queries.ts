@@ -12,7 +12,7 @@ export const getTheaterForNewProduction = async (
 ) => {
   return await client
     .from("theaters")
-    .select("*, addresses(*), productions(*), stages(*)")
+    .select("*, productions(*), stages(*, addresses(*))")
     .eq("manager_id", userId)
     .order("id")
     .limit(1)
@@ -56,21 +56,20 @@ export type TheaterForStagesPage = DbResultOk<
   ReturnType<typeof getTheaterForStagesPage>
 >;
 
-export const getTheaterForUpdateProduction = async (
+export const getProductionForUpdate = async (
   client: SupabaseClient<Database>,
   productionId: string,
 ) => {
   return await client
-    .from("theaters")
-    .select("*, addresses(*), productions(*), stages(*)")
-    .eq("productions.id", productionId)
-    .order("id")
+    .from("productions")
+    .select("*, theaters(*, stages(*, addresses(*))), stages(*, addresses(*))")
+    .eq("id", productionId)
     .limit(1)
     .maybeSingle();
 };
 
-export type TheaterForUpdateProduction = DbResultOk<
-  ReturnType<typeof getTheaterForUpdateProduction>
+export type ProductionForUpdate = DbResultOk<
+  ReturnType<typeof getProductionForUpdate>
 >;
 
 export const getProduction = async (

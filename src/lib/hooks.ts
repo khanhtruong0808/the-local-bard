@@ -112,7 +112,6 @@ export function useFormCustom<
       }
 
       if (Object.entries(values).length) {
-        console.log("saving to local storage:", values);
         window.localStorage.setItem(
           props.localStorageKey,
           JSON.stringify(values),

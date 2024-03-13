@@ -39,24 +39,24 @@ import {
 } from "@/lib/form-schemas/productions";
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
-import type {
-  Production,
-  TheaterForUpdateProduction,
-} from "@/lib/supabase/queries";
+import type { ProductionForUpdate } from "@/lib/supabase/queries";
 import { boolToYN, parseDateString, ynToBool } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
 
 interface ProductionFormProps {
-  production: Production;
-  theater: TheaterForUpdateProduction;
+  production: ProductionForUpdate;
 }
 
-export function UpdateProductionForm({
-  production,
-  theater,
-}: ProductionFormProps) {
+export function UpdateProductionForm({ production }: ProductionFormProps) {
   const LOCAL_STORAGE_KEY = `update-production-form-${production.id}`;
   const supabase = createClient();
+
+  const theater = production.theaters;
+  if (!theater) throw new Error(`No theater for production ${production.id}.`);
+
+  const productionStageAddress = production.stages?.addresses;
+  if (!productionStageAddress)
+    throw new Error(`No address for production ${production.id}.`);
 
   const defaultValues: UpdateProductionSchema = {
     id: production.id,
@@ -573,10 +573,11 @@ export function UpdateProductionForm({
                     {production.name}
                   </h3>
                   <div className="mt-2 max-w-xl text-sm text-zinc-400">
-                    <p>{theater?.name}</p>
-                    <p>{theater.addresses?.street_address}</p>
+                    <p>{theater.name}</p>
+                    <p>{productionStageAddress.street_address}</p>
                     <p>
-                      {theater.addresses?.city}, {theater.addresses?.state}
+                      {productionStageAddress.city},{" "}
+                      {productionStageAddress.state}
                     </p>
                   </div>
                 </div>

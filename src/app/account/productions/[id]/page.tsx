@@ -4,11 +4,7 @@ import { redirect } from "next/navigation";
 
 import { NotAuthorized } from "@/components/NotAuthorized";
 import { UpdateProductionForm } from "@/components/forms/UpdateProductionForm";
-import {
-  getProduction,
-  getTheaterForUpdateProduction,
-  getUser,
-} from "@/lib/supabase/queries";
+import { getProductionForUpdate, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EditProductionPage({
@@ -27,22 +23,20 @@ export default async function EditProductionPage({
     redirect("/login");
   }
 
-  const { data: production } = await getProduction(supabase, params.id);
-  if (!production) redirect("/account/productions");
-
-  const { data: theater, error } = await getTheaterForUpdateProduction(
+  const { data: production, error } = await getProductionForUpdate(
     supabase,
     params.id,
   );
-  if (error) throw new Error(error.message);
-  if (!theater)
+
+  if (!production) redirect("/account/productions");
+
+  if (!production.theaters)
     throw new Error(`No theater found for production ${params.id}.`);
-  if (theater.manager_id !== user.id) {
+  if (production.theaters.manager_id !== user.id) {
     console.error(
       `User ${user.id} is not authorized to update production ${params.id}, which has theater manager ${theater.manager_id}.`,
     );
     return <NotAuthorized />;
   }
-
-  return <UpdateProductionForm production={production} theater={theater} />;
+  return <UpdateProductionForm production={production} />;
 }
