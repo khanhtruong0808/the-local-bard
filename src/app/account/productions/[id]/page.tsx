@@ -34,7 +34,7 @@ export default async function EditProductionPage({
     throw new Error(`No theater found for production ${params.id}.`);
   if (production.theaters.manager_id !== user.id) {
     console.error(
-      `User ${user.id} is not authorized to update production ${params.id}, which has theater manager ${theater.manager_id}.`,
+      `User ${user.id} is not authorized to update production ${params.id}, which has theater manager ${production.theaters.manager_id}.`,
     );
     return <NotAuthorized />;
   }
