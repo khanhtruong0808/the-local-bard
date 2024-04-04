@@ -91,13 +91,14 @@ export default function MapMarker({
             <div className="w-full min-w-[400px] max-w-7xl">
               <div className="flex w-full justify-center">
                 {productions[0].poster_url && (
-                  <Image
-                    className="mt-2 h-[200px] w-[150px]"
-                    src={productions[0].poster_url}
-                    alt={productions[0].name || "Production poster"}
-                    width={200}
-                    height={150}
-                  />
+                  <div className="relative mt-2 h-[200px] w-[150px]">
+                    <Image
+                      src={productions[0].poster_url}
+                      alt={productions[0].name || "Production poster"}
+                      fill
+                      sizes="150px"
+                    />
+                  </div>
                 )}
               </div>
               <div className="mt-2 text-center">
@@ -132,7 +133,7 @@ export default function MapMarker({
               </div>
             </div>
           )}
-          {productions.length === 2 && (
+          {productions.length >= 2 && (
             <div className="mx-auto max-h-[50vh] w-full p-4 lg:max-w-7xl">
               <h2 className="text-center text-3xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
                 Productions at {productions[0].stages?.name}
@@ -149,13 +150,14 @@ export default function MapMarker({
                   >
                     <div className="flex justify-center group-hover:opacity-75">
                       {production.poster_url && (
-                        <Image
-                          src={production.poster_url}
-                          alt={production.poster_url || "Production poster"}
-                          className="h-[300px] w-[225px]"
-                          width={300}
-                          height={225}
-                        />
+                        <div className="relative h-[300px] w-[225px]">
+                          <Image
+                            src={production.poster_url}
+                            alt={production.poster_url || "Production poster"}
+                            fill
+                            sizes="225px"
+                          />
+                        </div>
                       )}
                     </div>
                     <div className="flex flex-1 flex-col space-y-2 p-4">
@@ -173,7 +175,11 @@ export default function MapMarker({
                         )}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {production.summary}
+                        {production.summary
+                          ? production.summary.length > 200
+                            ? production.summary.slice(0, 200) + "..."
+                            : production.summary
+                          : "No summary provided."}
                       </p>
                       <div className="flex flex-1 flex-col justify-end">
                         <p className="text-sm italic text-gray-500">

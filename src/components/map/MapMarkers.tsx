@@ -2,13 +2,11 @@
 
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
 
 import { getFullProductions } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
-import MapMarker from "./MapMarker";
 import { type RouteSearchParams } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import MapMarker from "./MapMarker";
 
 export default async function MapMarkers({
   searchParams,
@@ -62,12 +60,14 @@ export default async function MapMarkers({
           position={{ lat, lng }}
         >
           {production.poster_url && (
-            <Image
-              src={production.poster_url}
-              alt={production.name}
-              width={200}
-              height={150}
-            />
+            <div className="relative h-[200px] w-[150px]">
+              <Image
+                src={production.poster_url}
+                alt={production.name}
+                fill
+                sizes="150px"
+              />
+            </div>
           )}
         </MapMarker>
       );
@@ -94,13 +94,14 @@ export default async function MapMarkers({
           {productionsAtAddress.map((production) => {
             if (!production.poster_url) return null;
             return (
-              <Image
-                key={production.id}
-                src={production.poster_url}
-                alt={production.name}
-                width={200}
-                height={150}
-              />
+              <div key={production.id} className="relative h-[200px] w-[150px]">
+                <Image
+                  src={production.poster_url}
+                  alt={production.name}
+                  fill
+                  sizes="150px"
+                />
+              </div>
             );
           })}
         </div>
