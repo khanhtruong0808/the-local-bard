@@ -13,9 +13,9 @@ const navigation = [
 export async function Footer() {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
-  const { data, error } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
-  const loggedIn = data?.user !== null;
+  const loggedIn = data?.session !== null;
 
   return (
     <footer>
