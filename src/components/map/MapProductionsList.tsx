@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,8 +29,8 @@ export async function MapProductionsList({
     }
   });
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
+  await supabase.auth.getUser();
 
   const { data: productions, error } = await getFullProductions(
     supabase,

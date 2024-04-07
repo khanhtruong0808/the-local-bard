@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
@@ -27,8 +26,7 @@ export default async function updatePassword(form: FormData) {
     return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const update = await supabase.auth.updateUser({
     password: parsed.data.newPassword,

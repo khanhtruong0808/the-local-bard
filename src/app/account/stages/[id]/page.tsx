@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { NotAuthorized } from "@/components/NotAuthorized";
 import { UpdateStageForm } from "@/components/forms/UpdateStageForm";
 import {
   StageWithAddress,
@@ -8,15 +8,13 @@ import {
   getUser,
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
-import { NotAuthorized } from "@/components/NotAuthorized";
 
 export default async function EditStagePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
   const user = await getUser(supabase);
 
   const { data: stage } = await getStageWithAddress(

@@ -1,16 +1,12 @@
-import { cookies } from "next/headers";
-
 import { NoTheater } from "@/components/NoTheater";
 import { Button } from "@/components/ui/button";
 import { getTheaterForProductionsPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
-import { parse } from "date-fns";
 import { getTodayAtMidnight, parseDateString } from "@/lib/utils";
+import Link from "next/link";
 
 export default async function ProductionsPage() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const user = await getUser(supabase);
 

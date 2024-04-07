@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { SecondaryNavigation } from "@/components/SecondaryNavigation";
@@ -10,8 +9,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
   try {
     const user = await getUser(supabase);
     if (!user) {

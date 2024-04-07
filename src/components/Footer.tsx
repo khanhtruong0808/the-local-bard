@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
-
-import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+
+import { getMaybeUser } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/server";
 
 const navigation = [
   { name: "Contact", href: "/contact" },
@@ -11,11 +11,9 @@ const navigation = [
 ];
 
 export async function Footer() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
-  const loggedIn = data?.session !== null;
+  const supabase = createClient();
+  const user = await getMaybeUser(supabase);
+  const loggedIn = user !== null;
 
   return (
     <footer>

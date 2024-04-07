@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 
 import { NoTheater } from "@/components/NoTheater";
@@ -7,8 +6,7 @@ import { getTheaterForStagesPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function StagesPage() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const user = await getUser(supabase);
 

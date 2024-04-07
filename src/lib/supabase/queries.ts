@@ -220,3 +220,25 @@ export const getUser = async (client: SupabaseClient<Database>) => {
   if (error) throw new Error(error.message);
   throw new Error("No user found");
 };
+
+/**
+ * Same as above, but user isn't required.
+ * Returns null if no user is found.
+ */
+export const getMaybeUser = async (client: SupabaseClient<Database>) => {
+  const { data, error } = await client.auth.getUser();
+  if (data.user) return data.user;
+
+  if (error) {
+    if (
+      error.name === "AuthApiError" &&
+      error.code === "bad_jwt" &&
+      error.message.includes("missing sub claim")
+    ) {
+      return null;
+    }
+    throw new Error(error.message);
+  }
+
+  return null;
+};

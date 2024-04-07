@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { UpdatePasswordForm } from "@/components/forms/UpdatePasswordForm";
@@ -33,8 +32,7 @@ export default async function UpdatePasswordPage() {
       };
     }
 
-    const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const update = await supabase.auth.updateUser({
       password: parsed.data.newPassword,

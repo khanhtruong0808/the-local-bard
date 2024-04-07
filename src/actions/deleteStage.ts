@@ -1,13 +1,11 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { FormServerState } from "@/lib/types";
-import { cookies } from "next/headers";
 
 export default async function deleteStage(
   id: number,
 ): Promise<FormServerState> {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   // Check for any productions that are using this stage
   const { data: productions, error: productionError } = await supabase

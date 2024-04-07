@@ -26,8 +26,7 @@
 //     return { status: "error", error };
 //   }
 
-//   const cookieStore = cookies();
-//   const supabase = createClient(cookieStore);
+//   const supabase = createClient();
 
 //   const { poster, ...newProduction } = parsed.data;
 

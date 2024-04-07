@@ -1,16 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import {
   CreateStageSchema,
   createStageSchema,
 } from "@/lib/form-schemas/stages";
+import { getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { type FormServerState } from "@/lib/types";
 import { ynToBool } from "@/lib/utils";
-import { getUser } from "@/lib/supabase/queries";
 
 export default async function createStage(
   currentState: FormServerState,
@@ -21,8 +20,7 @@ export default async function createStage(
     return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const user = await getUser(supabase);
 

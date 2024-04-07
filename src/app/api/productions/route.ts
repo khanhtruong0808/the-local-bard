@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { createProductionServerSchema } from "@/lib/form-schemas/productions";
@@ -18,8 +17,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error } = await supabase.from("productions").insert({
     ...parsed.data,

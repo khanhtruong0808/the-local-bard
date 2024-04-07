@@ -1,6 +1,7 @@
-import { Tables } from "@/lib/supabase/dbHelperTypes";
 import Image from "next/image";
 import Link from "next/link";
+
+import type { Tables } from "@/lib/supabase/dbHelperTypes";
 
 interface Props {
   src: string;
