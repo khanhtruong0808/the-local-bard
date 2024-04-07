@@ -7,11 +7,6 @@ import { useCallback } from "react";
 import { clientEnv } from "@/lib/clientEnv";
 import { useLoadGoogleApi } from "@/lib/googleMaps";
 import { createUrl } from "@/lib/utils";
-import {
-  APIProvider,
-  type MapMouseEvent,
-  Map as VisglMap,
-} from "@vis.gl/react-google-maps";
 
 const containerStyle = {
   width: "100%",
@@ -35,7 +30,7 @@ export default function Map({ children }: { children: React.ReactNode }) {
 
   // Close any open info windows when the map is clicked.
   const handleMapClick = useCallback(
-    (e: MapMouseEvent) => {
+    (e: google.maps.MapMouseEvent) => {
       const currentProductionId = searchParams.get("productionId");
       const currentTheaterId = searchParams.get("stageId");
       if (currentProductionId === null && currentTheaterId === null) return;
@@ -57,16 +52,18 @@ export default function Map({ children }: { children: React.ReactNode }) {
   if (!isLoaded) return null; // TODO: replace with some loading indicator
 
   return (
-    <APIProvider apiKey={clientEnv.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-      <VisglMap
-        mapId={clientEnv.NEXT_PUBLIC_GOOGLE_MAP_ID}
-        defaultCenter={defaultCenter}
-        defaultZoom={zoom}
-        gestureHandling="greedy"
-        onClick={handleMapClick}
-      >
-        {children}
-      </VisglMap>
-    </APIProvider>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={defaultCenter}
+      zoom={zoom}
+      onClick={handleMapClick}
+      options={{
+        backgroundColor: "black",
+        gestureHandling: "greedy", // Allow zooming without holding ctrl
+        mapId: clientEnv.NEXT_PUBLIC_GOOGLE_MAP_ID,
+      }}
+    >
+      {children}
+    </GoogleMap>
   );
 }

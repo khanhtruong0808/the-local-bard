@@ -67,14 +67,12 @@ export async function MapProductionsList({
             <div className="sm:flex">
               <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
                 {production.poster_url && (
-                  <div className="relative h-[100px] w-[75px]">
-                    <Image
-                      src={production.poster_url}
-                      alt={production.name || "Production poster"}
-                      fill
-                      sizes="75px"
-                    />
-                  </div>
+                  <Image
+                    src={production.poster_url}
+                    alt={production.name || "Production poster"}
+                    width={100}
+                    height={100}
+                  />
                 )}
               </div>
               <div className="px-4 py-5 sm:p-6">
