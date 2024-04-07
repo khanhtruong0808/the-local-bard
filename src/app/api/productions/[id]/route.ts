@@ -1,5 +1,4 @@
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { updateProductionServerSchema } from "@/lib/form-schemas/productions";
@@ -36,8 +35,7 @@ export async function PUT(
     );
   }
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error } = await supabase
     .from("productions")

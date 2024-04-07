@@ -1,5 +1,4 @@
 import { User } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { NotAuthorized } from "@/components/NotAuthorized";
@@ -12,8 +11,7 @@ export default async function EditProductionPage({
 }: {
   params: { id: string };
 }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   let user: User | undefined;
   try {

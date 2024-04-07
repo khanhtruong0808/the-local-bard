@@ -1,33 +1,12 @@
 import { Poster } from "@/components/Poster";
 import SearchInput from "@/components/SearchInput";
-import { Tables } from "@/lib/supabase/dbHelperTypes";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getMaybeUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { cookies } from "next/headers";
+import { Suspense } from "react";
 
 export default async function Home() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
-
-  const formattedDate = `${year}-${month}-${day}`;
-  const { data: upcomingProductions, error } = await supabase
-    .from("productions")
-    .select("*, stages(addresses(*))")
-    .filter("start_date", "gte", formattedDate)
-    .not("name", "is", null)
-    .not("poster_url", "is", null)
-    .not("start_date", "is", null)
-    .not("stages.addresses.street_address", "is", null)
-    .order("start_date", { ascending: true })
-    .limit(4);
-
-  if (error) throw new Error(error.message);
-
   return (
     <div className="flex h-full w-full flex-col items-center font-serif">
       <div className="w-full">
@@ -53,31 +32,70 @@ export default async function Home() {
           <p className="text-center text-2xl font-semibold text-zinc-300">
             Showing Soon
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {upcomingProductions ? (
-              upcomingProductions.map((production) => {
-                // TODO: add better type checking?
-                return (
-                  <Poster
-                    key={production.id}
-                    name={production.name}
-                    src={production.poster_url as string}
-                    date={new Date(production.start_date)}
-                    address={
-                      production?.stages?.addresses as Tables<"addresses">
-                    }
-                    url={production.url}
-                  />
-                );
-              })
-            ) : (
-              <div className="text-zinc-400">
-                No upcoming productions. Check back again later.
-              </div>
-            )}
-          </div>
+          <Suspense fallback={<UpcomingProductionsSkeleton />}>
+            <UpcomingProductions />
+          </Suspense>
         </div>
       </div>
+    </div>
+  );
+}
+
+async function UpcomingProductions() {
+  const supabase = createClient();
+
+  // This line is required for supabase to stop complaining about getSession
+  await getMaybeUser(supabase);
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}`;
+  const { data: upcomingProductions, error } = await supabase
+    .from("productions")
+    .select("*, stages(addresses(*))")
+    .filter("start_date", "gte", formattedDate)
+    .not("name", "is", null)
+    .not("poster_url", "is", null)
+    .not("start_date", "is", null)
+    .not("stages.addresses.street_address", "is", null)
+    .order("start_date", { ascending: true })
+    .limit(4);
+
+  if (error) throw new Error(error.message);
+
+  return (
+    <div className="mt-8 flex flex-wrap justify-center gap-4">
+      {upcomingProductions ? (
+        upcomingProductions.map((production) => {
+          return (
+            <Poster
+              key={production.id}
+              name={production.name}
+              src={production.poster_url as string} // checked above
+              date={new Date(production.start_date)}
+              address={production?.stages?.addresses!} // checked above
+              url={production.url}
+            />
+          );
+        })
+      ) : (
+        <div className="text-zinc-400">
+          No upcoming productions. Check back again later.
+        </div>
+      )}
+    </div>
+  );
+}
+
+async function UpcomingProductionsSkeleton() {
+  return (
+    <div className="mt-8 flex flex-wrap justify-center gap-4">
+      {[1, 2, 3, 4].map((index) => (
+        <Skeleton key={index} className="h-[300px] w-[225px]" />
+      ))}
     </div>
   );
 }

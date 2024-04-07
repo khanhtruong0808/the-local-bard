@@ -1,13 +1,10 @@
-import { cookies } from "next/headers";
-
 import { NoTheater } from "@/components/NoTheater";
 import { TheaterForm } from "@/components/forms/TheaterForm";
 import { getTheaterForTheaterPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function GeneralPage() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const {
     data: { user },

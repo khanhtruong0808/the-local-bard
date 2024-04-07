@@ -1,15 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import {
   UpdateStageSchema,
   updateStageSchema,
 } from "@/lib/form-schemas/stages";
 import { createClient } from "@/lib/supabase/server";
-import { ynToBool } from "@/lib/utils";
 import { type FormServerState } from "@/lib/types";
+import { ynToBool } from "@/lib/utils";
 
 export default async function updateStage(
   currentState: FormServerState,
@@ -23,8 +22,7 @@ export default async function updateStage(
 
   const payload = parsed.data;
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   // Prefer to create a new address, rather than update an existing one.
   // We can always delete unused addresses later with an RPC.

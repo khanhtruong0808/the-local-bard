@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import {
   updateTheaterSchema,
@@ -23,8 +22,7 @@ export default async function updateTheater(
 
   const payload = parsed.data;
 
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error: theatersError } = await supabase
     .from("theaters")
