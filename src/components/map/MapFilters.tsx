@@ -6,7 +6,7 @@ import { genres } from "@/lib/constants";
 
 export default async function MapFilters() {
   return (
-    <>
+    <div className="px-4">
       <div className="mt-4">
         <ProductionSearch />
       </div>
@@ -74,6 +74,6 @@ export default async function MapFilters() {
           />
         </div>
       </fieldset>
-    </>
+    </div>
   );
 }

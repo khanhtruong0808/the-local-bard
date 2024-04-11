@@ -42,9 +42,9 @@ export default async function SearchPage({
   // TODO: make this page do different things based on mobile vs desktop
   return (
     <div className="flex grow">
-      <div className="mx-auto flex h-full w-full items-start gap-x-4">
-        {/* Sidebar Filters */}
-        <div className="sticky top-20 hidden w-60 shrink-0 px-8 lg:block">
+      <div className="mx-auto flex h-full w-full flex-col items-start gap-x-4 md:flex-row">
+        {/* Desktop Sidebar Filters */}
+        <div className="sticky top-20 hidden w-60 shrink-0 px-8 md:block">
           <div className="mt-8 h-full w-full">
             <h2 className="text-xl font-semibold leading-9 tracking-tight text-white">
               Filters
@@ -60,8 +60,14 @@ export default async function SearchPage({
             </div>
           </div>
         </div>
+
+        {/* Mobile filters */}
+        <div className="w-full md:hidden">
+          <MapFilters />
+        </div>
+
         {/* Sidebar Productions List */}
-        <div className="relative z-10 w-96 shrink-0 px-4 py-4">
+        <div className="relative z-10 w-full shrink-0 px-4 py-4 md:w-96">
           <div className="flex h-full w-full flex-col gap-y-4">
             <Suspense key={searchKey} fallback={<MapProductionsListSkeleton />}>
               <MapProductionsList searchParams={searchParams} />
