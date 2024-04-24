@@ -75,7 +75,8 @@ async function UpcomingProductions() {
               key={production.id}
               name={production.name}
               src={production.poster_url as string} // checked above
-              date={new Date(production.start_date)}
+              startDate={new Date(production.start_date)}
+              endDate={new Date(production.end_date)}
               address={production?.stages?.addresses!} // checked above
               url={production.url}
             />

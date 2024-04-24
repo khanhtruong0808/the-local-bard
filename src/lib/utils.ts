@@ -74,5 +74,37 @@ export function getTodayAtMidnight() {
   return today;
 }
 
+// Format Date as "Jan 1 2022"
+export function formatDate(date: Date) {
+  // Array of month names
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  // Get the day of the month (1-31)
+  const day = date.getUTCDate();
+
+  // Get the month index (0-11) and use it to retrieve the month name
+  const monthIndex = date.getUTCMonth();
+  const monthName = monthNames[monthIndex];
+
+  // Get the full year (e.g., 2022)
+  const year = date.getUTCFullYear();
+
+  // Construct the date string
+  return `${monthName} ${day} ${year}`;
+}
+
 export const urlRegex =
   /^(https?:\/\/)[A-Za-z0-9.-]+(?::\d+)?(?:\/[\+~%\/.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[.\!\/\\\w]*)?$/;
