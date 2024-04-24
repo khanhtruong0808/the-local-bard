@@ -2,22 +2,25 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Tables } from "@/lib/supabase/dbHelperTypes";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
   src: string;
   name: string;
-  date: Date;
+  startDate: Date;
+  endDate: Date;
   address: Tables<"addresses">;
   url: string | null;
 }
 
-export const Poster = ({ src, name, date, address, url }: Props) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  };
+export const Poster = ({
+  src,
+  name,
+  startDate,
+  endDate,
+  address,
+  url,
+}: Props) => {
   return (
     <Link
       href={url || ""}
@@ -36,7 +39,7 @@ export const Poster = ({ src, name, date, address, url }: Props) => {
         <div className="mt-2 flex max-w-[225px] flex-wrap justify-between text-sm">
           <p className="text-zinc-300">{name}</p>
           <p className="text-zinc-400">
-            {date.toLocaleDateString("en-us", options)}
+            {formatDate(startDate)} - {formatDate(endDate)}
           </p>
         </div>
         <p className="text-xs text-zinc-400">{address.street_address}</p>
