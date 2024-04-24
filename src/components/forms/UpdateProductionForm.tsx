@@ -42,6 +42,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { ProductionForUpdate } from "@/lib/supabase/queries";
 import { boolToYN, parseDateString, ynToBool } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
+import { AspectRatioWarning } from "../AspectRatioWarning";
 
 interface ProductionFormProps {
   production: ProductionForUpdate;
@@ -209,6 +210,13 @@ export function UpdateProductionForm({ production }: ProductionFormProps) {
         message:
           "WARNING: Poster image should be close to 3:4 aspect ratio for best results. (e.g. 300x400px)",
       });
+
+      // show dialog if user has not seen it yet to avoid spamming when the user loads the page
+      if (posterUrl !== production.poster_url)
+        openDialog({
+          title: "Aspect Ratio Warning",
+          content: <AspectRatioWarning />,
+        });
     } else {
       // clear errors if user has fixed the aspect ratio
       form.clearErrors("poster");

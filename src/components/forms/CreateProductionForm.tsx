@@ -40,6 +40,8 @@ import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
 import type { TheaterForNewProduction } from "@/lib/supabase/queries";
 import { ynToBool } from "@/lib/utils";
+import { AspectRatioWarning } from "../AspectRatioWarning";
+import useDialog from "@/utils/dialogStore";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -80,6 +82,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
 
   const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
+  const { openDialog } = useDialog();
 
   const { key, updateKey } = useSelectKey();
 
@@ -99,6 +102,11 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
         type: "manual",
         message:
           "WARNING: Poster image should be close to 3:4 aspect ratio for best results. (e.g. 300x400px)",
+      });
+
+      openDialog({
+        title: "Aspect Ratio Warning",
+        content: <AspectRatioWarning />,
       });
     } else {
       // clear errors if user has fixed the aspect ratio
