@@ -71,7 +71,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
     poster: undefined,
     url: "",
     notes: "",
-    date_range: { from: today, to: today },
+    date_range: undefined,
   };
 
   const form = useFormCustom<CreateProductionSchema>({
@@ -135,6 +135,10 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           } = supabase.storage.from("posters").getPublicUrl(poster.name);
 
           formData.poster_url = publicUrl;
+        }
+
+        if (date_range?.from === undefined) {
+          return Promise.reject(new Error("Please select a start date."));
         }
 
         const payload = {
@@ -569,6 +573,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                   dateRange={field.value}
                   onSelect={(v) => {
                     if (v === undefined) return;
+                    if (v.from === undefined) return;
                     field.onChange(v);
                   }}
                 />

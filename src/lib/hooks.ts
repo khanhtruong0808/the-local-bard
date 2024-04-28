@@ -37,9 +37,17 @@ export function useFormCustom<
             // See docs about reviver function for JSON.parse:
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#reviver
             if (key === "date_range") {
-              const from = new Date(value.from);
-              const to = new Date(value.to);
-              return { from, to };
+              if (value.from) {
+                if (value.to) {
+                  return {
+                    from: new Date(value.from),
+                    to: new Date(value.to),
+                  };
+                } else {
+                  return { from: new Date(value.from), to: undefined };
+                }
+              }
+              return undefined;
             }
             return value;
           }),
@@ -69,16 +77,20 @@ export function useFormCustom<
 
         // Excpetion for date_range because localstorage stores dates as strings
         if (key === "date_range") {
-          const from = new Date(localStorageValues[key].from);
-          const to = new Date(localStorageValues[key].to);
+          const lsDateRange = localStorageValues?.[key];
+          if (!lsDateRange?.from) return;
+          const from = new Date(lsDateRange.from);
+          const to = lsDateRange?.to ? new Date(lsDateRange.to) : undefined;
           const dateRange = { from, to } as TFieldValues["date_range"];
-          const defaultDateRange = defaultValue as TFieldValues["date_range"];
+          const defaultDateRange = defaultValue as
+            | TFieldValues["date_range"]
+            | undefined;
 
-          if (from === defaultDateRange.from && to === defaultDateRange.to) {
+          if (from === defaultDateRange?.from && to === defaultDateRange?.to) {
             return;
           }
 
-          if (from !== defaultDateRange.from || to !== defaultDateRange.to) {
+          if (from !== defaultDateRange?.from || to !== defaultDateRange?.to) {
             form.setValue(key as Path<TFieldValues>, dateRange);
             return;
           }

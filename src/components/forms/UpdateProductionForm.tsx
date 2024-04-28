@@ -166,6 +166,10 @@ export function UpdateProductionForm({ production }: ProductionFormProps) {
           formData.poster_url = publicUrl;
         }
 
+        if (date_range?.from === undefined) {
+          return Promise.reject(new Error("Please select a start date."));
+        }
+
         // Update
         const payload = {
           ...rest,
