@@ -41,6 +41,8 @@ export default async function createStage(
       city: parsed.data.city,
       state: parsed.data.state,
       postal_code: parsed.data.postal_code,
+      latitude: parsed.data.latitude,
+      longitude: parsed.data.longitude,
     })
     .select()
     .limit(1)
