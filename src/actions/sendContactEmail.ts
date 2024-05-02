@@ -6,6 +6,7 @@ import { contactEmailSchema } from "@/lib/form-schemas/emails";
 import { sendEmail } from "@/lib/sendEmail";
 import { serverEnv } from "@/lib/serverEnv";
 import type { FormServerState } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 export async function sendContactEmail(
   currentState: FormServerState,
@@ -49,5 +50,5 @@ Message: ${parsed.data.message}`;
     };
   }
 
-  return { status: "success" };
+  return redirect("/contact/success");
 }
