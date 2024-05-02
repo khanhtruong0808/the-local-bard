@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange, type SelectRangeEventHandler } from "react-day-picker";
+import type { DateRange, SelectRangeEventHandler } from "react-day-picker";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,10 +12,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { date } from "zod";
 
 interface DatePickerWithRangeProps {
   className?: string;
-  dateRange: DateRange;
+  dateRange: DateRange | undefined;
   onSelect: SelectRangeEventHandler;
 }
 
@@ -41,8 +42,8 @@ export function DatePickerWithRange({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateRange?.from ? (
-              dateRange.to ? (
+            {dateRange?.from && dateRange.from.toString() !== "Invalid Date" ? (
+              dateRange?.to && dateRange.to.toString() !== "Invalid Date" ? (
                 <>
                   {format(dateRange.from, "LLL dd, y")} -{" "}
                   {format(dateRange.to, "LLL dd, y")}
@@ -60,7 +61,7 @@ export function DatePickerWithRange({
             initialFocus
             mode="range"
             fromDate={today}
-            defaultMonth={dateRange?.from}
+            defaultMonth={dateRange?.from || undefined}
             selected={dateRange}
             onSelect={onSelect}
             numberOfMonths={2}

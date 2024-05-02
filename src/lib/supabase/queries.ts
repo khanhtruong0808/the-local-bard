@@ -237,6 +237,11 @@ export const getMaybeUser = async (client: SupabaseClient<Database>) => {
     ) {
       return null;
     }
+
+    if (error.message === "Auth session missing!") {
+      return null;
+    }
+
     throw new Error(error.message);
   }
 

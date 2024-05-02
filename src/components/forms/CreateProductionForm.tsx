@@ -71,7 +71,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
     poster: undefined,
     url: "",
     notes: "",
-    date_range: { from: today, to: today },
+    date_range: undefined,
   };
 
   const form = useFormCustom<CreateProductionSchema>({
@@ -137,6 +137,10 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           formData.poster_url = publicUrl;
         }
 
+        if (date_range?.from === undefined) {
+          return Promise.reject(new Error("Please select a start date."));
+        }
+
         const payload = {
           ...rest,
           poster_url: formData.poster_url,
@@ -159,8 +163,8 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
         router.push("/account/productions/new/success");
       })(),
       {
-        loading: "Creating production...",
-        success: "Production created!",
+        loading: "Submitting production...",
+        success: "Production submitted!",
         error: (err: Error) => err.message,
       },
       {
@@ -206,6 +210,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                     placeholder="The Lion King"
                     {...field}
                     list="titles"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <datalist id="titles">
@@ -422,6 +427,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                       field.onChange(v);
                       updateKey();
                     }}
+                    defaultValue={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a cost range" />
@@ -569,6 +575,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                   dateRange={field.value}
                   onSelect={(v) => {
                     if (v === undefined) return;
+                    if (v.from === undefined) return;
                     field.onChange(v);
                   }}
                 />

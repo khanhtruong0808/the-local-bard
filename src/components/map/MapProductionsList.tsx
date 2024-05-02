@@ -48,6 +48,7 @@ export async function MapProductionsList({
 
   return (
     <>
+      {/* Desktop */}
       {productions.map((production) => {
         const stage = production.stages;
         const stageAddress = stage?.addresses;
@@ -62,9 +63,55 @@ export async function MapProductionsList({
             key={production.id}
             href={createUrl("/search", nextSearchParams)}
             prefetch={false}
-            className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow hover:bg-zinc-600"
+            className="hidden w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow hover:bg-zinc-600 md:block"
           >
             <div className="sm:flex">
+              <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
+                {production.poster_url && (
+                  <Image
+                    src={production.poster_url}
+                    alt={production.name || "Production poster"}
+                    width={100}
+                    height={100}
+                  />
+                )}
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <h3 className="text-lg font-medium leading-6 text-zinc-200">
+                  {production.name}
+                </h3>
+                <div className="mt-2 max-w-xl text-sm text-zinc-400">
+                  <p>{stage?.name}</p>
+                  <p>{stageAddress?.street_address}</p>
+                  <p>
+                    {stageAddress?.city}, {stageAddress?.state}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
+
+      {/* Mobile */}
+      {productions.map((production) => {
+        const stage = production.stages;
+        const stageAddress = stage?.addresses;
+        nextSearchParams.set("productionId", production.id.toString());
+        nextSearchParams.delete("stageId");
+        if (stageAddress?.latitude && stageAddress?.longitude) {
+          nextSearchParams.set("lat", stageAddress.latitude.toString());
+          nextSearchParams.set("lng", stageAddress.longitude.toString());
+        }
+        return (
+          <Link
+            key={production.id}
+            href={production.url || ""}
+            prefetch={false}
+            target="_blank"
+            className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 py-2 shadow hover:bg-zinc-600 md:hidden"
+          >
+            <div className="flex">
               <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
                 {production.poster_url && (
                   <Image

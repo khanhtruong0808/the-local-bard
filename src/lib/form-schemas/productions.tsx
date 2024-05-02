@@ -42,10 +42,12 @@ export const createProductionSchema = z.object({
     .optional(),
   notes: z.string().trim(),
   // Custom field that we will convert to start_date and end_date on submit
-  date_range: z.object({
-    from: z.date(),
-    to: z.date().optional(), // Optional because for one-day events
-  }),
+  date_range: z
+    .object({
+      from: z.date(),
+      to: z.date().optional(), // Optional because for one-day events
+    })
+    .optional(),
 });
 
 export const updateProductionSchema = createProductionSchema

@@ -3,7 +3,6 @@ export const genres = [
   "Classic",
   "Contemporary/Original",
   "Fantasy/Science",
-  "Fiction",
   "Historical",
   "Tragedy",
   "Romance",
