@@ -1,17 +1,16 @@
 "use client";
 
-import type { FullProductions } from "@/lib/supabase/queries";
-import { cn, createUrl } from "@/lib/utils";
+import { Transition } from "@headlessui/react";
 import {
   AdvancedMarker,
   AdvancedMarkerProps,
-  InfoWindow,
   useAdvancedMarkerRef,
   useMap,
 } from "@vis.gl/react-google-maps";
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import type { FullProductions } from "@/lib/supabase/queries";
+import { cn, createUrl } from "@/lib/utils";
 
 interface MapMarkerProps extends AdvancedMarkerProps {
   productions: FullProductions;
@@ -72,13 +71,52 @@ export default function MapMarker({
         ref={markerRef}
         position={position}
         onClick={() => {
-          router.push(nextUrl);
-          map?.setCenter(position);
+          if (active) {
+            router.push(closeUrl);
+          } else {
+            router.push(nextUrl);
+            map?.setCenter(position);
+          }
         }}
       >
-        {children}
+        <div
+          className={cn(
+            "flex max-w-lg flex-col items-center justify-center rounded px-4 py-2",
+            active &&
+              "bg-gradient-to-r from-yellow-500 to-yellow-300 shadow-lg",
+          )}
+        >
+          {children}
+          <Transition
+            as="div"
+            className="z-30"
+            show={active}
+            enter="transition-opacity duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+          >
+            <div className="mt-2 flex flex-col items-center justify-center">
+              <h2 className="text-center text-2xl font-bold text-zinc-900">
+                {productions[0].name}
+              </h2>
+              <p className="font-serif text-xs">{productions[0].summary}</p>
+              <p className="text-base">
+                Showing from&nbsp;
+                {new Date(productions[0].start_date).toLocaleDateString()}
+                &nbsp;to&nbsp;
+                {new Date(productions[0].end_date).toLocaleDateString()}
+              </p>
+              <p className="text-base">
+                {productions[0].duration_minutes}
+                &nbsp;minutes
+              </p>
+              <p className="text-base">{productions[0].cost_range}</p>
+              <p className="text-sm">{productions[0].notes}</p>
+            </div>
+          </Transition>
+        </div>
       </AdvancedMarker>
-      {active && (
+      {/* {active && (
         <InfoWindow
           anchor={marker}
           position={position}
@@ -190,7 +228,7 @@ export default function MapMarker({
             </div>
           )}
         </InfoWindow>
-      )}
+      )} */}
     </>
   );
 }

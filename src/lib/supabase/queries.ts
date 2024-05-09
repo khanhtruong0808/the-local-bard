@@ -96,6 +96,8 @@ export const getFullProductions = cache(
     client: SupabaseClient<Database>,
     filters?: RouteSearchParams,
     search?: string | string[],
+    searchStartDate?: string | string[],
+    searchEndDate?: string | string[],
   ) => {
     const query = client
       .from("productions")
@@ -145,6 +147,22 @@ export const getFullProductions = cache(
         "id",
         data.map((d) => d.id),
       );
+    }
+
+    // Filter by productions that end after the search start date
+    if (searchStartDate) {
+      if (Array.isArray(searchStartDate)) {
+        throw new Error("multi search start date not implemented");
+      }
+      query.gte("end_date", searchStartDate);
+    }
+
+    // Filter by productions that start before the search end date
+    if (searchEndDate) {
+      if (Array.isArray(searchEndDate)) {
+        throw new Error("multi search end date not implemented");
+      }
+      query.lte("start_date", searchEndDate);
     }
 
     return await query;

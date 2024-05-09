@@ -12,13 +12,24 @@ export default async function MapMarkers({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
+  const {
+    q,
+    productionId,
+    stageId,
+    lat,
+    lng,
+    searchStartDate,
+    searchEndDate,
+    ...filters
+  } = searchParams || {};
   const supabase = createClient();
 
   const { data: productions, error } = await getFullProductions(
     supabase,
     filters,
     q,
+    searchStartDate,
+    searchEndDate,
   );
   if (error) throw error;
   if (!productions) return null;

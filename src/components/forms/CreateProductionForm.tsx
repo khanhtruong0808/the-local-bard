@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -12,6 +19,7 @@ import { DatePickerWithRange } from "@/components/DatePickerWithRange";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Form,
   FormControl,
@@ -39,9 +47,10 @@ import {
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
 import type { TheaterForNewProduction } from "@/lib/supabase/queries";
-import { ynToBool } from "@/lib/utils";
-import { AspectRatioWarning } from "../AspectRatioWarning";
+import { cn, ynToBool } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { AspectRatioWarning } from "../AspectRatioWarning";
 
 interface ProductionFormProps {
   theater: TheaterForNewProduction;
@@ -82,6 +91,15 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
 
   const [posterUrl, setPosterUrl] = useState<string | undefined>();
   const [imageKey, setImageKey] = useState(0);
+  const [query, setQuery] = useState("");
+
+  const filteredTitles =
+    query === ""
+      ? commonProductions
+      : commonProductions.filter((title) =>
+          title.toLowerCase().includes(query.toLowerCase()),
+        );
+
   const { openDialog } = useDialog();
 
   const { key, updateKey } = useSelectKey();
@@ -204,15 +222,51 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
             render={({ field }) => (
               <FormItem className="col-span-full">
                 <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="The Lion King"
-                    {...field}
-                    list="titles"
-                    autoComplete="off"
+                {/* <FormControl> */}
+                <Combobox
+                  value={field.value}
+                  onChange={field.onChange}
+                  onClose={() => setQuery("")}
+                >
+                  <ComboboxInput
+                    className={cn(
+                      "w-full rounded-lg border-none bg-white/5 py-1.5 pl-3 pr-8 text-sm/6 text-white",
+                      "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
+                    )}
+                    aria-label="Production Title"
+                    onChange={(event) => setQuery(event.target.value)}
                   />
-                </FormControl>
+                  <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
+                    <ChevronDownIcon className="size-4 fill-white/60 group-data-[hover]:fill-white" />
+                  </ComboboxButton>
+                  <ComboboxOptions
+                    anchor="bottom"
+                    className="w-[var(--input-width)] rounded-xl border border-white/5 bg-zinc-950 p-1 [--anchor-gap:var(--spacing-1)] empty:hidden"
+                  >
+                    {filteredTitles.map((title) => (
+                      <ComboboxOption
+                        key={title}
+                        value={title}
+                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
+                      >
+                        <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
+                        <div className="text-sm/6 text-white">{title}</div>
+                      </ComboboxOption>
+                    ))}
+                    {query.length > 0 && (
+                      <ComboboxOption
+                        value={query}
+                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
+                      >
+                        <div className="text-sm/6 text-white">
+                          Create{" "}
+                          <span className="font-bold">&quot;{query}&quot;</span>
+                        </div>
+                      </ComboboxOption>
+                    )}
+                  </ComboboxOptions>
+                </Combobox>
+                {/* </FormControl> */}
                 <datalist id="titles">
                   {commonProductions.map((title) => (
                     <option key={title} value={title} />
