@@ -16,9 +16,11 @@ export default async function SearchPage({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, stageId, lat, lng, searchDate, ...filters } =
+    searchParams || {};
 
-  const searchKey = JSON.stringify(filters);
+  const searchKey = JSON.stringify([filters, searchDate]);
+  console.log(searchKey);
 
   // TODO: use zod or invariant to validate these params
   if (Array.isArray(q)) throw new Error("q must be a single value");
@@ -27,6 +29,8 @@ export default async function SearchPage({
   if (Array.isArray(stageId)) throw new Error("stageId must be a single value");
   if (Array.isArray(lat)) throw new Error("lat must be a single value");
   if (Array.isArray(lng)) throw new Error("lng must be a single value");
+  if (Array.isArray(searchDate))
+    throw new Error("searchDate must be a single value");
 
   // This is meant to get all the defined non-filter search params from the URL
   // so that we can set the new URL to only have those params when the user

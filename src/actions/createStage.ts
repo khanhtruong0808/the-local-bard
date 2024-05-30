@@ -8,8 +8,7 @@ import {
 } from "@/lib/form-schemas/stages";
 import { getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
-import { type FormServerState } from "@/lib/types";
-import { ynToBool } from "@/lib/utils";
+import type { FormServerState } from "@/lib/types";
 
 export default async function createStage(
   currentState: FormServerState,
@@ -59,8 +58,6 @@ export default async function createStage(
     name: parsed.data.name,
     type: parsed.data.type,
     notes: parsed.data.notes,
-    wheelchair_accessible: ynToBool(parsed.data.wheelchair_accessible),
-    seating_capacity: parsed.data.seating_capacity || undefined,
     address_id: address.id,
   });
 

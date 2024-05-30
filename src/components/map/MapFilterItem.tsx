@@ -1,8 +1,12 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { Button } from "@/components/ui/button";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createUrl } from "@/lib/utils";
 
 interface FilterItemProps {
@@ -62,5 +66,44 @@ export function FilterItem({
         </label>
       </div>
     </div>
+  );
+}
+
+export function DateSearchItem() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initSearchDate = searchParams.get("searchDate") || "";
+
+  const [searchDate, setSearchDate] = useState(initSearchDate);
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("searchDate");
+    if (searchDate) newParams.set("searchDate", searchDate);
+    router.push(createUrl(pathname, newParams));
+  };
+
+  return (
+    <form onSubmit={handleSearch} className="relative w-full">
+      <Input
+        type="date"
+        name="searchDate"
+        value={searchDate}
+        onChange={(e) => {
+          setSearchDate(e.target.value);
+        }}
+        className="mt-2 rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
+      />
+      <Button
+        type="submit"
+        size="sm"
+        className="mt-2 rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
+      >
+        Search
+      </Button>
+    </form>
   );
 }

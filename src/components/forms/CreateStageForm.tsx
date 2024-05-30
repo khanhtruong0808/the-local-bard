@@ -55,10 +55,6 @@ export const CreateStageForm = () => {
     postal_code: "",
     notes: "",
     type: "",
-    wheelchair_accessible: "",
-    seating_capacity: 0,
-    concessions: "",
-    parking_instructions: "",
     latitude: 0,
     longitude: 0,
   };
@@ -246,55 +242,6 @@ export const CreateStageForm = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="wheelchair_accessible"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3" key={key}>
-                <FormLabel>Wheel Chair Accessible</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={(v) => {
-                      field.onChange(v);
-                      updateKey();
-                    }}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="seating_capacity"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Seating Capacity</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder="100"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value !== "" ? parseInt(e.target.value) : "",
-                      )
-                    }
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

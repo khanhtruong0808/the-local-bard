@@ -14,7 +14,8 @@ export async function MapProductionsList({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, stageId, lat, lng, searchDate, ...filters } =
+    searchParams || {};
 
   const nextSearchParams = new URLSearchParams();
 
@@ -28,6 +29,8 @@ export async function MapProductionsList({
       nextSearchParams.set(key, value);
     }
   });
+  if (searchDate && !Array.isArray(searchDate))
+    nextSearchParams.set("searchDate", searchDate);
 
   const supabase = createClient();
   await supabase.auth.getUser();
@@ -36,6 +39,7 @@ export async function MapProductionsList({
     supabase,
     filters,
     q,
+    searchDate,
   );
 
   if (error) throw new Error(error.message);

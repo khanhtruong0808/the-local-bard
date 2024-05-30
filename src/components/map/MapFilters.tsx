@@ -1,12 +1,12 @@
 "use server";
 
-import { FilterItem } from "@/components/map/MapFilterItem";
-import { ProductionSearch } from "./ProductionSearch";
+import { DateSearchItem, FilterItem } from "@/components/map/MapFilterItem";
 import { genres } from "@/lib/constants";
+import { ProductionSearch } from "./ProductionSearch";
 
 export default async function MapFilters() {
   return (
-    <div className="px-4">
+    <div className="px-4 sm:p-0">
       <div className="mt-4">
         <ProductionSearch />
       </div>
@@ -73,6 +73,12 @@ export default async function MapFilters() {
             value="TRUE"
           />
         </div>
+      </fieldset>
+      <hr className="my-4 border-slate-500" />
+      <fieldset className="mt-4">
+        <legend className="sr-only">Date</legend>
+        <h4 className="text-md font-medium leading-6 text-white">Date</h4>
+        <DateSearchItem />
       </fieldset>
     </div>
   );

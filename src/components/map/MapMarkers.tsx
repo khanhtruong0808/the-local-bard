@@ -12,13 +12,15 @@ export default async function MapMarkers({
 }: {
   searchParams?: RouteSearchParams;
 }) {
-  const { q, productionId, stageId, lat, lng, ...filters } = searchParams || {};
+  const { q, productionId, stageId, lat, lng, searchDate, ...filters } =
+    searchParams || {};
   const supabase = createClient();
 
   const { data: productions, error } = await getFullProductions(
     supabase,
     filters,
     q,
+    searchDate,
   );
   if (error) throw error;
   if (!productions) return null;
@@ -89,18 +91,24 @@ export default async function MapMarkers({
         groupedProductionIds={productionsAtAddress.map((p) => p.id)}
         position={{ lat, lng }}
       >
-        <div className="flex flex-row gap-x-4">
-          {productionsAtAddress.map((production) => {
+        <div className="flex flex-row -space-x-16">
+          {productionsAtAddress.map((production, i) => {
             if (!production.poster_url) return null;
             return (
-              <Image
-                key={production.id}
-                src={production.poster_url}
-                alt={production.name}
-                width={105}
-                height={140}
-                className="h-[140px] w-[105px]"
-              />
+              <div
+                className="border bg-yellow-400 bg-opacity-75 shadow-lg"
+                key={i}
+              >
+                <Image
+                  key={production.id}
+                  src={production.poster_url}
+                  alt={production.name}
+                  width={105}
+                  height={140}
+                  style={{ zIndex: i }}
+                  className="h-[140px] w-[105px]"
+                />
+              </div>
             );
           })}
         </div>
