@@ -7,8 +7,7 @@ import {
   updateStageSchema,
 } from "@/lib/form-schemas/stages";
 import { createClient } from "@/lib/supabase/server";
-import { type FormServerState } from "@/lib/types";
-import { ynToBool } from "@/lib/utils";
+import type { FormServerState } from "@/lib/types";
 
 export default async function updateStage(
   currentState: FormServerState,
@@ -48,8 +47,6 @@ export default async function updateStage(
       name: payload.name,
       type: payload.type,
       notes: payload.notes,
-      wheelchair_accessible: ynToBool(payload.wheelchair_accessible),
-      seating_capacity: payload.seating_capacity,
       address_id: addressData.id,
     })
     .eq("id", payload.id);

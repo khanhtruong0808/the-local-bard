@@ -74,53 +74,36 @@ export function DateSearchItem() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const initSearchStartDate = searchParams.get("searchStartDate") || "";
-  const initSearchEndDate = searchParams.get("searchEndDate") || "";
+  const initSearchDate = searchParams.get("searchDate") || "";
 
-  const [searchStartDate, setSearchStartDate] = useState(initSearchStartDate);
-  const [searchEndDate, setSearchEndDate] = useState(initSearchEndDate);
+  const [searchDate, setSearchDate] = useState(initSearchDate);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newParams = new URLSearchParams(searchParams);
-    newParams.delete("searchStartDate");
-    newParams.delete("searchEndDate");
-    if (searchStartDate) newParams.set("searchStartDate", searchStartDate);
-    if (searchEndDate) newParams.set("searchEndDate", searchEndDate);
+    newParams.delete("searchDate");
+    if (searchDate) newParams.set("searchDate", searchDate);
     router.push(createUrl(pathname, newParams));
   };
 
   return (
     <form onSubmit={handleSearch} className="relative w-full">
-      <div className="flex gap-2">
-        <Label htmlFor="searchStartDate" className="text-white" />
-        <Input
-          type="date"
-          name="searchStartDate"
-          value={searchStartDate}
-          onChange={(e) => {
-            setSearchStartDate(e.target.value);
-          }}
-          className="rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
-        />
-        <Label htmlFor="searchEndDate" className="text-white" />
-        <Input
-          type="date"
-          name="searchEndDate"
-          value={initSearchEndDate}
-          onChange={(e) => {
-            setSearchEndDate(e.target.value);
-          }}
-          className="rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          className="rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
-        >
-          Search
-        </Button>
-      </div>
+      <Input
+        type="date"
+        name="searchDate"
+        value={searchDate}
+        onChange={(e) => {
+          setSearchDate(e.target.value);
+        }}
+        className="mt-2 rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
+      />
+      <Button
+        type="submit"
+        size="sm"
+        className="mt-2 rounded border-slate-500 bg-slate-500 px-2 py-1 text-white"
+      >
+        Search
+      </Button>
     </form>
   );
 }

@@ -487,15 +487,16 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                       <SelectValue placeholder="Select a cost range" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="$">{"$ ($20 or less)"}</SelectItem>
-                      <SelectItem value="$$">{"$$ ($21 to $50)"}</SelectItem>
-                      <SelectItem value="$$$">{" $$$ ($51 to $99)"}</SelectItem>
-                      <SelectItem value="$$$$">
-                        {"$$$$ ($100 or more)"}
-                      </SelectItem>
+                      <SelectItem value="$">{"$ (less than $20)"}</SelectItem>
+                      <SelectItem value="$$">{"$$ ($20+)"}</SelectItem>
+                      <SelectItem value="$$$">{" $$$ ($50+)"}</SelectItem>
+                      <SelectItem value="$$$$">{"$$$$ ($100+)"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormDescription>
+                  Select the minimum price of a ticket for your production.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

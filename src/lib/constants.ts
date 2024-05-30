@@ -25,6 +25,7 @@ export const theaterTypes = [
   "Junior College",
   "Equity Theater",
   "Play House",
+  "Other",
 ] as const;
 
 export const commonProductions = [

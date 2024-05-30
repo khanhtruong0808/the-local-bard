@@ -36,7 +36,6 @@ import {
 import { useFormCustom, useSelectKey } from "@/lib/hooks";
 import { StageWithAddress } from "@/lib/supabase/queries";
 import { type FormServerState } from "@/lib/types";
-import { boolToYN } from "@/lib/utils";
 import useDialog from "@/utils/dialogStore";
 import FormToaster from "../FormToaster";
 import { ConfirmDeleteForm } from "./ConfirmDeleteForm";
@@ -98,15 +97,8 @@ const UpdateStageFormInternal = ({
     state: address.state || "",
     postal_code: address.postal_code || "",
     type: stage.type || "",
-    wheelchair_accessible:
-      stage.wheelchair_accessible !== null
-        ? boolToYN(stage.wheelchair_accessible)
-        : "",
-    seating_capacity: stage.seating_capacity || 0,
     notes: stage.notes || "",
     address_id: stage.address_id || "",
-    concessions: stage.concessions || "",
-    parking_instructions: stage.parking_instructions || "",
     latitude: address.latitude || 0,
     longitude: address.longitude || 0,
   };
@@ -341,84 +333,6 @@ const UpdateStageFormInternal = ({
                       ))}
                     </SelectContent>
                   </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="wheelchair_accessible"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-3" key={key}>
-                <FormLabel>Wheelchair Accessible?</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={(v) => {
-                      field.onChange(v);
-                      updateKey();
-                    }}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yes">Yes</SelectItem>
-                      <SelectItem value="No">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="seating_capacity"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Seating Capacity</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder="100"
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value !== "" ? parseInt(e.target.value) : "",
-                      )
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="parking_instructions"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Parking Instructions</FormLabel>
-                <FormControl>
-                  <Textarea rows={3} {...field} />
-                </FormControl>
-                <FormDescription>
-                  List any parking instructions here.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="concessions"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>Concessions</FormLabel>
-                <FormControl>
-                  <Input type="text" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
