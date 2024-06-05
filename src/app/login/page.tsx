@@ -8,12 +8,10 @@ export default async function Login() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Image
-          className="mx-auto w-auto"
-          width={40}
-          height={40}
+        <img
+          className="mx-auto h-[90px] w-[90px]"
           alt="The Local Bard Logo"
-          src="/logo.jpg"
+          src="/logo.png"
         />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-white">
           Sign In to your account
