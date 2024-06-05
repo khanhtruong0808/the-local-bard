@@ -36,7 +36,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
               href="/"
               className="mr-14 flex items-center gap-2 whitespace-nowrap font-medium"
             >
-              <Image width={40} height={40} alt="" src="/logo.jpg" />
+              <img alt="" src="/logo.png" className="h-[55px] w-[55px]" />
               The Local Bard
             </Link>
             <div className="flex w-full justify-between">
@@ -76,8 +76,8 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
               )}
             </Disclosure.Button>
             <a href="/" className="flex items-center gap-2 font-medium">
-              <Image width={40} height={40} alt="" src="/logo.jpg" /> The Local
-              Bard
+              <img alt="" src="/logo.png" className="h-[55px] w-[55px]" /> The
+              Local Bard
             </a>
             <div className="flex items-center text-sm">{children}</div>
           </div>
