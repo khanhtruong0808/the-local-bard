@@ -3,10 +3,11 @@
 import {
   APIProvider,
   Map as VisglMap,
+  useMap,
   type MapMouseEvent,
 } from "@vis.gl/react-google-maps";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { clientEnv } from "@/lib/clientEnv";
 import { useLoadGoogleApi } from "@/lib/googleMaps";
@@ -59,8 +60,26 @@ export default function Map({ children }: { children: React.ReactNode }) {
         gestureHandling="greedy"
         onClick={handleMapClick}
       >
+        <LocationPanHandler />
         {children}
       </VisglMap>
     </APIProvider>
   );
+}
+
+/** Makes sure the map pans to wherever the lat/lng search params are */
+function LocationPanHandler() {
+  const searchParams = useSearchParams();
+  const lat = searchParams.get("lat");
+  const lng = searchParams.get("lng");
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+    if (lat && lng) {
+      map.panTo({ lat: parseFloat(lat), lng: parseFloat(lng) });
+    }
+  }, [lat, lng, map]);
+
+  return null;
 }
