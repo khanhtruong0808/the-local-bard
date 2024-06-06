@@ -142,10 +142,12 @@ export const getFullProductions = cache(
       });
       if (error) throw error;
 
-      query.in(
-        "id",
-        data.map((d) => d.id),
-      );
+      // ids that match our fuzzy search
+      const ids = data.map((d) => d.id);
+
+      // representation of OR clauses in our supabase query
+      const queryStr = `id.in.(${ids.join(",")}), directors.cs.{"${search}"}, composers.cs.{"${search}"}, playwrights.cs.{"${search}"}, genres.cs.{"${search}"}`;
+      query.or(queryStr);
     }
 
     // Filter by productions that end after the search start date
@@ -153,7 +155,8 @@ export const getFullProductions = cache(
       if (Array.isArray(searchDate)) {
         throw new Error("multi search date not implemented");
       }
-      query.or(`end_date.lte.${searchDate},start_date.gte.${searchDate}`);
+      query.lte("start_date", searchDate);
+      query.gte("end_date", searchDate);
     }
 
     return await query;

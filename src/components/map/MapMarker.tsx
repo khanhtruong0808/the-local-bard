@@ -11,6 +11,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import type { FullProductions } from "@/lib/supabase/queries";
 import { cn, createUrl } from "@/lib/utils";
+import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 
 interface MapMarkerProps extends AdvancedMarkerProps {
   productions: FullProductions;
@@ -66,17 +67,43 @@ export default function MapMarker({
     currentProductionId === productionId.toString() ||
     currentTheaterId === stageId?.toString();
 
+  const currentProduction = productions.find(
+    (p) => p.id === parseInt(currentProductionId || ""),
+  );
+
   const handleClick = () => {
-    console.log("handling click");
     if (active) {
-      console.log("active, changing url to", closeUrl);
       router.push(closeUrl);
     } else {
-      console.log("not active");
       router.push(nextUrl);
       map?.setCenter(position);
     }
   };
+
+  const currentProductionIndex = productions.findIndex(
+    (p) => p.id === parseInt(currentProductionId || ""),
+  );
+
+  const prevProduction =
+    currentProductionIndex === 0
+      ? productions[productions.length - 1]
+      : productions[currentProductionIndex - 1];
+  const nextProduction =
+    currentProductionIndex === productions.length - 1
+      ? productions[0]
+      : productions[currentProductionIndex + 1];
+  const prevProductionSearchParams = new URLSearchParams(
+    searchParams.toString(),
+  );
+  prevProductionSearchParams.set("productionId", prevProduction?.id.toString());
+
+  const nextProductionSearchParams = new URLSearchParams(
+    searchParams.toString(),
+  );
+  nextProductionSearchParams.set("productionId", nextProduction?.id.toString());
+
+  const prevProductionUrl = createUrl(pathname, prevProductionSearchParams);
+  const nextProductionUrl = createUrl(pathname, nextProductionSearchParams);
 
   return (
     <>
@@ -95,32 +122,48 @@ export default function MapMarker({
           )}
         >
           {children}
-          <Transition
-            as="div"
-            show={active}
-            enter="transition-all duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-          >
+          <div className={cn(active ? "block" : "hidden")}>
             <div className="mt-2 flex flex-col items-center justify-center">
               <h2 className="text-center text-2xl font-bold text-zinc-900">
-                {productions[0].name}
+                {currentProduction?.name}
               </h2>
-              <p className="font-serif text-xs">{productions[0].summary}</p>
+              <p className="font-serif text-xs">{currentProduction?.summary}</p>
               <p className="text-base">
                 Showing from&nbsp;
-                {new Date(productions[0].start_date).toLocaleDateString()}
+                {new Date(
+                  currentProduction?.start_date || 0,
+                ).toLocaleDateString()}
                 &nbsp;to&nbsp;
-                {new Date(productions[0].end_date).toLocaleDateString()}
+                {new Date(
+                  currentProduction?.end_date || 0,
+                ).toLocaleDateString()}
               </p>
               <p className="text-base">
-                {productions[0].duration_minutes}
+                {currentProduction?.duration_minutes}
                 &nbsp;minutes
               </p>
-              <p className="text-base">{productions[0].cost_range}</p>
-              <p className="text-sm">{productions[0].notes}</p>
+              <p className="text-base">{currentProduction?.cost_range}</p>
+              <p className="text-sm">{currentProduction?.notes}</p>
+              <div className="flex">
+                <ArrowBigLeft
+                  className={cn("h-10 w-10")}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push(prevProductionUrl);
+                  }}
+                />
+                <ArrowBigRight
+                  className="h-10 w-10"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push(nextProductionUrl);
+                  }}
+                />
+              </div>
             </div>
-          </Transition>
+          </div>
         </div>
       </AdvancedMarker>
     </>

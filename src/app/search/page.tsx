@@ -20,7 +20,6 @@ export default async function SearchPage({
     searchParams || {};
 
   const searchKey = JSON.stringify([filters, searchDate]);
-  console.log(searchKey);
 
   // TODO: use zod or invariant to validate these params
   if (Array.isArray(q)) throw new Error("q must be a single value");
