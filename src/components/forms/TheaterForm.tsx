@@ -133,22 +133,6 @@ const TheaterFormInternal = ({
         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 border-t border-gray-200 py-6 sm:grid-cols-6 md:col-span-2">
           <input type="hidden" {...form.register("id")} />
           <input type="hidden" {...form.register("address_id")} />
-          {/* Possibly implement later if that is a feature we'd like? */}
-          {/* <div className="col-span-full">
-              <label
-                className="block text-sm/6 font-medium text-white"
-                htmlFor="photo"
-              >
-                Photo
-              </label>
-              <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-gray-300"
-                  aria-hidden="true"
-                />
-                <Button type="button">Change</Button>
-              </div>
-            </div> */}
           <FormField
             control={form.control}
             name="name"

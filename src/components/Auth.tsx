@@ -26,7 +26,10 @@ export async function Auth() {
       <div className="flex items-center">
         <p className="text-sm text-zinc-300">{name}</p>
       </div>
-      <ProfileDropdown name={name} />
+      <ProfileDropdown
+        name={name}
+        profileUrl={profile?.profile_image_url || undefined}
+      />
     </div>
   );
 }

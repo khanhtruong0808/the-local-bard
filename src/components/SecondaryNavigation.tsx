@@ -30,6 +30,12 @@ const secondaryNavigation = [
     icon: FilmIcon,
   },
   {
+    name: "Profile",
+    href: "/account/profile",
+    segment: "profile",
+    icon: UserCircleIcon,
+  },
+  {
     name: "Password",
     href: "/account/password",
     segment: "password",
