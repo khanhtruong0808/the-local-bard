@@ -220,6 +220,20 @@ export type TheaterForTheaterPage = DbResultOk<
   ReturnType<typeof getTheaterForTheaterPage>
 >;
 
+export const getProfile = async (
+  client: SupabaseClient<Database>,
+  userId: string,
+) => {
+  return await client
+    .from("profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+};
+
+export type Profile = DbResultOk<ReturnType<typeof getProfile>>;
+
 /**
  * Gets user from Supabase Auth or throws an error.
  * This circumvents the issue where we DO get a user response, but there is also
