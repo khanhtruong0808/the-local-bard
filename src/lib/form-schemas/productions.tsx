@@ -66,6 +66,7 @@ export const createProductionServerSchema = createProductionSchema
     kid_friendly: z.boolean().optional(),
     start_date: z.string(), // Supabase requires dates to be strings
     end_date: z.string(), // Supabase requires dates to be strings
+    approved: z.boolean(),
   })
   .omit({ poster: true, date_range: true });
 

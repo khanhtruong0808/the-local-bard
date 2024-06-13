@@ -11,7 +11,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import type { FullProductions } from "@/lib/supabase/queries";
 import { cn, createUrl } from "@/lib/utils";
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
+import {
+  ArrowBigLeft,
+  ArrowBigRight,
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
 
 interface MapMarkerProps extends AdvancedMarkerProps {
   productions: FullProductions;
@@ -144,24 +149,26 @@ export default function MapMarker({
               </p>
               <p className="text-base">{currentProduction?.cost_range}</p>
               <p className="text-sm">{currentProduction?.notes}</p>
-              <div className="flex">
-                <ArrowBigLeft
-                  className={cn("h-10 w-10")}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    router.push(prevProductionUrl);
-                  }}
-                />
-                <ArrowBigRight
-                  className="h-10 w-10"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    router.push(nextProductionUrl);
-                  }}
-                />
-              </div>
+              {productions.length > 1 && (
+                <div className="flex">
+                  <ArrowLeft
+                    className={cn("h-10 w-10")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(prevProductionUrl);
+                    }}
+                  />
+                  <ArrowRight
+                    className="h-10 w-10"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(nextProductionUrl);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

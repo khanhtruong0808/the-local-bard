@@ -165,6 +165,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           start_date: format(date_range.from, "yyyy-MM-dd"),
           end_date: format(date_range.to || date_range.from, "yyyy-MM-dd"),
           kid_friendly: ynToBool(kid_friendly),
+          approved: theater.verified,
         } as CreateProductionServerSchema;
 
         const endpoint = "/api/productions";
@@ -178,7 +179,11 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           return Promise.reject(new Error(error));
         }
         form.reset(defaultValues);
-        router.push("/account/productions/new/success");
+        if (theater.verified) {
+          router.push("/account/productions");
+        } else {
+          router.push("/account/productions/new/success");
+        }
       })(),
       {
         loading: "Submitting production...",
