@@ -9,7 +9,7 @@ export default function SignUpPage() {
         </h1>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-lg">
         <SignUpForm />
       </div>
     </>

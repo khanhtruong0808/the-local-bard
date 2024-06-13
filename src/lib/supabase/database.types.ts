@@ -320,6 +320,7 @@ export type Database = {
           type: string | null
           updated_at: string
           url: string | null
+          verified: boolean
         }
         Insert: {
           address_id: number
@@ -332,6 +333,7 @@ export type Database = {
           type?: string | null
           updated_at?: string
           url?: string | null
+          verified?: boolean
         }
         Update: {
           address_id?: number
@@ -344,6 +346,7 @@ export type Database = {
           type?: string | null
           updated_at?: string
           url?: string | null
+          verified?: boolean
         }
         Relationships: [
           {
