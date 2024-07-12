@@ -92,7 +92,7 @@ export const UpdateProfileForm = ({
                 )}
               <Button type="button">
                 <label className="hover:cursor-pointer" htmlFor="profileImage">
-                  Update profile picture
+                  Select picture
                 </label>
               </Button>
               <input
