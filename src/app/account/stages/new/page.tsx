@@ -1,4 +1,5 @@
 import { NoTheater } from "@/components/NoTheater";
+import { NotVerified } from "@/components/NotVerified";
 import { CreateStageForm } from "@/components/forms/CreateStageForm";
 import { getTheaterForStagesPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -14,6 +15,7 @@ export default async function EditStagePage() {
   );
   if (error) throw new Error(error.message);
   if (!theater) return <NoTheater />;
+  if (!theater.verified) return <NotVerified />;
 
   return <CreateStageForm />;
 }

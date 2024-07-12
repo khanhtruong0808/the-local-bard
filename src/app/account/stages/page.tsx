@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { NoTheater } from "@/components/NoTheater";
+import { NotVerified } from "@/components/NotVerified";
 import { Button } from "@/components/ui/button";
 import { getTheaterForStagesPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -16,6 +17,7 @@ export default async function StagesPage() {
   );
   if (error) throw new Error(error.message);
   if (!theater) return <NoTheater />;
+  if (!theater.verified) return <NotVerified />;
 
   // sort stages to list most recently updated first
   const stages = theater.stages.sort((a, b) => {
