@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import signOut from "@/actions/signOut";
-import { profile } from "console";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const ProfileDropdown = ({
   name,
@@ -22,7 +22,10 @@ export const ProfileDropdown = ({
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="ml-2 inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
         {profileUrl ? (
-          <img src={profileUrl} alt="" />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={profileUrl} />
+            <AvatarFallback>{name || ""}</AvatarFallback>
+          </Avatar>
         ) : (
           <svg
             className="h-full w-full text-gray-300"
