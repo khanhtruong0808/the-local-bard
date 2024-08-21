@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { Analytics } from "@vercel/analytics/react";
 
 import "@/app/globals.css";
 import { Auth } from "@/components/Auth";
@@ -51,6 +52,7 @@ export default async function RootLayout({
           }}
         />
         <GlobalDialog />
+        <Analytics />
       </body>
     </html>
   );
