@@ -165,7 +165,6 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
           start_date: format(date_range.from, "yyyy-MM-dd"),
           end_date: format(date_range.to || date_range.from, "yyyy-MM-dd"),
           kid_friendly: ynToBool(kid_friendly),
-          approved: theater.verified,
         } as CreateProductionServerSchema;
 
         const endpoint = "/api/productions";
@@ -227,6 +226,9 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
             render={({ field }) => (
               <FormItem className="col-span-full">
                 <FormLabel>Title</FormLabel>
+                <FormDescription>
+                  Choose a production from the list, or use a custom title.
+                </FormDescription>
                 {/* <FormControl> */}
                 <Combobox
                   value={field.value}
@@ -264,8 +266,7 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                         className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
                       >
                         <div className="text-sm/6 text-white">
-                          Create{" "}
-                          <span className="font-bold">&quot;{query}&quot;</span>
+                          <span className="font-bold">{query}</span>
                         </div>
                       </ComboboxOption>
                     )}

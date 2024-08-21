@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 /** Show this the user's account has not been verified as a theater manager yet. */
-export function NotVerified() {
+export function AccountNotVerified() {
   return (
     <>
       <p className="text-xl font-semibold text-zinc-300">
