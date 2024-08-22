@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
 interface MapMarkerProps extends AdvancedMarkerProps {
   productions: FullProductions;
@@ -125,6 +126,11 @@ export default function MapMarker({
             active &&
               "bg-gradient-to-r from-yellow-500 to-yellow-300 shadow-lg",
           )}
+          onClick={() =>
+            active &&
+            currentProduction?.url &&
+            window.open(currentProduction.url, "_blank")
+          }
         >
           {children}
           <div className={cn(active ? "block" : "hidden")}>

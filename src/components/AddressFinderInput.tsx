@@ -1,14 +1,13 @@
 "use client";
-
 // Search input component with Google Maps Places Autocomplete
 import { StandaloneSearchBox } from "@react-google-maps/api";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useLoadGoogleApi } from "@/lib/googleMaps";
-import { useFormContext } from "react-hook-form";
-import { Input } from "./ui/input";
-import { FormDescription, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { cn } from "@/lib/utils";
+import { useFormContext } from "react-hook-form";
+import { FormDescription, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
 
 // Geographic boundary to bias the search results to Sacramento County.
 // Results outside of this area will still be returned, but will be lower priority.
@@ -26,6 +25,7 @@ export default function AddressFinderInput({
 }) {
   const { isLoaded, loadError } = useLoadGoogleApi();
   const { setValue, getValues, getFieldState } = useFormContext();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [search, setSearch] = useState<google.maps.places.SearchBox | null>(
     null,
@@ -37,6 +37,7 @@ export default function AddressFinderInput({
 
   const handlePlacesChanged = () => {
     if (search) {
+      console.log({ search });
       const places = search.getPlaces();
 
       if (places === undefined || places.length === 0) {
@@ -54,6 +55,8 @@ export default function AddressFinderInput({
         return;
       }
 
+      console.log(addressComponents);
+
       const lat = place.geometry?.location?.lat();
       const lng = place.geometry?.location?.lng();
       if (lat === undefined || lng === undefined) {
@@ -64,17 +67,28 @@ export default function AddressFinderInput({
       const get = (name: string) =>
         addressComponents.find((c) => c.types.includes(name));
 
+      const premise = get("premise")?.long_name;
       const streetNumber = get("street_number")?.long_name;
       const streetName = get("route")?.long_name;
       const city = get("locality")?.long_name;
       const state = get("administrative_area_level_1")?.short_name;
       const postalCode = get("postal_code")?.long_name;
-      if (!streetNumber || !streetName || !city || !state || !postalCode) {
+      const placeName = place.name;
+
+      // If it's not nicely formatted like "123 Main St", try alternatives
+      const streetAddress =
+        streetNumber && streetName
+          ? `${streetNumber} ${streetName}`
+          : premise
+            ? premise
+            : placeName
+              ? placeName
+              : undefined;
+
+      if (!streetAddress || !city || !state || !postalCode) {
         alert("Invalid address. Please try again.");
         return;
       }
-
-      const streetAddress = `${streetNumber} ${streetName}`;
 
       setValue("street_address", streetAddress, { shouldDirty: true });
       setValue("city", city, { shouldDirty: true });
@@ -139,6 +153,7 @@ export default function AddressFinderInput({
           type="text"
           placeholder="Type here to search for an address"
           defaultValue={currentAddress}
+          ref={inputRef}
           onKeyDown={(e) => {
             if (e.code === "Enter") e.preventDefault();
           }}

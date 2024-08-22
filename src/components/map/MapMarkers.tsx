@@ -6,6 +6,7 @@ import { getFullProductions } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { type RouteSearchParams } from "@/lib/types";
 import MapMarker from "./MapMarker";
+import Link from "next/link";
 
 export default async function MapMarkers({
   searchParams,

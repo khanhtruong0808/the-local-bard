@@ -1,4 +1,5 @@
 import { NoTheater } from "@/components/NoTheater";
+import { TheaterNotVerified } from "@/components/TheaterNotVerified";
 import { Button } from "@/components/ui/button";
 import { getTheaterForProductionsPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -16,6 +17,7 @@ export default async function ProductionsPage() {
   );
   if (error) throw new Error(error.message);
   if (!theater) return <NoTheater />;
+  if (!theater.verified) return <TheaterNotVerified />;
 
   // filter out productions that have ended
   // sort productions to list most recently updated first

@@ -1,13 +1,15 @@
 "use client";
 
+import { AlertCircle, Check } from "lucide-react";
+import { useState } from "react";
+import { useFormState } from "react-dom";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { Profile } from "@/lib/supabase/queries";
-import { useState } from "react";
-import { Button } from "../ui/button";
 import { FormServerState } from "@/lib/types";
-import { useFormState } from "react-dom";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { AlertCircle, Check } from "lucide-react";
 
 export const UpdateProfileForm = ({
   profile,
@@ -67,7 +69,9 @@ export const UpdateProfileForm = ({
           <div className="mt-2 flex items-center gap-x-3">
             <div className="inline-block h-48 w-48 overflow-hidden rounded-full bg-gray-100">
               {profileUrl ? (
-                <img src={profileUrl} alt="" />
+                <Avatar className="h-48 w-48">
+                  <AvatarImage src={profileUrl} />
+                </Avatar>
               ) : (
                 <svg
                   className="h-full w-full text-gray-300"
