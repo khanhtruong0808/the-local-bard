@@ -37,7 +37,6 @@ export default function AddressFinderInput({
 
   const handlePlacesChanged = () => {
     if (search) {
-      console.log({ search });
       const places = search.getPlaces();
 
       if (places === undefined || places.length === 0) {
@@ -54,8 +53,6 @@ export default function AddressFinderInput({
         );
         return;
       }
-
-      console.log(addressComponents);
 
       const lat = place.geometry?.location?.lat();
       const lng = place.geometry?.location?.lng();
