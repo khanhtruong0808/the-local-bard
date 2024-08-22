@@ -1,6 +1,5 @@
 "use client";
 
-import { Transition } from "@headlessui/react";
 import {
   AdvancedMarker,
   AdvancedMarkerProps,
@@ -11,13 +10,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import type { FullProductions } from "@/lib/supabase/queries";
 import { cn, createUrl } from "@/lib/utils";
-import {
-  ArrowBigLeft,
-  ArrowBigRight,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface MapMarkerProps extends AdvancedMarkerProps {
   productions: FullProductions;
@@ -49,12 +42,13 @@ export default function MapMarker({
   if (!productions || productions.length === 0) return null;
 
   const currentProductionId = searchParams.get("productionId");
-  const currentTheaterId = searchParams.get("stageId");
+  const currentStageId = searchParams.get("stageId");
 
   const nextSearchParams = new URLSearchParams(searchParams.toString());
   if (stageId) {
     nextSearchParams.delete("productionId");
     nextSearchParams.set("stageId", stageId.toString());
+    nextSearchParams.set("productionId", productionId.toString());
   } else {
     nextSearchParams.set("productionId", productionId.toString());
     nextSearchParams.delete("stageId");
@@ -71,7 +65,7 @@ export default function MapMarker({
   const active =
     groupedProductionIds?.includes(parseInt(currentProductionId || "")) ||
     currentProductionId === productionId.toString() ||
-    currentTheaterId === stageId?.toString();
+    currentStageId === stageId?.toString();
 
   const currentProduction = productions.find(
     (p) => p.id === parseInt(currentProductionId || ""),
