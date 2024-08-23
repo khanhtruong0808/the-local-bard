@@ -14,10 +14,15 @@ export default async function Home() {
           <h1 className="text-4xl font-medium text-white sm:text-5xl">
             Find spectactular stage productions near you.
           </h1>
-          <p className="text-sm text-zinc-400 sm:text-base">
-            Uncover nearby theaters swiftly. User-friendly interface. No more
-            tedious searches. Embrace cinematic delight. Your go-to for an
-            unforgettable movie experience. Discover now!
+          <p className="text-sm text-zinc-300 sm:text-base">
+            Professional, educational, or community, there&quot;s a show for
+            everyone. Now you can easily find your favorite plays and musicals
+            performing near you. Buy tickets. Support local theaters. Discover
+            new productions. And embrace the joys of Live Theatre.
+          </p>
+          <p className="text-xs text-zinc-300 sm:text-sm">
+            The Local Bard is currently in Beta and will be receiving frequent
+            updates. Thank you for your support.
           </p>
           <div className="relative mt-4 w-full self-center">
             <SearchInput />
