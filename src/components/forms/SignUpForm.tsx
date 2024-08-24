@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { sendNewTheaterEmail } from "@/actions/sendNewTheaterEmail";
 import AddressFinderInput from "@/components/AddressFinderInput";
 import ErrorMessage from "@/components/ErrorMessage";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { theaterTypes } from "@/lib/constants";
 import { SignUpSchema, signUpSchema } from "@/lib/form-schemas/sign-up";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -26,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { theaterTypes } from "@/lib/constants";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -134,6 +135,18 @@ export default function SignUpForm() {
     if (!theater) {
       console.log("No theater");
       setError("No theater");
+      return;
+    }
+
+    // Send email to admin to verify new theater
+    const emailFormData = new FormData();
+    emailFormData.append("first_name", values.firstName);
+    emailFormData.append("last_name", values.lastName);
+    emailFormData.append("theater_name", values.theaterName);
+    const result = await sendNewTheaterEmail(emailFormData);
+    if (result.status === "error") {
+      console.error(result.error);
+      setError(result.error);
       return;
     }
 

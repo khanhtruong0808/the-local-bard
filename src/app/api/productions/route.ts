@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       from: serverEnv.NOREPLY_EMAIL,
       to: serverEnv.ADMIN_EMAIL,
       subject: "New production created",
-      text: `A new production was created: ${JSON.stringify(parsed.data)}`,
+      text: `A new production was created: ${JSON.stringify(parsed.data, null, 2)}`,
     });
   } catch (error) {
     console.error("Error sending email", error);

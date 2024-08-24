@@ -300,7 +300,7 @@ const TheaterFormInternal = ({
               <FormItem className="col-span-full">
                 <FormLabel>Website URL</FormLabel>
                 <FormControl>
-                  <Input {...field} type="url" placeholder="www.example.com" />
+                  <Input {...field} type="text" placeholder="www.example.com" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

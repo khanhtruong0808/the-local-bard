@@ -268,6 +268,10 @@ export const getMaybeUser = async (client: SupabaseClient<Database>) => {
       return null;
     }
 
+    if (error.message.includes("User from sub claim in JWT does not exist")) {
+      return null;
+    }
+
     throw new Error(error.message);
   }
 
