@@ -10,8 +10,8 @@ export function TheaterNotVerified() {
         Your theater has not been verified yet.
       </p>
       <p className="text-base/7 text-zinc-400">
-        Please wait for us to review your theater information, or contact us for
-        verification status.
+        Thank you for your patience while we review and authenticate your
+        theater information.
       </p>
       <Button asChild className="mt-4">
         <Link href="/contact">Contact Us</Link>

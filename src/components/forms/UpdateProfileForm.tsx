@@ -67,7 +67,10 @@ export const UpdateProfileForm = ({
         </div>
         <div className="col-span-full">
           <div className="mt-2 flex items-center gap-x-3">
-            <div className="inline-block h-48 w-48 overflow-hidden rounded-full bg-gray-100">
+            <label
+              htmlFor="profileImage"
+              className="inline-block h-48 w-48 overflow-hidden rounded-full bg-gray-100 hover:cursor-pointer"
+            >
               {profileUrl ? (
                 <Avatar className="h-48 w-48">
                   <AvatarImage src={profileUrl} />
@@ -81,7 +84,7 @@ export const UpdateProfileForm = ({
                   <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               )}
-            </div>
+            </label>
 
             <div className="flex gap-4 self-end">
               {profileUrl !== profile.profile_image_url &&
@@ -94,11 +97,6 @@ export const UpdateProfileForm = ({
                     Cancel
                   </Button>
                 )}
-              <Button type="button">
-                <label className="hover:cursor-pointer" htmlFor="profileImage">
-                  Select picture
-                </label>
-              </Button>
               <input
                 id="profileImage"
                 name="profileImage"

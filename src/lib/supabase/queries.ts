@@ -256,6 +256,7 @@ export const getMaybeUser = async (client: SupabaseClient<Database>) => {
   if (data.user) return data.user;
 
   if (error) {
+    console.error(error);
     if (
       error.name === "AuthApiError" &&
       error.code === "bad_jwt" &&
