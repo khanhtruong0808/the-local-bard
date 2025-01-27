@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function resetPasswordEmail(form: FormData) {
-  const headersList = headers();
+  const headersList = await headers();
   const email = form.get("email") as string;
 
   const supabase = createClient();

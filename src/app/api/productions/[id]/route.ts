@@ -6,10 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "edge";
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const intId = parseInt(params.id, 10);
   if (isNaN(intId)) {
     return NextResponse.json(

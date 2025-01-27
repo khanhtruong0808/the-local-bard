@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import toast from "react-hot-toast";
 
 import deleteStage from "@/actions/deleteStage";
@@ -65,12 +65,12 @@ const UpdateStageFormInternal = ({
 }: UpdateStageFormProps & { resetFormState: () => void }) => {
   const LOCAL_STORAGE_KEY = `update-stage-form-${stage.id}`;
 
-  const [state, formAction] = useFormState<FormServerState, UpdateStageSchema>(
-    updateStage,
-    {
-      status: "idle",
-    },
-  );
+  const [state, formAction] = useActionState<
+    FormServerState,
+    UpdateStageSchema
+  >(updateStage, {
+    status: "idle",
+  });
 
   const [isDeleting, setIsDeleting] = useState(false);
   const { openDialog, closeDialog } = useDialog();

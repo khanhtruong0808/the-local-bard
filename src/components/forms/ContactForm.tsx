@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Check } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { sendContactEmail } from "@/actions/sendContactEmail";
 import SubmitButton from "@/components/ui/SubmitButton";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormServerState } from "@/lib/types";
 
 export function ContactForm() {
-  const [state, formAction] = useFormState<FormServerState, FormData>(
+  const [state, formAction] = useActionState<FormServerState, FormData>(
     sendContactEmail,
     { status: "idle" },
   );

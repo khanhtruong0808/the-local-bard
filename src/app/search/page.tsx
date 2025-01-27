@@ -11,11 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { RouteSearchParams } from "@/lib/types";
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams?: RouteSearchParams;
-}) {
+export default async function SearchPage(
+  props: {
+    searchParams?: Promise<RouteSearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const { q, productionId, stageId, lat, lng, searchDate, ...filters } =
     searchParams || {};
 

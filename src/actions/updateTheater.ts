@@ -32,7 +32,7 @@ export default async function updateTheater(
       url: payload.url,
       type: payload.type,
     })
-    .eq("id", payload.id || "");
+    .eq("id", payload.id);
 
   if (theatersError) {
     console.error(theatersError);
@@ -49,7 +49,7 @@ export default async function updateTheater(
       latitude: payload.latitude,
       longitude: payload.longitude,
     })
-    .eq("id", payload.address_id || "");
+    .eq("id", payload.address_id || -1); // TODO: fix this type
 
   if (addressesError) {
     console.error(addressesError);

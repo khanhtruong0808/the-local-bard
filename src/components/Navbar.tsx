@@ -75,10 +75,10 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                 <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
               )}
             </Disclosure.Button>
-            <a href="/" className="flex items-center gap-2 font-medium">
+            <Link href="/" className="flex items-center gap-2 font-medium">
               <img alt="" src="/logo.png" className="h-[55px] w-[55px]" /> The
               Local Bard
-            </a>
+            </Link>
             <div className="flex items-center text-sm">{children}</div>
           </div>
 

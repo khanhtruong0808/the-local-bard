@@ -82,7 +82,7 @@ async function UpcomingProductions() {
               src={production.poster_url as string} // checked above
               startDate={new Date(production.start_date)}
               endDate={new Date(production.end_date)}
-              address={production?.stages?.addresses!} // checked above
+              address={production.stages.addresses!} // checked above
               url={production.url}
             />
           );

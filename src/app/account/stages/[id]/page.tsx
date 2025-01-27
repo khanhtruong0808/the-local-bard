@@ -9,11 +9,12 @@ import {
 } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function EditStagePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditStagePage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getUser(supabase);
 

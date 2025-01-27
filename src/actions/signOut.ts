@@ -3,14 +3,18 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import type { FormServerState } from "@/lib/types";
 
-export default async function signOut() {
+export default async function signOut(
+  prevState: FormServerState,
+  formData: FormData,
+): Promise<FormServerState> {
   const supabase = createClient();
 
   const signOut = await supabase.auth.signOut();
   if (signOut.error) {
     console.error(signOut.error);
-    return { error: signOut.error.message };
+    return { status: "error", error: signOut.error.message };
   }
 
   redirect("/login");

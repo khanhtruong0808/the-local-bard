@@ -1,4 +1,4 @@
-// For use with useFormState actions
+// For use with useActionState actions
 export type FormServerState =
   | {
       status: "success";

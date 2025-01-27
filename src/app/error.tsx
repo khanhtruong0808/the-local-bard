@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Error() {
   return (
     <main className="mx-auto grid min-h-full place-items-center">
@@ -14,12 +16,12 @@ export default function Error() {
           If this problem persists, please let us know.
         </p>
         <div className="mt-7 flex items-center justify-center gap-x-6">
-          <a
+          <Link
             href="/"
             className="rounded-md bg-zinc-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             Go back home
-          </a>
+          </Link>
           <a href="/contact" className="text-sm font-semibold text-zinc-200">
             Notify us <span aria-hidden="true">&rarr;</span>
           </a>

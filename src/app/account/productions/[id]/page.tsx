@@ -6,11 +6,15 @@ import { UpdateProductionForm } from "@/components/forms/UpdateProductionForm";
 import { getProductionForUpdate, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function EditProductionPage({
-  params,
-}: {
-  params: { id: string };
+export default async function EditProductionPage(props: {
+  params: Promise<{ id: string }>;
 }) {
+  const params = await props.params;
+  const id = parseInt(params.id, 10);
+  if (isNaN(id)) {
+    redirect("/account/productions");
+  }
+
   const supabase = createClient();
 
   let user: User | undefined;
@@ -23,8 +27,13 @@ export default async function EditProductionPage({
 
   const { data: production, error } = await getProductionForUpdate(
     supabase,
-    params.id,
+    id,
   );
+
+  if (error) {
+    console.error(error);
+    redirect("/account/productions");
+  }
 
   if (!production) redirect("/account/productions");
 

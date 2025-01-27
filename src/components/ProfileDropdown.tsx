@@ -6,10 +6,11 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useActionState } from "react";
 
 import signOut from "@/actions/signOut";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FormServerState } from "@/lib/types";
 
 export const ProfileDropdown = ({
   name,
@@ -18,6 +19,11 @@ export const ProfileDropdown = ({
   name: string | undefined;
   profileUrl: string | undefined;
 }) => {
+  const [signOutError, signOutAction] = useActionState<
+    FormServerState,
+    FormData
+  >(signOut, { status: "idle" });
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="ml-2 inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
@@ -71,7 +77,7 @@ export const ProfileDropdown = ({
             </Menu.Item>
           </div>
           <div className="py-1">
-            <form action={signOut} className="flex w-full">
+            <form action={signOutAction} className="flex w-full">
               <Menu.Item
                 as="button"
                 type="submit"

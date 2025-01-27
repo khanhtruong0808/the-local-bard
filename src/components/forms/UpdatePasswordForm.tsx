@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { FormServerState } from "@/lib/types";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 export const UpdatePasswordForm = ({
@@ -17,9 +17,12 @@ export const UpdatePasswordForm = ({
     formData: FormData,
   ) => Promise<FormServerState>;
 }) => {
-  const [state, formAction] = useFormState<FormServerState, FormData>(action, {
-    status: "idle",
-  });
+  const [state, formAction] = useActionState<FormServerState, FormData>(
+    action,
+    {
+      status: "idle",
+    },
+  );
 
   return (
     <form action={formAction}>

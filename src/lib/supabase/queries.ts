@@ -58,7 +58,7 @@ export type TheaterForStagesPage = DbResultOk<
 
 export const getProductionForUpdate = async (
   client: SupabaseClient<Database>,
-  productionId: string,
+  productionId: number,
 ) => {
   return await client
     .from("productions")
@@ -74,7 +74,7 @@ export type ProductionForUpdate = DbResultOk<
 
 export const getProduction = async (
   client: SupabaseClient<Database>,
-  productionId: string,
+  productionId: number,
 ) => {
   return await client
     .from("productions")
