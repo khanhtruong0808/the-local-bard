@@ -15,7 +15,7 @@ export default async function EditProductionPage(props: {
     redirect("/account/productions");
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   let user: User | undefined;
   try {

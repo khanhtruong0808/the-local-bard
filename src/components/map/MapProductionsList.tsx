@@ -32,7 +32,7 @@ export async function MapProductionsList({
   if (searchDate && !Array.isArray(searchDate))
     nextSearchParams.set("searchDate", searchDate);
 
-  const supabase = createClient();
+  const supabase = await createClient();
   await supabase.auth.getUser();
 
   const { data: productions, error } = await getFullProductions(
@@ -67,10 +67,10 @@ export async function MapProductionsList({
             key={production.id}
             href={createUrl("/search", nextSearchParams)}
             prefetch={false}
-            className="hidden w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow hover:bg-zinc-600 md:block"
+            className="hidden w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow-sm hover:bg-zinc-600 md:block"
           >
             <div className="sm:flex">
-              <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
+              <div className="ml-2 shrink-0 self-center pl-4 sm:mr-4 sm:mb-0">
                 {production.poster_url && (
                   <Image
                     src={production.poster_url}
@@ -81,7 +81,7 @@ export async function MapProductionsList({
                 )}
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium leading-6 text-zinc-200">
+                <h3 className="text-lg leading-6 font-medium text-zinc-200">
                   {production.name}
                 </h3>
                 <div className="mt-2 max-w-xl text-sm text-zinc-400">
@@ -113,10 +113,10 @@ export async function MapProductionsList({
             href={production.url || ""}
             prefetch={false}
             target="_blank"
-            className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 py-2 shadow hover:bg-zinc-600 md:hidden"
+            className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 py-2 shadow-sm hover:bg-zinc-600 md:hidden"
           >
             <div className="flex">
-              <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
+              <div className="ml-2 shrink-0 self-center pl-4 sm:mr-4 sm:mb-0">
                 {production.poster_url && (
                   <Image
                     src={production.poster_url}
@@ -127,7 +127,7 @@ export async function MapProductionsList({
                 )}
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium leading-6 text-zinc-200">
+                <h3 className="text-lg leading-6 font-medium text-zinc-200">
                   {production.name}
                 </h3>
                 <div className="mt-2 max-w-xl text-sm text-zinc-400">

@@ -568,9 +568,9 @@ export function UpdateProductionForm({ production }: ProductionFormProps) {
             )}
           />
           <div className="mx-auto mt-8 max-w-fit sm:col-span-3">
-            <div className="overflow-hidden rounded-lg bg-zinc-700 shadow">
+            <div className="overflow-hidden rounded-lg bg-zinc-700 shadow-sm">
               <div className="sm:flex">
-                <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
+                <div className="ml-2 shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
                   {posterUrl && (
                     <Image
                       src={posterUrl}

@@ -9,7 +9,7 @@ export default async function signInWithEmail(form: FormData) {
   const email = form.get("email") as string;
   const password = form.get("password") as string;
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const signIn = await supabase.auth.signInWithPassword({
     email,

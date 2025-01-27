@@ -5,7 +5,7 @@ import { getMaybeUser } from "@/lib/supabase/queries";
 export const dynamic = "force-dynamic";
 
 export async function Auth() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const user = await getMaybeUser(supabase);
   if (!user) return null;
 

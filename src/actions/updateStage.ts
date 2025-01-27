@@ -21,7 +21,7 @@ export default async function updateStage(
 
   const payload = parsed.data;
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Prefer to create a new address, rather than update an existing one.
   // We can always delete unused addresses later with an RPC.

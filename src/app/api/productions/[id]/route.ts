@@ -6,7 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "edge";
 
-export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  request: Request,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   const intId = parseInt(params.id, 10);
   if (isNaN(intId)) {
@@ -33,7 +36,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     );
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase
     .from("productions")

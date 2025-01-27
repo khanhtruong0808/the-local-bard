@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function signInWithGoogle() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const signIn = await supabase.auth.signInWithOAuth({
     provider: "google",

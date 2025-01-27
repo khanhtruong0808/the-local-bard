@@ -47,7 +47,7 @@ export default function GoogleSignInButton() {
           fill="#EB4335"
         />
       </svg>
-      <span className="text-sm font-semibold leading-6">Google</span>
+      <span className="text-sm leading-6 font-semibold">Google</span>
     </Button>
   );
 }

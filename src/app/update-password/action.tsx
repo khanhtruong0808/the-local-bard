@@ -25,7 +25,7 @@ export default async function updatePasswordAfterReset(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const update = await supabase.auth.updateUser({
     password: parsed.data.newPassword,

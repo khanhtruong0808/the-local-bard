@@ -22,7 +22,7 @@ export default async function updateTheater(
 
   const payload = parsed.data;
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error: theatersError } = await supabase
     .from("theaters")

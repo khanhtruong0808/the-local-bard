@@ -34,7 +34,7 @@ export const Poster = ({
           width={225}
           src={src}
           alt=""
-          className="h-[300px] w-[225px] overflow-hidden rounded"
+          className="h-[300px] w-[225px] overflow-hidden rounded-sm"
         />
         <div className="mt-2 flex max-w-[225px] flex-wrap justify-between text-sm">
           <p className="text-zinc-300">{name}</p>

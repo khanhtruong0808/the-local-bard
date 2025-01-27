@@ -116,9 +116,9 @@ export default function MapMarker({
       >
         <div
           className={cn(
-            "flex max-w-lg flex-col items-center justify-center rounded px-4 py-2",
+            "flex max-w-lg flex-col items-center justify-center rounded-sm px-4 py-2",
             active &&
-              "bg-gradient-to-r from-yellow-500 to-yellow-300 shadow-lg",
+              "bg-linear-to-r from-yellow-500 to-yellow-300 shadow-lg",
           )}
           onClick={() =>
             active &&

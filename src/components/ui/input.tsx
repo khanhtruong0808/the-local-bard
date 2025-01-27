@@ -12,7 +12,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         className={cn(
           "flex h-10 w-full rounded-md border px-3 py-2 text-sm", // base
           "disabled:cursor-not-allowed disabled:opacity-50", // disabled
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2", // focus
+          "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2", // focus
           "file:border-0 file:bg-transparent file:text-sm file:font-medium", // file input
           "border-zinc-200 bg-white ring-offset-white placeholder:text-zinc-500 focus-visible:ring-zinc-950", // light mode
           // "dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300", // shadcn default dark mode

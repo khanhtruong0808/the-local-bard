@@ -5,7 +5,7 @@ import { getTheaterForStagesPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EditStagePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const user = await getUser(supabase);
 

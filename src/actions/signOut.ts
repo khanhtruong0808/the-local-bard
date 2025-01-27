@@ -9,7 +9,7 @@ export default async function signOut(
   prevState: FormServerState,
   formData: FormData,
 ): Promise<FormServerState> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const signOut = await supabase.auth.signOut();
   if (signOut.error) {

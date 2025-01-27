@@ -58,9 +58,10 @@ export function DatePickerWithRange({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
+            autoFocus
             mode="range"
-            fromDate={today}
+            startMonth={new Date(today.getFullYear(), today.getMonth())}
+            hidden={[{ before: today }]}
             defaultMonth={dateRange?.from || undefined}
             selected={dateRange}
             onSelect={onSelect}

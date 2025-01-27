@@ -48,7 +48,7 @@ export const Navbar = ({ children }: { children: React.ReactNode }) => {
                         key={link.label}
                         href={link.href}
                         className={twMerge(
-                          "rounded px-3 py-2 text-zinc-400 hover:bg-white/10 hover:text-white",
+                          "rounded-sm px-3 py-2 text-zinc-400 hover:bg-white/10 hover:text-white",
                           isSearchPage && "hover:bg-zinc-700",
                         )}
                       >

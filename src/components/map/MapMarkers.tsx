@@ -19,7 +19,7 @@ export default async function MapMarkers({
   if (Array.isArray(productionId))
     throw new Error("productionId must be a single value");
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: productions, error } = await getFullProductions(
     supabase,
@@ -65,7 +65,7 @@ export default async function MapMarkers({
           position={{ lat, lng }}
         >
           {production.poster_url && (
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Image
                 src={production.poster_url}
                 alt={production.name}
@@ -118,7 +118,7 @@ export default async function MapMarkers({
             if (!production.poster_url) return null;
             return (
               <div
-                className="border bg-yellow-400 bg-opacity-75 shadow-lg"
+                className="bg-opacity-75 border bg-yellow-400 shadow-lg"
                 key={i}
               >
                 <Image

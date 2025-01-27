@@ -20,7 +20,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm [&>span]:line-clamp-1", // base
-      "focus:outline-none focus:ring-2 focus:ring-offset-2", // focus base
+      "focus:outline-hidden focus:ring-2 focus:ring-offset-2", // focus base
       "disabled:cursor-not-allowed disabled:opacity-50", // disabled
       "border-zinc-200 bg-white ring-offset-white placeholder:text-zinc-500 focus:ring-zinc-950", // light mode
       // "dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus:ring-zinc-300", // shadcn default dark mode
@@ -127,8 +127,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none", // base
-      "data-[disabled]:pointer-events-none data-[disabled]:opacity-50", // disabled
+      "relative flex w-full cursor-default select-none items-center rounded-xs py-1.5 pl-8 pr-2 text-sm outline-hidden", // base
+      "data-disabled:pointer-events-none data-disabled:opacity-50", // disabled
       "focus:bg-zinc-100 focus:text-zinc-900", // light mode
       "dark:focus:bg-zinc-800 dark:focus:text-zinc-50", // dark mode
       className,

@@ -28,7 +28,7 @@
 //     return { status: "error", error: error };
 //   }
 
-//   const supabase = createClient();
+//   const supabase = await createClient();
 
 //   const { id, poster, ...updatedProduction } = parsed.data;
 
