@@ -8,10 +8,10 @@ export const AspectRatioWarning = () => {
 
   return (
     <div className="mt-8 flex flex-col space-y-8 text-white">
-      <p className="text-bold text-gray-300">
+      <p className="text-bold text-muted-foreground">
         The uploaded poster is not in a 3:4 aspect ratio.
       </p>
-      <p className="text-bold text-gray-300">
+      <p className="text-bold text-muted-foreground">
         The poster may appear warped or stretched when displayed. Consider
         uploading a poster that is within this aspect ratio for best results.
       </p>

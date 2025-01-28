@@ -32,7 +32,7 @@ export default async function StagesPage() {
         <h2 className="text-base leading-7 font-semibold text-zinc-200">
           {theater.name} Stages
         </h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm leading-6">
           Manage your theater&apos;s stages.
         </p>
       </div>

@@ -48,7 +48,7 @@ export const UpdateProfileForm = ({
 
   return (
     <form action={formAction}>
-      <h2 className="text-base font-semibold leading-7 text-zinc-200">
+      <h2 className="text-base leading-7 font-semibold text-zinc-200">
         Update profile
       </h2>
       <div className="mt-6 space-y-4 border-t border-gray-200 py-6">
@@ -80,7 +80,7 @@ export const UpdateProfileForm = ({
                 </Avatar>
               ) : (
                 <svg
-                  className="h-full w-full text-gray-300"
+                  className="text-muted-foreground h-full w-full"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >

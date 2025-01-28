@@ -1,6 +1,12 @@
 "use client";
 
-import { Menu, MenuItem, MenuItems, Transition } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
 import {
   ArrowRightStartOnRectangleIcon,
   UserCircleIcon,
@@ -26,7 +32,7 @@ export const ProfileDropdown = ({
 
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="ml-2 inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
+      <MenuButton className="ml-2 inline-block h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-gray-100">
         {profileUrl ? (
           <Avatar className="h-8 w-8">
             <AvatarImage src={profileUrl} />
@@ -34,14 +40,14 @@ export const ProfileDropdown = ({
           </Avatar>
         ) : (
           <svg
-            className="h-full w-full text-gray-300"
+            className="text-muted-foreground h-full w-full"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
         )}
-      </Menu.Button>
+      </MenuButton>
 
       <Transition
         as={Fragment}
@@ -56,7 +62,7 @@ export const ProfileDropdown = ({
           <div>
             <MenuItem>
               <div className="group flex items-center px-4 py-2 text-sm">
-                <h3 className="font-semibold text-gray-700">
+                <h3 className="text-secondary font-semibold">
                   Welcome{name ? `, ${name}` : ""}!
                 </h3>
               </div>
@@ -66,10 +72,10 @@ export const ProfileDropdown = ({
             <MenuItem>
               <Link
                 href="/account/theater"
-                className="group ui-not-active:text-gray-700 flex items-center px-4 py-2 text-sm data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                className="group text-secondary flex items-center px-4 py-2 text-sm data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
               >
                 <UserCircleIcon
-                  className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                  className="text-muted-foreground mr-3 h-5 w-5 group-hover:text-gray-500"
                   aria-hidden="true"
                 />
                 My Theater
@@ -81,10 +87,10 @@ export const ProfileDropdown = ({
               <MenuItem
                 as="button"
                 type="submit"
-                className="group ui-not-active:text-gray-700 flex w-full items-center px-4 py-2 text-sm data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                className="group text-secondary flex w-full cursor-pointer items-center px-4 py-2 text-sm data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
               >
                 <ArrowRightStartOnRectangleIcon
-                  className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                  className="text-muted-foreground mr-3 h-5 w-5 group-hover:text-gray-500"
                   aria-hidden="true"
                 />
                 Log out

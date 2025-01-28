@@ -35,7 +35,7 @@ export default async function ProductionsPage() {
         <h2 className="text-base leading-7 font-semibold text-zinc-200">
           {theater.name} Productions
         </h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm leading-6">
           Manage your theater&apos;s productions.
         </p>
       </div>
@@ -56,7 +56,7 @@ export default async function ProductionsPage() {
                     Approved
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-md bg-gray-400/10 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-gray-400/20 ring-inset">
+                  <span className="text-muted-foreground inline-flex items-center rounded-md bg-gray-400/10 px-2 py-1 text-xs font-medium ring-1 ring-gray-400/20 ring-inset">
                     Pending approval
                   </span>
                 )}

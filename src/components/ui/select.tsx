@@ -19,12 +19,10 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm [&>span]:line-clamp-1", // base
-      "focus:outline-hidden focus:ring-2 focus:ring-offset-2", // focus base
+      "border-input ring-offset-background flex h-10 w-full items-center justify-between rounded-md border bg-transparent px-3 py-2 text-sm [&>span]:line-clamp-1", // base
+      "placeholder:text-muted-foreground", // placeholder
+      "focus:ring-ring focus:ring-2 focus:outline-none", // focus base
       "disabled:cursor-not-allowed disabled:opacity-50", // disabled
-      "border-zinc-200 bg-white ring-offset-white placeholder:text-zinc-500 focus:ring-zinc-950", // light mode
-      // "dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400 dark:focus:ring-zinc-300", // shadcn default dark mode
-      "dark:border-zinc-500 dark:bg-transparent dark:text-zinc-300 dark:ring-offset-zinc-500 dark:placeholder:text-zinc-500 dark:focus:ring-zinc-100", // custom dark mode
       className,
     )}
     {...props}
@@ -114,7 +112,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("py-1.5 pl-8 pr-2 text-sm font-semibold", className)}
+    className={cn("py-1.5 pr-2 pl-8 text-sm font-semibold", className)}
     {...props}
   />
 ));
@@ -127,7 +125,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-xs py-1.5 pl-8 pr-2 text-sm outline-hidden", // base
+      "relative flex w-full cursor-default items-center rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none", // base
       "data-disabled:pointer-events-none data-disabled:opacity-50", // disabled
       "focus:bg-zinc-100 focus:text-zinc-900", // light mode
       "dark:focus:bg-zinc-800 dark:focus:text-zinc-50", // dark mode
