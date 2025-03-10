@@ -232,11 +232,11 @@ function SingleProductionMarker({
           animate={{
             width:
               isSelected && currentZoom >= legibleZoom
-                ? 800 * zoomScaleFactor
+                ? 1000 * zoomScaleFactor
                 : 0,
             height:
               isSelected && currentZoom >= legibleZoom
-                ? 440 * zoomScaleFactor
+                ? 500 * zoomScaleFactor
                 : 0,
           }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
