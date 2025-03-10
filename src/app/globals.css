@@ -25,6 +25,14 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
+  --container-4xs: 14rem;
+  --container-5xs: 12rem;
+  --container-6xs: 10rem;
+  --container-7xs: 8rem;
+  --container-8xs: 6rem;
+  --container-9xs: 4rem;
+  --container-10xs: 2rem;
+
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
     from 180deg at 50% 50%,
@@ -50,6 +58,9 @@
       height: 0;
     }
   }
+
+  --text-2xs: 0.625rem;
+  --text-3xs: 0.5rem;
 }
 
 @utility container {

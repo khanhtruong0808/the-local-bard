@@ -1,48 +1,82 @@
-"use server";
+"use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import Link from "next/link";
+import {
+  parseAsArrayOf,
+  parseAsBoolean,
+  parseAsFloat,
+  parseAsInteger,
+  parseAsIsoDate,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
+import { useCallback } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFullProductions } from "@/lib/supabase/queries";
-import { createClient } from "@/lib/supabase/server";
-import { RouteSearchParams } from "@/lib/types";
-import { createUrl } from "@/lib/utils";
+import { fullProductionsQueryOptions } from "@/lib/queryOptions";
+import { createClient } from "@/lib/supabase/client";
+import { FullProduction } from "@/lib/supabase/queries";
 
-export async function MapProductionsList({
-  searchParams,
-}: {
-  searchParams?: RouteSearchParams;
-}) {
-  const { q, productionId, stageId, lat, lng, searchDate, ...filters } =
-    searchParams || {};
-
-  const nextSearchParams = new URLSearchParams();
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((v) => {
-        nextSearchParams.append(key, v);
-      });
-    } else {
-      if (value === undefined) return;
-      nextSearchParams.set(key, value);
-    }
+export function MapProductionsList() {
+  const [searchParams, _setSearchParams] = useQueryStates({
+    q: parseAsString,
+    cost_range: parseAsArrayOf(parseAsStringEnum(["$", "$$", "$$$", "$$$$"])),
+    genres: parseAsArrayOf(parseAsString),
+    kid_friendly: parseAsBoolean,
+    searchDate: parseAsIsoDate,
   });
-  if (searchDate && !Array.isArray(searchDate))
-    nextSearchParams.set("searchDate", searchDate);
 
-  const supabase = await createClient();
-  await supabase.auth.getUser();
+  // setter func for production and stage IDs when we click on a production
+  const [_ids, setIds] = useQueryStates({
+    productionId: parseAsInteger,
+    stageId: parseAsInteger,
+  });
 
-  const { data: productions, error } = await getFullProductions(
-    supabase,
-    filters,
-    q,
-    searchDate,
+  // setter func for lat and lng when we click on a production
+  const [_latLng, setLatLng] = useQueryStates({
+    lat: parseAsFloat,
+    lng: parseAsFloat,
+  });
+
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+  const {
+    data: productions,
+    isLoading,
+    error,
+  } = useQuery(
+    fullProductionsQueryOptions({
+      supabase,
+      q: searchParams.q,
+      cost_range: searchParams.cost_range,
+      genres: searchParams.genres,
+      kid_friendly: searchParams.kid_friendly,
+      searchDate: searchParams.searchDate,
+    }),
+    queryClient,
+  );
+
+  const handleProductionClick = useCallback(
+    (production: FullProduction) => {
+      setIds({
+        productionId: production.id,
+        stageId: null,
+      });
+      const stageAddress = production.stages?.addresses;
+      if (stageAddress?.latitude && stageAddress?.longitude) {
+        setLatLng({
+          lat: stageAddress.latitude,
+          lng: stageAddress.longitude,
+        });
+      }
+    },
+    [setIds, setLatLng],
   );
 
   if (error) throw new Error(error.message);
+  if (isLoading) return <MapProductionsListSkeleton />;
   if (!productions || productions.length === 0)
     return (
       <h3 className="mt-4 text-lg leading-9 tracking-tight text-slate-200">
@@ -56,17 +90,10 @@ export async function MapProductionsList({
       {productions.map((production) => {
         const stage = production.stages;
         const stageAddress = stage?.addresses;
-        nextSearchParams.set("productionId", production.id.toString());
-        nextSearchParams.delete("stageId");
-        if (stageAddress?.latitude && stageAddress?.longitude) {
-          nextSearchParams.set("lat", stageAddress.latitude.toString());
-          nextSearchParams.set("lng", stageAddress.longitude.toString());
-        }
         return (
-          <Link
+          <div
             key={production.id}
-            href={createUrl("/search", nextSearchParams)}
-            prefetch={false}
+            onClick={() => handleProductionClick(production)}
             className="hidden w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 shadow-sm hover:bg-zinc-600 md:block"
           >
             <div className="sm:flex">
@@ -93,7 +120,7 @@ export async function MapProductionsList({
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         );
       })}
 
@@ -101,18 +128,11 @@ export async function MapProductionsList({
       {productions.map((production) => {
         const stage = production.stages;
         const stageAddress = stage?.addresses;
-        nextSearchParams.set("productionId", production.id.toString());
-        nextSearchParams.delete("stageId");
-        if (stageAddress?.latitude && stageAddress?.longitude) {
-          nextSearchParams.set("lat", stageAddress.latitude.toString());
-          nextSearchParams.set("lng", stageAddress.longitude.toString());
-        }
+
         return (
-          <Link
+          <div
             key={production.id}
-            href={production.url || ""}
-            prefetch={false}
-            target="_blank"
+            onClick={() => handleProductionClick(production)}
             className="w-full cursor-pointer overflow-hidden rounded-lg bg-zinc-700 py-2 shadow-sm hover:bg-zinc-600 md:hidden"
           >
             <div className="flex">
@@ -139,14 +159,14 @@ export async function MapProductionsList({
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         );
       })}
     </>
   );
 }
 
-export async function MapProductionsListSkeleton() {
+export function MapProductionsListSkeleton() {
   return (
     <>
       {Array.from({ length: 5 }).map((_, i) => (

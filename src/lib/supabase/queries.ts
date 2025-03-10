@@ -1,10 +1,8 @@
+import { format } from "date-fns";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { cache } from "react";
 
 import type { Database } from "./database.types";
 import type { DbResultOk, Tables } from "./dbHelperTypes";
-import type { RouteSearchParams } from "../types";
-import { format } from "date-fns";
 
 export const getTheaterForNewProduction = async (
   client: SupabaseClient<Database>,
@@ -91,79 +89,72 @@ export type Production = DbResultOk<ReturnType<typeof getProduction>>;
  * Includes stage with address and theater.
  * Filters comes from searchParams on the map/search page.
  */
-export const getFullProductions = cache(
-  async (
-    client: SupabaseClient<Database>,
-    filters?: RouteSearchParams,
-    search?: string | string[],
-    searchDate?: string | string[],
-  ) => {
-    const query = client
-      .from("productions")
-      .select("*, stages (*, addresses (*)), theaters (*)")
-      .eq("approved", true)
-      .gte("end_date", format(new Date(), "yyyy-MM-dd"));
+export const getFullProductions = async ({
+  client,
+  search,
+  cost_range,
+  genres,
+  kid_friendly,
+  searchDate,
+}: {
+  client: SupabaseClient<Database>;
+  search?: string | null;
+  cost_range: string[] | null;
+  genres: string[] | null;
+  kid_friendly: boolean | null;
+  searchDate: Date | null;
+}) => {
+  const query = client
+    .from("productions")
+    .select("*, stages (*, addresses (*)), theaters (*)")
+    .eq("approved", true)
+    .gte("end_date", format(new Date(), "yyyy-MM-dd"));
 
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value === undefined) {
-          return; // Skip undefined values
-        } else if (
-          ["genres", "directors", "composers", "playwrights"].includes(key)
-        ) {
-          // Hard-code these array-type columns for now
-          if (Array.isArray(value)) {
-            query.contains(key, value);
-          } else {
-            query.contains(key, [value]);
-          }
-        } else if (Array.isArray(value)) {
-          query.in(key, value);
-          return;
-        } else {
-          query.eq(key, value);
-        }
-      });
-    }
+  if (cost_range && cost_range.length > 0) {
+    query.in("cost_range", cost_range);
+  }
 
-    // If search is provided like ?q=foo, search for productions using fuzzy
-    // search. The search_production_ids function has been implemented in
-    // Supabase, so we can call it with RPC to get all the production IDs that
-    // match the search term and use them to filter the query.
-    // TODO: Implement multi search, and possibly implement this whole query
-    // as a function so that we can just do RPC instead of query + RPC.
-    if (search) {
-      if (Array.isArray(search)) {
-        throw new Error("multi search not implemented");
-      }
+  if (kid_friendly) {
+    query.eq("kid_friendly", true);
+  }
 
-      const { data, error } = await client.rpc("search_production_ids", {
-        search_term: search,
-      });
-      if (error) throw error;
+  if (genres && genres.length > 0) {
+    query.contains("genres", genres);
+  }
 
-      // ids that match our fuzzy search
-      const ids = data.map((d) => d.id);
+  // If search is provided like ?q=foo, search for productions using fuzzy
+  // search. The search_production_ids function has been implemented in
+  // Supabase, so we can call it with RPC to get all the production IDs that
+  // match the search term and use them to filter the query.
+  // TODO: Implement multi search, and possibly implement this whole query
+  // as a function so that we can just do RPC instead of query + RPC.
+  if (search) {
+    const { data, error } = await client.rpc("search_production_ids", {
+      search_term: search,
+    });
+    if (error) throw error;
 
-      // representation of OR clauses in our supabase query
-      const queryStr = `id.in.(${ids.join(",")}), directors.cs.{"${search}"}, composers.cs.{"${search}"}, playwrights.cs.{"${search}"}, genres.cs.{"${search}"}`;
-      query.or(queryStr);
-    }
+    // ids that match our fuzzy search
+    const ids = data.map((d) => d.id);
 
-    // Filter by productions that end after the search start date
-    if (searchDate) {
-      if (Array.isArray(searchDate)) {
-        throw new Error("multi search date not implemented");
-      }
-      query.lte("start_date", searchDate);
-      query.gte("end_date", searchDate);
-    }
+    // representation of OR clauses in our supabase query
+    const queryStr = `id.in.(${ids.join(",")}), directors.cs.{"${search}"}, composers.cs.{"${search}"}, playwrights.cs.{"${search}"}, genres.cs.{"${search}"}`;
+    query.or(queryStr);
+  }
 
-    return await query;
-  },
-);
+  // Filter by productions that end after the search start date
+  if (searchDate) {
+    query.lte("start_date", searchDate);
+    query.gte("end_date", searchDate);
+  }
 
-export type FullProductions = DbResultOk<ReturnType<typeof getFullProductions>>;
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data;
+};
+
+export type FullProductions = Awaited<ReturnType<typeof getFullProductions>>;
 export type FullProduction = FullProductions[number];
 
 /**
