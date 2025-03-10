@@ -6,11 +6,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function signUp(form: FormData) {
-  const headersList = headers();
+  const headersList = await headers();
   const email = form.get("email") as string;
   const password = form.get("password") as string;
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const signUp = await supabase.auth.signUp({
     email,

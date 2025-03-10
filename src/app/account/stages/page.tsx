@@ -7,7 +7,7 @@ import { getTheaterForStagesPage, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function StagesPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const user = await getUser(supabase);
 
@@ -29,10 +29,10 @@ export default async function StagesPage() {
   return (
     <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
       <div>
-        <h2 className="text-base font-semibold leading-7 text-zinc-200">
+        <h2 className="text-base leading-7 font-semibold text-zinc-200">
           {theater.name} Stages
         </h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm leading-6">
           Manage your theater&apos;s stages.
         </p>
       </div>

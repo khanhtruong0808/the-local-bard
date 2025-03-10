@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import createStage from "@/actions/createStage";
 import AddressFinderInput from "@/components/AddressFinderInput";
@@ -37,10 +37,10 @@ import { FormServerState } from "@/lib/types";
 export const CreateStageForm = () => {
   const LOCAL_STORAGE_KEY = `create-stage-form`;
 
-  const [state, formAction] = useFormState<FormServerState, CreateStageSchema>(
-    createStage,
-    { status: "idle" },
-  );
+  const [state, formAction] = useActionState<
+    FormServerState,
+    CreateStageSchema
+  >(createStage, { status: "idle" });
 
   const router = useRouter();
   if (state.status === "success") {

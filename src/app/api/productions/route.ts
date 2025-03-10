@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.from("productions").insert({
     ...parsed.data,

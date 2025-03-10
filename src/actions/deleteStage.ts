@@ -5,7 +5,7 @@ import { FormServerState } from "@/lib/types";
 export default async function deleteStage(
   id: number,
 ): Promise<FormServerState> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Check for any productions that are using this stage
   const { data: productions, error: productionError } = await supabase

@@ -47,7 +47,7 @@ export default async function Home() {
 }
 
 async function UpcomingProductions() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // This line is required for supabase to stop complaining about getSession
   await getMaybeUser(supabase);
@@ -69,7 +69,10 @@ async function UpcomingProductions() {
     .order("start_date", { ascending: true })
     .limit(4);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
 
   return (
     <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -82,7 +85,7 @@ async function UpcomingProductions() {
               src={production.poster_url as string} // checked above
               startDate={new Date(production.start_date)}
               endDate={new Date(production.end_date)}
-              address={production?.stages?.addresses!} // checked above
+              address={production.stages.addresses!} // checked above
               url={production.url}
             />
           );

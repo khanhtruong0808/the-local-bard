@@ -11,7 +11,7 @@ const navigation = [
 ];
 
 export async function Footer() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const user = await getMaybeUser(supabase);
   const loggedIn = user !== null;
 

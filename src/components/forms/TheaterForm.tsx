@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import updateTheater from "@/actions/updateTheater";
 import AddressFinderInput from "@/components/AddressFinderInput";
@@ -64,7 +64,7 @@ const TheaterFormInternal = ({
   resetFormState: () => void;
 }) => {
   const LOCAL_STORAGE_KEY = `update-theater-form`;
-  const [state, formAction] = useFormState<
+  const [state, formAction] = useActionState<
     FormServerState,
     UpdateTheaterSchema
   >(updateTheater, { status: "idle" });

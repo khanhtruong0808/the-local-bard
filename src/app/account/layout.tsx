@@ -9,7 +9,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   try {
     const user = await getUser(supabase);
     if (!user) {

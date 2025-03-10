@@ -16,7 +16,7 @@ export default async function UpdateProfilePage() {
     formData: FormData,
   ): Promise<FormServerState> {
     "use server";
-    const supabase = createClient();
+    const supabase = await createClient();
     const parsed = updateProfileSchema.safeParse({
       profileImage: formData.get("profileImage"),
     });
@@ -65,7 +65,7 @@ export default async function UpdateProfilePage() {
     return { status: "success" };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const user = await getMaybeUser(supabase);
   if (!user) return null;
 

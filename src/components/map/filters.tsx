@@ -1,10 +1,14 @@
-"use server";
+"use client";
 
-import { DateSearchItem, FilterItem } from "@/components/map/MapFilterItem";
+import {
+  DateSearchItem,
+  FilterItem,
+  MultiFilterItem,
+} from "@/components/map/filter-item";
 import { genres } from "@/lib/constants";
-import { ProductionSearch } from "./ProductionSearch";
+import { ProductionSearch } from "./search";
 
-export default async function MapFilters() {
+export default function MapFilters() {
   return (
     <div className="px-4 sm:p-0">
       <div className="mt-4">
@@ -12,51 +16,46 @@ export default async function MapFilters() {
       </div>
       <fieldset className="mt-4">
         <legend className="sr-only">Price</legend>
-        <h4 className="text-md font-medium leading-6 text-white">Price</h4>
+        <h4 className="text-md leading-6 font-medium text-white">Price</h4>
         <div className="mt-2 space-y-2">
-          <FilterItem
+          <MultiFilterItem
             name="oneDollar"
             label="$"
             field="cost_range"
             value="$"
-            multi={true}
           />
-          <FilterItem
+          <MultiFilterItem
             name="twoDollar"
             label="$$"
             field="cost_range"
             value="$$"
-            multi={true}
           />
-          <FilterItem
+          <MultiFilterItem
             name="threeDollar"
             label="$$$"
             field="cost_range"
             value="$$$"
-            multi={true}
           />
-          <FilterItem
+          <MultiFilterItem
             name="fourDollar"
             label="$$$$"
             field="cost_range"
             value="$$$$"
-            multi={true}
           />
         </div>
       </fieldset>
       <hr className="my-4 border-slate-500" />
       <fieldset className="mt-4">
         <legend className="sr-only">Genre</legend>
-        <h4 className="text-md font-medium leading-6 text-white">Genre</h4>
+        <h4 className="text-md leading-6 font-medium text-white">Genre</h4>
         <div className="mt-2 space-y-2">
           {genres.map((genre) => (
-            <FilterItem
+            <MultiFilterItem
               key={genre}
               name={genre}
               label={genre}
               field="genres"
               value={genre}
-              multi={true}
             />
           ))}
         </div>
@@ -64,7 +63,7 @@ export default async function MapFilters() {
       <hr className="my-4 border-slate-500" />
       <fieldset className="mt-4">
         <legend className="sr-only">Misc.</legend>
-        <h4 className="text-md font-medium leading-6 text-white">Misc.</h4>
+        <h4 className="text-md leading-6 font-medium text-white">Misc.</h4>
         <div className="mt-2 space-y-2">
           <FilterItem
             name="kidFriendly"
@@ -77,7 +76,7 @@ export default async function MapFilters() {
       <hr className="my-4 border-slate-500" />
       <fieldset className="mt-4">
         <legend className="sr-only">Date</legend>
-        <h4 className="text-md font-medium leading-6 text-white">Date</h4>
+        <h4 className="text-md leading-6 font-medium text-white">Date</h4>
         <DateSearchItem />
       </fieldset>
     </div>

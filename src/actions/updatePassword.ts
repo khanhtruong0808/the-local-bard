@@ -26,7 +26,7 @@ export default async function updatePassword(form: FormData) {
     return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const update = await supabase.auth.updateUser({
     password: parsed.data.newPassword,

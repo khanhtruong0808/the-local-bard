@@ -75,3 +75,15 @@ export const commonPlaywrigthts = [
   "Richard Stilgoe",
   "Trey Parker",
 ];
+
+// Sacramento, CA
+export const defaultMapCenter = {
+  lat: 38.576657,
+  lng: -121.493652,
+};
+
+export const defaultMapZoom = 12;
+
+// Because the poster and info window sizes are based on zoom level,
+// only display text when zoom level is at least this value.
+export const legibleZoom = 15;

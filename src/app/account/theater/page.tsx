@@ -4,7 +4,7 @@ import { getTheaterForTheaterPage } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function GeneralPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

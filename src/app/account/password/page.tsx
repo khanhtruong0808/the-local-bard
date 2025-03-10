@@ -32,7 +32,7 @@ export default async function UpdatePasswordPage() {
       };
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const user = await supabase.auth.getUser(); // Ensure user is logged in
 
     if (!user) throw new Error("No user found.");

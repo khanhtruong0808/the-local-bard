@@ -156,9 +156,8 @@ export function useFormCustom<
       setIsLocalStorageApplied(false);
 
       const formValues = form.getValues();
-      const result = onAction(formValues);
+      onAction(formValues);
       form.reset(formValues);
-      return result;
     }
     console.error(form.formState.errors);
   };

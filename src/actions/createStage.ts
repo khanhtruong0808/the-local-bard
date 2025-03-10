@@ -19,7 +19,7 @@ export default async function createStage(
     return Promise.reject(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const user = await getUser(supabase);
 

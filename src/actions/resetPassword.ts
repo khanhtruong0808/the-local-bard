@@ -21,7 +21,7 @@ export default async function resetPassword(form: FormData) {
     throw new Error(parsed.error.errors.map((e) => e.message).join("\n"));
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const update = await supabase.auth.updateUser({
     password: parsed.data.password,

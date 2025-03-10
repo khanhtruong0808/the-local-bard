@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useLoadGoogleApi } from "@/lib/googleMaps";
+import { cn } from "@/lib/utils";
 
 // Geographic boundary to bias the search results to Sacramento County.
 // Results outside of this area will still be returned, but will be lower priority.
@@ -67,7 +68,7 @@ export default function SearchInput() {
         type="text"
         placeholder="Enter an address, neighborhood, city, or ZIP code"
         disabled
-        className="w-full truncate rounded-sm p-4 pr-7 font-sans placeholder:text-gray-600"
+        className="w-full truncate rounded-xs p-4 pr-7 font-sans placeholder:text-gray-600"
       />
     );
 
@@ -80,7 +81,10 @@ export default function SearchInput() {
       <input
         type="text"
         placeholder="Enter an address, neighborhood, city, or ZIP code"
-        className="w-full truncate rounded-sm p-4 pr-7 font-sans placeholder:text-gray-600"
+        className={cn(
+          "w-full truncate rounded-xs p-4 pr-7 font-sans placeholder:text-gray-600",
+          "dark:border-zinc-500 dark:bg-zinc-100 dark:text-zinc-900 dark:ring-offset-zinc-500 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-100", // custom dark mode
+        )}
       />
     </StandaloneSearchBox>
   );

@@ -7,7 +7,7 @@ import { getTodayAtMidnight, parseDateString } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function ProductionsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const user = await getUser(supabase);
 
@@ -32,10 +32,10 @@ export default async function ProductionsPage() {
   return (
     <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
       <div>
-        <h2 className="text-base font-semibold leading-7 text-zinc-200">
+        <h2 className="text-base leading-7 font-semibold text-zinc-200">
           {theater.name} Productions
         </h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm leading-6">
           Manage your theater&apos;s productions.
         </p>
       </div>
@@ -52,11 +52,11 @@ export default async function ProductionsPage() {
               <div className="font-medium text-zinc-300">{production.name}</div>
               <div className="flex items-center">
                 {production.approved ? (
-                  <span className="inline-flex items-center rounded-md bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/20">
+                  <span className="inline-flex items-center rounded-md bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-green-500/20 ring-inset">
                     Approved
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-md bg-gray-400/10 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-gray-400/20">
+                  <span className="text-muted-foreground inline-flex items-center rounded-md bg-gray-400/10 px-2 py-1 text-xs font-medium ring-1 ring-gray-400/20 ring-inset">
                     Pending approval
                   </span>
                 )}

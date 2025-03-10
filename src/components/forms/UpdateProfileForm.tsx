@@ -2,7 +2,7 @@
 
 import { AlertCircle, Check } from "lucide-react";
 import { useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -21,9 +21,12 @@ export const UpdateProfileForm = ({
     formData: FormData,
   ) => Promise<FormServerState>;
 }) => {
-  const [state, formAction] = useFormState<FormServerState, FormData>(action, {
-    status: "idle",
-  });
+  const [state, formAction] = useActionState<FormServerState, FormData>(
+    action,
+    {
+      status: "idle",
+    },
+  );
   const [profileUrl, setProfileUrl] = useState(profile.profile_image_url);
   const [imageKey, setImageKey] = useState(0);
 
@@ -45,7 +48,7 @@ export const UpdateProfileForm = ({
 
   return (
     <form action={formAction}>
-      <h2 className="text-base font-semibold leading-7 text-zinc-200">
+      <h2 className="text-base leading-7 font-semibold text-zinc-200">
         Update profile
       </h2>
       <div className="mt-6 space-y-4 border-t border-gray-200 py-6">
@@ -77,7 +80,7 @@ export const UpdateProfileForm = ({
                 </Avatar>
               ) : (
                 <svg
-                  className="h-full w-full text-gray-300"
+                  className="text-muted-foreground h-full w-full"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >

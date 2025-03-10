@@ -61,14 +61,14 @@ export const SecondaryNavigation = () => {
                   segment === item.segment
                     ? "bg-zinc-700 text-zinc-100"
                     : "text-zinc-300 hover:bg-zinc-700 hover:text-zinc-200",
-                  "group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm font-semibold leading-6",
+                  "group flex gap-x-3 rounded-md py-2 pr-3 pl-2 text-sm leading-6 font-semibold",
                 )}
               >
                 <item.icon
                   className={twMerge(
                     segment === item.segment
                       ? "text-zinc-100"
-                      : "text-gray-400 group-hover:text-zinc-200",
+                      : "text-muted-foreground group-hover:text-zinc-200",
                     "h-6 w-6 shrink-0",
                   )}
                   aria-hidden="true"

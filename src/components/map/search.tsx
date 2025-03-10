@@ -30,7 +30,7 @@ export function ProductionSearch() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
-      <div className="absolute inset-y-0 right-0 top-0 mr-1 flex h-full items-center">
+      <div className="absolute inset-y-0 top-0 right-0 mr-1 flex h-full items-center">
         <MagnifyingGlassIcon className="h-4 w-4 text-zinc-300" />
       </div>
     </form>

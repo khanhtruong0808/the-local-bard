@@ -238,13 +238,13 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                   <ComboboxInput
                     className={cn(
                       "w-full rounded-lg border-none bg-white/5 py-1.5 pl-3 pr-8 text-sm/6 text-white",
-                      "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
+                      "focus:outline-hidden data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25",
                     )}
                     aria-label="Production Title"
                     onChange={(event) => setQuery(event.target.value)}
                   />
                   <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
-                    <ChevronDownIcon className="size-4 fill-white/60 group-data-[hover]:fill-white" />
+                    <ChevronDownIcon className="size-4 fill-white/60 group-data-hover:fill-white" />
                   </ComboboxButton>
                   <ComboboxOptions
                     anchor="bottom"
@@ -254,16 +254,16 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
                       <ComboboxOption
                         key={title}
                         value={title}
-                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
+                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10"
                       >
-                        <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
+                        <CheckIcon className="invisible size-4 fill-white group-data-selected:visible" />
                         <div className="text-sm/6 text-white">{title}</div>
                       </ComboboxOption>
                     ))}
                     {query.length > 0 && (
                       <ComboboxOption
                         value={query}
-                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-white/10"
+                        className="group flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10"
                       >
                         <div className="text-sm/6 text-white">
                           <span className="font-bold">{query}</span>
@@ -564,9 +564,9 @@ export function CreateProductionForm({ theater }: ProductionFormProps) {
             )}
           />
           <div className="mx-auto mt-8 max-w-fit sm:col-span-3">
-            <div className="overflow-hidden rounded-lg bg-zinc-700 shadow">
+            <div className="overflow-hidden rounded-lg bg-zinc-700 shadow-sm">
               <div className="sm:flex">
-                <div className="ml-2 flex-shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
+                <div className="ml-2 shrink-0 self-center pl-4 sm:mb-0 sm:mr-4">
                   {posterUrl && (
                     <Image
                       src={posterUrl}

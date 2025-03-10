@@ -4,7 +4,7 @@ import { getTheaterForNewProduction, getUser } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function NewProductionPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const user = await getUser(supabase);
 
   const { data: theater, error } = await getTheaterForNewProduction(
