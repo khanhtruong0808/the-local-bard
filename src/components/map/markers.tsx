@@ -287,7 +287,9 @@ function SingleProductionMarker({
                   "@5xs:text-xs @2xs:text-sm",
                 )}
               >
-                {production.summary}
+                {production.summary && production.summary?.length > 300
+                  ? production.summary.slice(0, 300) + "..."
+                  : production.summary}
               </p>
               <p
                 className={cn(

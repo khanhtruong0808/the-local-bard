@@ -29,7 +29,6 @@ export function MultiFilterItem({
 
   /** If already active, remove the value, otherwise add it to the param array */
   const handleChange = () => {
-    console.log("handleChange", active);
     setParam(
       active
         ? (param || []).filter((v) => v !== value)
